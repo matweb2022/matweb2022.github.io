@@ -1,0 +1,42 @@
+/* Style sheet
+   color picker www.w3schools.com/colors/colors_picker.asp
+*/
+
+body{
+ 
+  background: url(back.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+ 
+  
+}
+
+.question {
+  background-color: black;
+  color: white;
+  width: auto;
+  padding-bottom: 25px;
+ 
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+  align: center;
+}
+
+li {
+  float: left ; 
+  list-style-type: none;
+    
+}
+
+/* Defining styling for a specific element with an id */
+#signature {
+  text-align: right;
+  color: red;
+  font-style: italic;
+  font-size: 75%;
+}

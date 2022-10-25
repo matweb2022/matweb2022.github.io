@@ -1,0 +1,323 @@
+<!-- This file contains many elements adapted from the online tutoral -->
+<!-- on Bootstrap 4 as found here: https://www.w3schools.com/bootstrap4/default.asp -->
+
+<!-- Images source: -->
+<!-- jule.jpg taken from https://www.freepik.com/premium-vector/cartoon-successful-hairdresser_3951066.htm -->
+<!-- Erwind.jpb https://www.kijiji.ca/v-construction-trades-jobs/winnipeg/bicycle-mechanic/1499188319 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- The head should contain an appropriate title for your site -->
+<head>
+    <title>Accroche vélo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Style sheet (CSS) and JavaScript scripts necessary to use Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>    
+
+    <!-- Your own additional style sheet -->
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+</head>
+
+
+<body>
+
+    <!-- Medium size container, padding 3, margins 3, background dark, text is white -->
+    <!-- Should show the name of your company with an image or logo -->
+    <!-- Bootstrap has its own font for H1, H2, p, etc.  -->
+    <!-- Look in BS4 Typography https://www.w3schools.com/bootstrap4/bootstrap_typography.asp -->
+    <!-- Use your own CSS file to change those fonts if they do not correspond to your company's look -->
+    <div class="container p-3 br-1 border bg-dark text-white">
+		<img class= "img-fluid" src="images/entete.png" >	
+	<div>
+<!-- Nac menu -->
+
+
+
+
+	<nav class="navbar navbar-expand" style=" padding-top:60px ; padding-bottom:45px; padding-left: 45px" >
+	  <ul class="navbar-nav navbar-center" style="width: 800px">
+	  <div class="row text-center" >
+		<div  class="col-sm-2"  style="background-color:#ff3300">
+			<li class="nav-item ">
+			  <a id="menu" class="nav-link " href="#nous" style="height: 67px">Qui nous somme</a>
+			</li>
+		</div>
+		<div class="col-sm-3" style="background-color:#ff3300" >
+			<li class="nav-item">
+			  <a id="menu" class="nav-link" href="#equipe" style="height: 67px">Rencontrer l'équipe</a>
+			</li>
+		</div>
+		<div class="col-sm-2" style="background-color:#ff3300">
+			<li class="nav-item">
+			  <a id="menu" class="nav-link" href="#domain" style="height: 67px">Services</a>
+			</li>
+		</div>
+		<div class="col-sm-3" style="background-color:#ff3300">
+			<li class="nav-item">
+			  <a id="menu" class="nav-link" href="#apt" style="height: 67px">Prendre un rendez-vous</a>
+			</li>
+		</div>
+		<div class="col-sm-2" style="background-color:#ff3300">
+			<li class="nav-item ">
+			  <a id="menu" class="nav-link" href="#contact1" style="height: 67px">Nous contacter</a>
+			</li>
+		</div> 
+	  </ul>
+	</nav>
+
+	
+	 <!-- nous conniatre-->
+    <div id="nous" class=" nous container-md p-3 my-3 text-success bg-org" >
+        <h3>On fais touner la roue depuis 1998.</h3>
+        <h6>Depuis 21 ans nous accrochons vos vélo et fesons l'impossible pour que vous profitée d'une 
+		expérience impécable aussi bien avec nous que sur la route. Entretien saisonier, réparation, ajustement 
+		on en fait notre affaire.</h6>
+    </div>
+	
+	<!--equipe-->
+	 <div id="equipe" class=" container p-3 my-3 text-success bg-org">
+		<div class="row d-flex" style="color: black">
+			<div class="col-md-12">
+				<h2>Rencontrer l'équipe</h2>
+					<div class="card bg-off-white justify-content-center" style="width:220px">
+						<img class="card-img-top" src="images/Erwind.jpg" alt="Card image" style="width:70% border">
+						<div class="card-body">
+							<h4 class="card-title">Erwind</h4>
+							<p class="card-text">Le rigolos</p>
+							<!-- collapsible part -->
+							<a href="#profile" class="btn bg-dark " data-toggle="collapse" style="color: white">Profile</a>
+							<div id="profile" class="collapse p-3">
+								<p>Cycliste chauvronner Erwind
+								à plus d'un tours dans sont sac, il remettras à neuf
+								votre bolide à coups sur.</p>
+								<h5>Spécialiter:<h5>
+								<p>-> Systems de frein</p>
+								<p>-> Dérailleur</p>
+								<p>-> Crevaison</p>
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+	</div>
+	<!--frein photo -->
+	<div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="frein" role="dialog">
+            <div class="modal-dialog">  
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-org">
+				<!--Lien: https://www.citycle.com/wp-content/uploads/2018/05/revision-etat-freins-velo.jpg -->
+                    <button type="button" class="close" data-dismiss="modal" style="color: #cccccc">&times;</button>
+                </div>
+                <div class="modal-body bg-dark">
+                    <div class="container" style="color: #cccccc">
+                        <h4>Les freins.</h4>
+						<img class= "img-responsive" src="images/fr.jpg" style="width: 90%;" >	
+                    </div>
+                </div>
+                <div class="modal-footer bg-org">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" style="color: #cccccc">Fermer</button>
+                </div>
+            </div>     
+        </div>
+        </div>    
+    </div>
+	
+	<!--diretion photo -->
+	<div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="direction" role="dialog">
+            <div class="modal-dialog">  
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-org">
+                    <button type="button" class="close" data-dismiss="modal" style="color: #cccccc">&times;</button>
+                </div>
+                <div class="modal-body bg-dark">
+                    <div class="container" style="color: #cccccc">
+                        <h4>La direction.</h4>
+						<!-- Lien: https://i.ytimg.com/vi/11eMplopmg8/maxresdefault.jpg-->
+						<img class= "img-responsive" src="images/direct.jpg" style="width: 90%;" >	
+                    </div>
+                </div>
+                <div class="modal-footer bg-org">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" style="color: #cccccc">Fermer</button>
+                </div>
+            </div>     
+        </div>
+        </div>    
+    </div>
+	
+	<!--pneus photo -->
+	<div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="pneus" role="dialog">
+            <div class="modal-dialog">  
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-org">
+                    <button type="button" class="close" data-dismiss="modal" style="color: #cccccc">&times;</button>
+                </div>
+                <div class="modal-body bg-dark">
+                    <div class="container" style="color: #cccccc">
+                        <h4>Le pneus.</h4>
+						<!-- Lien:https://www.velobac.be/2368-thickbox_default/pneu-vtt-16x175.jpg-->
+						<img class= "img-responsive" src="images/pneus1.jpg" style="width: 90%;" >	
+                    </div>
+                </div>
+                <div class="modal-footer bg-org">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" style="color: #cccccc">Fermer</button>
+                </div>
+            </div>     
+        </div>
+        </div>    
+    </div>
+	
+	<!--pneus tube photo -->
+	<div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="tube" role="dialog">
+            <div class="modal-dialog">  
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-org">
+                    <button type="button" class="close" data-dismiss="modal" style="color: #cccccc">&times;</button>
+                </div>
+                <div class="modal-body bg-dark">
+                    <div class="container" style="color: #cccccc">
+                        <h4>La chambre à air.</h4>
+						<!-- Lien: https://i.ytimg.com/vi/8DIGSrh1NGA/maxresdefault.jpg-->
+						<img class= "img-responsive" src="images/pneus.jpg" style="width: 90%;" >	
+                    </div>
+                </div>
+                <div class="modal-footer bg-org">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" style="color: #cccccc">Fermer</button>
+                </div>
+            </div>     
+        </div>
+        </div>    
+    </div>
+	
+	<!--service-->
+	 <div id="domain" class="container-md p-3 my-3 bg-org text-success"  >
+        <div class="container" style="color: black">
+        <h2>Domaine d'expertise</h2>
+        <h6>Services offers:</h6>            
+        <table class="table table-dark table-hover" style="color: #cccccc" >
+            <thead>
+            <tr>
+                <th>Service</th>
+				<th>Description</th>
+				<th>Couts</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a href="#" data-toggle="tooltip" title="Généralement en début et fin de saison" style="color: #cccccc">Entretien saisonnier</a></td>
+                <td>Comprend système de 
+				<a href="#" data-toggle="modal" data-target="#frein" style="text-decoration: underline ; color: #cccccc">frein</a>
+				, 
+				<a href="#" data-toggle="modal" data-target="#direction" style="text-decoration: underline ; color: #cccccc">direction</a>
+				,et la remise a neuf des
+				<a href="#" data-toggle="modal" data-target="#pneus" style="text-decoration: underline ; color: #cccccc">pneus</a>
+				. </td>
+				<td>149.99$ </td>
+            </tr>
+            <tr>
+                <td><a href="#" style="color: #cccccc" >Service de crevaison</a></td>
+                <td>Changement de la 
+				<a href="#" data-toggle="modal" data-target="#tube" style="text-decoration: underline ; color: #cccccc">chambre à air.</a>
+				</td>
+				<td>34.99$</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+	</div>
+ 
+	<!--rendez-vous-->
+	<div id="apt" class="container-md p-3 my-3 bg-org text-success ">
+		 <h2>Prendre rendez-vous.</h2>
+        <div id="accordion">
+            <div class="card bg-dark">
+                <div class="card-header ">			
+						<h5 class="card-link" data-toggle="collapse" href="#collapseService" style="text-decoration: underline ; color: #cccccc">Choisir un service</h5>
+                <div id="collapseService" class="collapse" data-parent="#accordion">
+                    <div class="card-body" style="color: black">
+                        <h5>Nos service offert:</h5>
+						<button type="button" class="btn bg-off-white"><h6>Entretien saissonier</h6></button>
+						<button type="button" class="btn bg-off-white"><h6>Service de crevaison</h6></button>
+                    </div>
+                </div>
+			</div>
+            <div class="card bg-dark">
+                <div class="card-header">
+						<h5 class="collapsed card-link" data-toggle="collapse" href="#collapseDate" style="text-decoration: underline ;color: #cccccc">Choisir une date</h5>
+				</div>
+                <div id="collapseDate" class="collapse" data-parent="#accordion">
+                    <div class="card-body" style="color: black">
+                        <h5>Choisisez une date pour votre service.</h5>
+                        <!-- Bootstrap has various input components. Some examples are given here: -->
+                        <!-- Component shown here: https://v4-alpha.getbootstrap.com/components/forms/#textual-inputs -->
+                        <div class="form-group row">
+                            <label for="dateTimeInput" class="col-2 col-form-label" style="color: black">Date et heur sélectionner</label>
+                            <div class="col-10">
+                                <input class="form-control" type="datetime-local" value="2011-08-19T13:45:00" id="dateTimeInput">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+            <div class="card bg-dark">
+                <div class="card-header">			
+						<h5 class="collapsed card-link" data-toggle="collapse" href="#collapseClientInfo" style="text-decoration: underline; color: #cccccc">Entrée vos informations</h5>
+				</div>
+                <div id="collapseClientInfo" class="collapse" data-parent="#accordion">
+                    <div class="card-body" style="color: black">
+                        <h5>Profile</h5>
+                        <form action="/action_page.php">
+						  <label for="prenom">Prenom:</label>
+						  <input type="text" id="prenom" name="prenom"><br><br>
+						  
+						  <label for="nom">Nom:</label>
+						  <input type="text" id="nom" name="nom"><br><br>
+						  
+						  
+						  <input type="submit" value="Submit">
+						</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	</div>
+	
+	<!--contact-->
+	<div id="contact1" class="container-md p-3 my-3 ">
+        <h5 href="#contact" class="btn btn-block" data-toggle="collapse" style="background-color: #cccccc ; color: black">Nous contacter</h5>
+        <div id="contact" class="collapse">
+			<div class="row bg-org" style="color: black">
+				<div class="col-sm-6 text-align: Left">
+					<h5><mark>Address:</mark></h5>
+					<p>210, Rue Williams, <br> Ottawa, Ontario <br> K1C 1W3</p>
+				</div>
+				<div class="col-sm-6" style="text-align: Left"<!--style="background-color:lavenderblush;"--> 
+					<h5><mark>Coordonnées:</mark></h5>
+					<p>Téléphone:(613)598-4852 <br> Fax: (613)285-4815 <br> Courriel: AKVelo@velo.com</p>
+				</div>
+		
+			</div>
+        </div>
+	</div>
+	
+</body>
+</html>

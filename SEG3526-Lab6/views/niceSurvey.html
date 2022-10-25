@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <title>Questionnaire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Style sheet (CSS) and JavaScript scripts necessary to use Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>    
+    
+    <link rel="stylesheet" type="text/css"   href="/css/style.css">
+    
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+  </head>
+  
+  <body>
+    <div class="jumbotron text-center" style="color: white; background-color: black;">
+      <h1>Sondage</h1>
+      <p>Votre opinion compte pour nous!</p> 
+    </div>
+    
+    <div class="container-md p-3 my-3 text-center" style="color: white;">
+        <i><a href="https://sites.google.com/csdceo.org/mmemelanie3eannee/accueil?authuser=0"><h3>Site web </h3></a></i>
+        <h3> de la classe de 3e! </h3>	
+        <a href="https://sites.google.com/csdceo.org/mmemelanie3eannee/accueil?authuser=0"> 
+          <img src="/images/site.JPG" alt="https://sites.google.com/csdceo.org/mmemelanie3eannee/accueil?authuser=0" width="1000" height="550"> 
+          </a>
+    </div>
+
+	
+    <form>
+      <div class="container-md question border " >
+        <h2> Faite vous partit de la classe de 3e de Mme Mélanie ? </h2>
+        <br>
+        <input type="radio" name="answer" value="oui"> oui
+        <input type="radio" name="answer" value="non"> non<br>
+        <br>
+      </div>
+
+      <div class="container-md question border" >
+        <h2>Quel type d'apprentissage préférez-vous ?</h2>
+            <select name="learn">
+                <option value="En classe" selected="selected">En classe.</option>
+                <option value="Par vous même">Par vous-même.</option>
+                <option value="Via site web">Via site web.</option>
+                <option value="Via video-Conference">Via vidéo conférence. </option>
+            </select>    
+      </div>
+
+      <div class="container-md border question">
+        <h2> Sélectionner les onglets que vous trouvez les plus utiles ?</h2>
+        <br>
+          <input type="checkbox" name="onglets" value="devoirs">  Devoirs</input><br>     
+          <input type="checkbox" name="onglets" value="Evènement">  Evènement</input><br>
+          <input type="checkbox" name="onglets" value="Calendrier">  Calendrier</input><br>
+          <input type="checkbox" name="onglets" value="Activités">  Activités de classe</input><br>
+          <input type="checkbox" name="onglets" value="nouvelles">  Petites nouvelles</input><br>
+          <input type="checkbox" name="onglets" value="sites">  Sites internet</input>
+      </div>
+
+      <div class="container-md question border"  >
+			  <h2>Ce site web satisfait-il à votre apprentissage ? </h2>
+				<br>
+				<li> Complètement satisfait -> </li>
+				<li><input type="radio" name="guilty" value="1" />-</li>
+				<li><input type="radio" name="guilty" value="2" />-</li>
+				<li><input type="radio" name="guilty" value="3" />-</li>
+				<li><input type="radio" name="guilty" value="4" />-</li>
+				<li><input type="radio" name="guilty" value="5" />-</li>
+				<li><input type="radio" name="guilty" value="6" />-</li>
+				<li><input type="radio" name="guilty" value="7" />-</li>
+				<li><input type="radio" name="guilty" value="8" />-</li>
+				<li><input type="radio" name="guilty" value="9" />-</li>
+				<li> <-  Complètement insatisfait</li><br>
+				
+      </div>
+     
+      <div class="container-md question border" >
+          <h2> Quels outils voudriez-vous voir apparaître sur ce site web? </h2>
+          <br>
+          <input type="text" name="outils" style="width: 400px; height: 75px;" required/>
+      </div>
+
+      <div class="container-md question border" >
+          <h2> Commentaire: </h2>
+          <br>
+          <input type="text" name="comment" style="width: 400px; height: 75px;" required/>
+      </div>
+
+      <div class="container-md text-center" style="padding-top: 25px;" >
+        <button type="submit" class="btn btn-warning" id="bb" style="width: 150px;">Soumettre</button>
+      </div>
+    </form>
+
+    
+    <p id="signature">Site web créer par Mathieu Bellefeuille <br>
+			Dernière mise à jour: 25 Juin 2020
+		</p>
+	<script src="/assets/action.js"></script>
+  </body>
+</html> 

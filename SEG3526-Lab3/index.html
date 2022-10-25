@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<! This style sheet is taken from  https://www.w3schools.com/howto/howto_js_tabs.asp>
+	<link href="styles/style.css" rel="stylesheet" type="text/css">
+	<link href="styles/Breadcrumbs_Menu.css" rel="stylesheet" type="text/css">
+	<title>Epicerie</title>
+</head>
+
+<body>
+<h1>Chez Collette</h1>
+<!--Breadcrumbs menu (stylesheet taken from https://codepen.io/tbrownvisuals/pen/pNBomO )-->
+	<div class="container">
+		<div class="row">
+			<ul class="breadcrumb wizard">
+				<li id="m_Remplir" class="completed"><a>Remplir sont panier.</a></li>
+				<li id="m_Verifier" class="1"><a>Verification du panier.</a></li>
+				<li id="m_Confirmer" class="2"><a>Confirmez</a></li>
+			</ul>
+		</div>
+	</div>
+	
+<!-- Tab content -->
+<div id="remplir" class="tabcontent">
+	<h2>Faite votre sélection d'article</h2>
+	<div class="contrainte">
+		<h3>1. Critère de sélection</h3> 
+		<form action="/action_page.php">
+			Végétarien ?<br>
+			<input type="radio" id="vegNon" name="gender" onchange="populateListProductChoices(this.id, 'displayProduct')" value="vegNon"  >
+			<label for="vegNon">Non</label>
+			<input type="radio" id="vegOui" name="gender" onchange="populateListProductChoices(this.id, 'displayProduct')" value="vegOui">
+			<label for="vegOui">Oui</label>
+		</form>
+		<br>
+		<form action="/action_page.php">
+				Celiac ?<br>
+			<input type="radio" id="celNon" name="gender" onchange="populateListProductChoices(this.id, 'displayProduct')" value="celNon"  >
+			<label for="celNon">Non</label>
+			<input type="radio" id="celOui" name="gender" onchange="populateListProductChoices(this.id, 'displayProduct')" value="celOui">
+			<label for="celOui">Oui</label>
+		</form>
+		<br>
+		<form action="/action_page.php">
+				Article organique ?<br>
+			<input type="radio" id="orgNon" name="gender" onchange="populateListProductChoices(this.id, 'displayProduct')" value="orgNon"  >
+			<label for="orgNon">Non</label>
+			<input type="radio" id="celOui" name="gender" onchange="populateListProductChoices(this.id, 'displayProduct')" value="orgOui">
+			<label for="orgOui">Oui</label>
+		</form>
+	</div>
+	<div class="panier">
+		<h3>2. Nos produit pour vous.</h3>
+		<div id="displayProduct"></div>
+		 <button id="addCart" type="button" class="block" onclick="selectedItems()">
+			Ajouter au panier.
+		</button>
+	</div>
+ </div> 
+ 
+ <div id="verifier" class="tabcontent">
+  <h3>Vérifier votre panier</h3>
+  <div id="displayCart" class="verfPanier"></div>
+	<div class="listWrap">
+		Departement:
+	  <div id="deptFruit" class = "list"> Fruit et légume</div>
+	  <div id="deptViande" class = "list">Viande</div>
+	  <div id="deptEpicerie" class = "list">Epicerie</div>
+	  <div id="deptBoulangerie" class = "list">Boulangerie</div>
+	</div>
+ </div> 
+ <div id="confirmer" class="tabcontent">
+  <h3>Confirmer vos achat</h3>
+  <a> Site en construction <br> 
+	Nous seront de retour pour mieux vous servir. </br>
+ </div> 
+ 
+<!-- Previous et next button -->
+<div class = "navigation">
+	<button class="previous round  nb_caract" onclick="openInfo(event, -1)"> &#8249;  Retour</button>
+	<button class="next round nb_caract" onclick="openInfo(event, 1)"> Continuer &#8250;</button>
+	
+ </div> 
+
+<!-- site web javacripy -->
+	<script src="scripts/groceries.js"></script>
+	<script src="scripts/main.js"></script>
+	
+<!-- Signature du siteweb -->	
+	<p id="demo" style=" position: absolute; 
+	bottom: 0; 
+	right: 20px; 
+	width: 100%; 
+	text-align: right;">Site web créer par Mathieu Bellefeuille <br>
+				Dernière mise à jour: 1 Juin 2020.</p>
+
+</body>
+</html>--

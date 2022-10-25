@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+	<! IMPORTANT to use a CSS file - external >
+	<link href="styles/style.css" rel="stylesheet" type="text/css">
+    <title>Sondage</title>
+  </head>
+  <body>
+	<br>
+	<h1><i>Sondage</h1>
+	
+	<br>
+		<br>
+		<h2>Votre opinion compte pour nous! </h2>	
+		<br>
+		<i><a href="https://sites.google.com/csdceo.org/mmemelanie3eannee/accueil?authuser=0"><h3>Site web </h3></a></i>
+		<h3> de la classe de 3e! </h3>	
+		<br>
+		<br>
+		<a href="https://sites.google.com/csdceo.org/mmemelanie3eannee/accueil?authuser=0"> 
+			<img src="images/site.JPG" alt="https://sites.google.com/csdceo.org/mmemelanie3eannee/accueil?authuser=0" width="1000" height="550"> 
+			</a>
+		<br>
+	
+	<form id="myform" action="index.php" >
+		
+		
+		<div class="question">
+			<fieldset>
+			  <legend>Faite vous partit de la classe de 3e de Mme Mélanie ?</legend>
+			  <p>
+				<input type="radio" id="oui" name="answer" value="oui">
+				<label for="oui">OUI</label>
+			  </p>
+			  <p>
+				<input type="radio" id="non" name="answer" value="non">
+				<label for="non">NON</label><br>
+			  </p>
+			</fieldset>
+			
+		</div>
+		
+		<div class="question">
+			<fieldset>
+			  <legend>Quel type d'apprentissage préférez-vous ?</legend>
+			  <br>
+				 <select id="apprentissage">
+					<option value="En classe" selected="selected">En classe.</option>
+					<option value="Par vous même">Par vous-même.</option>
+					<option value="Via site web">Via site web.</option>
+					<option value="Via video-Conference ">Via vidéo conférence. </option>
+				</select>
+			<br>
+			<br>
+			</fieldset>
+		</div>
+		
+		<div class="question">
+		
+			<fieldset>
+			  <legend>Sélectionner les onglets que vous trouvez les plus utiles ?</legend>
+			  <br>
+				 <input type="checkbox" id="Devoirs" name="devoirs" value="devoirs">
+				  <label for="Devoirs">Devoirs</label><br>
+				  
+				  <input type="checkbox" id="Evènement" name="Evènement" value="Evènement">
+				  <label for="Evènement">Evènement</label><br>
+				  
+				  <input type="checkbox" id="Calendrier" name="Calendrier" value="Calendrier">
+				  <label for="Calendrier"></label>Calendrier<br>
+				  
+				  <input type="checkbox" id="Activités " name="Activités " value="Activités">
+				  <label for="Activités"></label>Activités de classe <br>
+				  
+				  <input type="checkbox" id="nouvelles" name="nouvelles" value="nouvelles">
+				  <label for="nouvelles"></label>Petites nouvelles<br>
+				  
+				  <input type="checkbox" id="sites" name="sites" value="sites">
+				  <label for="sites"></label>Sites internet<br>
+				<br>
+			</fieldset>
+	
+		</div>
+		
+		<div class="question">
+		
+			<fieldset>
+			  <legend>Ce site web satisfait-il à votre apprentissage ? </legend>
+				<br>
+				<li> Complètement satisfait</li>
+				<li><input type="radio" name="guilty" value="1" /></li>
+				<li><input type="radio" name="guilty" value="2" /></li>
+				<li><input type="radio" name="guilty" value="3" /></li>
+				<li><input type="radio" name="guilty" value="4" /></li>
+				<li><input type="radio" name="guilty" value="5" /></li>
+				<li><input type="radio" name="guilty" value="6" /></li>
+				<li><input type="radio" name="guilty" value="7" /></li>
+				<li><input type="radio" name="guilty" value="8" /></li>
+				<li><input type="radio" name="guilty" value="9" /></li>
+				<li> Complètement insatisfait</li>
+				<br>
+				<br>
+			</fieldset>
+		</div>
+		
+		<div class="question">
+			<fieldset>
+			  <legend>Quels outils voudriez-vous voir apparaître sur ce site web?</legend>
+				<br>
+				<textarea rows="5" cols="80"></textarea>
+				<br>
+			</fieldset>
+		</div>	
+		
+		<div class="question">
+			<fieldset>
+				<legend>Commentaire: </legend>
+				<textarea rows="5" cols="80"></textarea>
+			</fieldset>
+		</div>
+				
+		<br>
+		<br>
+				
+		<button id="submitButton" type="button" class="block">
+			Soumettre 
+		</button>
+			
+		<p id="signature">Site web créer par Mathieu Bellefeuille <br>
+			Dernière mise à jour: 25 Mai 2020
+		</p>	
+	
+	</form>
+  </body>
+</html> 

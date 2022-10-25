@@ -1,0 +1,94 @@
+/* Style sheet
+   color picker www.w3schools.com/colors/colors_picker.asp
+*/
+
+html {
+  /*background-color: white;*/
+}
+
+body{
+  /*background-color: white;*/
+  background: url(back.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /*border: 2px solid black;*/
+  /*padding: 0px 20px 20px 20px;*/
+  
+}
+
+h1 {
+	font-size: 60px;
+	text-align: center;
+	margin: 0;
+	padding: 20px 0;
+	color: #FBF2EF;  /* Fuchsia */
+	text-shadow: 3px 3px 1px black;
+}
+
+h2 {
+	font-size: 40px;
+	color: white;
+	margin: 100;
+	!padding: 20px 0;
+}
+
+h3 {
+	font-size: 35px;
+	text-align: center;
+	color: white;
+	margin: -50px;
+	padding: 20px 0;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+  align: center;
+}
+/*
+p {
+  color: red;
+}
+*/
+
+table {
+	border: 1px solid black;
+	background-color: #f1f1c1;
+}
+
+/* Defining styling for a specific element type - each question */
+.question {
+  background-color: black;
+  color: white;
+  margin: 20px;
+  padding: 20px;
+}
+
+/* Defining styling for a specific element type - large block buttons */
+.block {
+  display: block;
+  width: 75%;
+  border: none;
+  background-color: #5CAEF6;  /* yellow */
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  margin: auto auto;
+}
+
+ li {
+    float: left;
+    list-style-type: none;
+}
+
+/* Defining styling for a specific element with an id */
+#signature {
+  text-align: right;
+  color: red;
+  font-style: italic;
+  font-size: 75%;
+}

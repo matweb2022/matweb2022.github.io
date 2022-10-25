@@ -1,0 +1,80 @@
+/* Style sheet
+   color picker www.w3schools.com/colors/colors_picker.asp
+*/
+
+a{
+	font-size:17px;
+	font-weight: bold;
+	
+}
+
+/* Bootstrap default font-family is Helvetica Neue */
+
+.error {
+  background-color: yellow;
+  color : red;
+}
+
+
+.showInput {
+  background-color: pink;
+}
+
+.icone {
+  float: left;
+}
+
+h3 {
+  /*font-family: "Times New Roman", Times, serif;*/
+  color: black;
+  
+}
+h2 {
+  /*font-family: "Times New Roman", Times, serif;*/
+  color: black;
+  
+}
+h6 {
+  /*font-family: "Times New Roman", Times, serif;*/
+  color: black;
+  
+}
+p {
+  /*font-family: "Times New Roman", Times, serif;*/
+  color: black;
+  
+}
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#menu{
+    color: black;
+}
+#menu:hover{
+    background-color: #cccccc;
+}
+.navbar-nav.navbar-center {
+    position: absolute;
+    left: 50%;
+    transform: translatex(-50%);
+}
+.bg-org{
+	background-color:#ff3300;
+}
+.bg-off-white{
+	background-color:#cccccc;
+}
+mark { 
+  background-color: #cccccc
+  ;
+  color: black;
+}
+.border-3 {
+    border-width:5px !important;
+}
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();   
+});

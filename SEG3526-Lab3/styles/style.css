@@ -1,0 +1,88 @@
+e/* This style sheet is taken from  https://www.w3schools.com/howto/howto_js_tabs.asp> */
+
+/* Previous next button */
+	.navigation {	
+	  text-align: center;
+	   
+	}
+
+	.navigation button:hover {
+	  background-color: #ffc107;
+	  border: double;
+	  color: black;
+	}
+	.previous {
+	  background: hsla(153, 57%, 51%, 1);
+	  color: white;
+	  
+	  
+	}
+	.nb_caract {
+		font-size: 20px;
+		border: none;
+		margin: 10px 8px;
+	}
+	.next {            
+		background: hsla(153, 57%, 51%, 1);
+		color: white;
+	}
+
+	.round {
+	  border-radius: 5%;
+	}
+
+
+/*Store name  cat h1*/
+
+	h1 {
+		font-size: 60px;
+		text-align: center;
+		margin: 0;
+		padding: 20px 0;
+		color: Black;  /* Fuchsia */
+		text-shadow: 1px 3px 1px red;
+	}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 5px;
+  border: 2px solid #ccc;
+  border-top: none;
+  overflow: hidden;
+}
+/*Style des contrainte*/
+
+.contrainte{
+	width: 300px;
+    float:left; /* add this */
+	padding: 6px 5px;
+    border: 2px solid #ccc;
+}
+.panier{
+	border: 2px solid #ccc;
+    overflow: hidden;
+	padding: 6px 5px;
+}
+
+/*style de panier verifie*/
+
+.verfPanier{
+	width: 200px;
+    float:left; /* add this */
+	padding: 6px 5px;
+    /*border: 2px solid #ccc;*/
+}
+.listWrap{
+	border: 2px solid #ccc;
+    overflow: hidden;
+	padding: 6px 5px;
+}
+.list{
+	border: 1px solid #ccc;
+    overflow: hidden;
+	padding: 6px 5px;
+}
+
+
+

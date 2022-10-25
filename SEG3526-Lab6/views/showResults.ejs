@@ -1,0 +1,51 @@
+<html lang="en-US">
+<head>
+    <title>Survey Analysis</title>
+</head>
+
+<body>
+    <h1>Resultat du sondage</h1>
+    <h2>Faite vous partit de la classe de 3e de Mme Mélanie ?</h2>
+    <ul>
+    <% for (var i=0; i<results[0].length; i++){ %>
+        <li><%= results[0][i].answer %> :  <%= results[0][i].count %></li>
+    <% } %>    
+    </ul>
+
+    <h2>Quel type d'apprentissage préférez-vous ?</h2>
+    <ul>
+    <% for (var i=0; i<results[1].length; i++){ %>
+        <li><%= results[1][i].learn %> :  <%= results[1][i].count %></li>
+    <% } %>    
+    </ul>
+
+    <h2>Sélectionner les onglets que vous trouvez les plus utiles ?</h2>
+    <ul>
+    <% for (var i=0; i<results[2].length; i++){ %>
+        <li><%= results[2][i].onglets %> :  <%= results[2][i].count %></li>
+    <% } %>    
+    </ul>
+
+    <h2>Ce site web satisfait-il à votre apprentissage ?</h2>
+    <ul>
+    <% for (var i=0; i<results[3].length; i++){ %>
+        <li><%= results[3][i].guilty %> :  <%= results[3][i].count %></li>
+    <% } %>    
+    </ul>
+
+    <h2>Quels outils voudriez-vous voir apparaître sur ce site web?</h2>
+    <ul>
+    <% for (var i=0; i<results[4].length; i++){ %>
+        <li><%= results[4][i].outils %></li>
+    <% } %>    
+    </ul>
+
+    <h2>Commentaire:</h2>
+    <ul>
+    <% for (var i=0; i<results[5].length; i++){ %>
+        <p><%= results[5][i].comment %></p
+    <% } %>    
+    </ul>
+
+</body>
+</html>
