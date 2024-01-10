@@ -3,26 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <title>Mobile Layout</title>
+  <title>Firebase Write Test</title>
 
-  <!-- Firebase App (the core Firebase SDK) -->
+  <!-- Include the Firebase App and Firestore scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-
-  <!-- Firebase Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
-  <!-- Your web app's Firebase configuration -->
+  <!-- Your Firebase configuration -->
   <script>
-   const firebaseConfig = {
-  apiKey: "AIzaSyC5ZZ27DGEtodhZH7z_lSqH7cMzw8NEdwo",
-  authDomain: "expenses-database-bb5a9.firebaseapp.com",
-  projectId: "expenses-database-bb5a9",
-  storageBucket: "expenses-database-bb5a9.appspot.com",
-  messagingSenderId: "280596988005",
-  appId: "1:280596988005:web:c8dac944aed1402c4e068c",
-  measurementId: "G-E19HELLGVC"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyC5ZZ27DGEtodhZH7z_lSqH7cMzw8NEdwo",
+        authDomain: "expenses-database-bb5a9.firebaseapp.com",
+        projectId: "expenses-database-bb5a9",
+        storageBucket: "expenses-database-bb5a9.appspot.com",
+        messagingSenderId: "280596988005",
+        appId: "1:280596988005:web:c8dac944aed1402c4e068c",
+        measurementId: "G-E19HELLGVC"
+      };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
 
@@ -37,36 +34,33 @@
   <div class="row">
     <!-- Button Column (Half width) -->
     <div class="col-12 col-md-6 text-center">
-      <button id="submitButton" class="btn btn-primary">Click Me</button>
-    </div>
-
-    <!-- Text Input Column (Half width) -->
-    <div class="col-12 col-md-6">
-      <input id="textInput" type="text" class="form-control" placeholder="Enter text">
+      <button id="writeButton" class="btn btn-primary">Write to Firestore</button>
     </div>
   </div>
 </div>
 
-<!-- Bootstrap JS and Popper.js -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- Bootstrap, jQuery, Popper, etc. scripts if needed -->
 
 <script>
-  document.getElementById('submitButton').addEventListener('click', function () {
-    const textInputValue = document.getElementById('textInput').value;
+  // Event listener for the button click
+  document.getElementById('writeButton').addEventListener('click', function () {
+    // Generate a random document ID
+    const documentId = firestore.collection("testCollection").doc().id;
 
-    // Add a document to a "users" collection
-    firestore.collection("expenses").add({
-      name: textInputValue,
-      // Add other fields as needed
-    })
-    .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
-    })
-    .catch((error) => {
-      console.error("Error adding document: ", error);
-    });
+    // Data to be written to Firestore
+    const dataToWrite = {
+      message: "Hello, Firebase!",
+      timestamp: new Date()
+    };
+
+    // Write data to Firestore
+    firestore.collection("testCollection").doc(documentId).set(dataToWrite)
+      .then(() => {
+        console.log("Data written to Firestore successfully");
+      })
+      .catch((error) => {
+        console.error("Error writing data to Firestore:", error);
+      });
   });
 </script>
 
