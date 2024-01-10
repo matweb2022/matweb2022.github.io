@@ -2,67 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Firebase Write Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Demo</title>
 
-  <!-- Include the Firebase App and Firestore scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js" defer></script>
 
-  <!-- Your Firebase configuration -->
+  <!-- Firebase Configuration -->
   <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyC5ZZ27DGEtodhZH7z_lSqH7cMzw8NEdwo",
-        authDomain: "expenses-database-bb5a9.firebaseapp.com",
-        projectId: "expenses-database-bb5a9",
-        storageBucket: "expenses-database-bb5a9.appspot.com",
-        messagingSenderId: "280596988005",
-        appId: "1:280596988005:web:c8dac944aed1402c4e068c",
-        measurementId: "G-E19HELLGVC"
-      };
+      // Your Firebase configuration
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-
-    // Initialize Firestore
-    const firestore = firebase.firestore();
   </script>
-
 </head>
 <body>
 
-<div class="container">
-  <div class="row">
-    <!-- Button Column (Half width) -->
-    <div class="col-12 col-md-6 text-center">
-      <button id="writeButton" class="btn btn-primary">Write to Firestore</button>
-    </div>
-  </div>
-</div>
+  <!-- Your HTML Content -->
 
-<!-- Bootstrap, jQuery, Popper, etc. scripts if needed -->
-
-<script>
-  // Event listener for the button click
-  document.getElementById('writeButton').addEventListener('click', function () {
-    // Generate a random document ID
-    const documentId = firestore.collection("testCollection").doc().id;
-
-    // Data to be written to Firestore
-    const dataToWrite = {
-      message: "Hello, Firebase!",
-      timestamp: new Date()
-    };
-
-    // Write data to Firestore
-    firestore.collection("testCollection").doc(documentId).set(dataToWrite)
-      .then(() => {
-        console.log("Data written to Firestore successfully");
-      })
-      .catch((error) => {
-        console.error("Error writing data to Firestore:", error);
-      });
-  });
-</script>
+  <!-- Your JavaScript Code Using Firebase -->
 
 </body>
 </html>
