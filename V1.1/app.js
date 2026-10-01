@@ -1,171 +1,100 @@
-/* =========================================================
-   PRODUCTION FLOOR TRACKER
-   V1.2
-   ========================================================= */
-
-
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
-
-const $ = id => document.getElementById(id);
-
-
-/* =========================================================
-   APPLICATION STATE
-   ========================================================= */
+const STORAGE_KEY = "production-floor-tracker-clean-v1";
 
 const state = {
+    setupStep: 1,
 
-    world: {
-        width: 40,
-        height: 25,
-        originName: "My workstation"
+    workstation: {
+        x: 0,
+        y: 0
     },
 
-    settings: {
-        stepLength: 0.72,
-        sensitivity: 1.15,
-        headingOffset: 0
+    sensors: {
+        motionPermission: false,
+        orientationPermission: false,
+        motionData: false,
+        orientationData: false
     },
 
-    pos: {
+    mapping: {
+        active: false,
         x: 0,
         y: 0,
         heading: 0,
-        speed: 0
+        distance: 0,
+
+        path: [
+            {
+                x: 0,
+                y: 0,
+                t: Date.now()
+            }
+        ],
+
+        references: []
     },
 
-    distance: 0,
+    tracking: {
+        active: false,
+        x: 0,
+        y: 0,
+        heading: 0,
+        distance: 0,
 
-    tracking: false,
-
-    trackingStarted: null,
-
-    lastSample: null,
-
-    trail: [],
-
-    samples: [],
-
-    checkpoints: [],
-
-    areas: [],
-
-    areaTime: {},
-
-    currentArea: null,
-
-    calibration: {
-        locked: false,
-        points: [],
-        matrix: null
+        path: [
+            {
+                x: 0,
+                y: 0,
+                t: Date.now()
+            }
+        ]
     },
 
-    pdf: {
-        fileName: null,
-        page: 1,
-        width: 0,
-        height: 0,
-        scale: 1,
-        fileObject: null
-    },
+    plan: {
+        jpegUrl: null,
+        jpegName: null,
 
-    sensor: {
-        motion: false,
-        orientation: false
-    },
+        pdfName: null,
+        pdfUrl: null,
 
-    calibrationMode: false,
-
-    areaMode: false,
-
-    areaDraft: [],
-
-
-    /* =====================================================
-       SETUP
-       ===================================================== */
-
-    setup: {
-
-        currentStep: 0,
-
-        completed: {
-            project: false,
-            pdf: false,
-            calibration: false,
-            mapping: false,
-            iphone: false,
-            test: false
-        },
-
-        test: {
-
-            active: false,
-
-            startedAt: null,
-
-            startPos: null,
-
-            startDistance: 0,
-
-            startHeading: 0,
-
-            startSampleCount: 0,
-
-            result: null
-
+        imageTransform: {
+            x: 0,
+            y: 0,
+            scale: 1,
+            rotation: 0
         }
+    },
 
-    }
-
+    locked: false
 };
 
 
 /* =========================================================
-   PDF.JS
-   ========================================================= */
-
-let pdfjsLib = null;
-
-try {
-
-    const mod = await import(
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs"
-    );
-
-    pdfjsLib = mod;
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
-
-} catch (e) {
-
-    console.warn("PDF.js unavailable", e);
-
-}
-
-
-/* =========================================================
-   SENSOR STATE
+   SENSOR VARIABLES
    ========================================================= */
 
 let motion = {
-
-    magnitude: 0,
-
-    filtered: 0,
-
-    lastPeak: 0,
-
-    accelSamples: []
-
+    filtered: 9.81,
+    lastPeak: 0
 };
 
 let headingDeg = 0;
 
-let sensorsBound = false;
+
+/* =========================================================
+   PDF
+   ========================================================= */
+
+let pdfjsLib = null;
+let pdfDocument = null;
+
+
+/* =========================================================
+   DOM HELPER
+   ========================================================= */
+
+function $(id) {
+    return document.getElementById(id);
+}
 
 
 /* =========================================================
@@ -174,48 +103,76 @@ let sensorsBound = false;
 
 loadState();
 
-bindUI();
+bindNavigation();
+bindSetupSteps();
+bindButtons();
+bindAlignmentControls();
+
+initializeAlignmentControls();
+restoreUploadedImage();
+
+renderSetup();
+drawMovement();
+drawAlignment();
+drawLiveMap();
+updateAllUI();
+updateAllUIStatusBadge();
+
+loadServerFiles();
 
 registerServiceWorker();
 
-drawWorld();
 
-updateUI();
+/* =========================================================
+   SERVICE WORKER
+   ========================================================= */
 
-updateSetupUI();
+function registerServiceWorker() {
+
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+
+    navigator.serviceWorker
+        .register("./service-worker.js")
+        .then(() => {
+            console.log("Service worker registered.");
+        })
+        .catch(error => {
+            console.warn(
+                "Service worker registration failed:",
+                error
+            );
+        });
+}
 
 
 /* =========================================================
-   LOCAL STORAGE
+   PERSISTENCE
    ========================================================= */
 
 function saveState() {
 
     try {
 
-        const safe = JSON.parse(
-            JSON.stringify(state)
-        );
-
-        /*
-         * File objects cannot be serialized.
-         */
-        safe.pdf.fileObject = null;
+        const copy =
+            JSON.parse(
+                JSON.stringify(state)
+            );
 
         localStorage.setItem(
-            "productionTrackerV12",
-            JSON.stringify(safe)
+            STORAGE_KEY,
+            JSON.stringify(copy)
         );
 
-    } catch (e) {
+    } catch (error) {
 
         console.warn(
-            "Could not save application state:",
-            e
+            "Could not save state:",
+            error
         );
 
     }
-
 }
 
 
@@ -224,701 +181,381 @@ function loadState() {
     try {
 
         const raw =
-            localStorage.getItem("productionTrackerV12") ||
-            localStorage.getItem("productionTrackerV11");
+            localStorage.getItem(
+                STORAGE_KEY
+            );
 
         if (!raw) {
-
-            syncInputValues();
-
             return;
         }
 
-        const saved = JSON.parse(raw);
+        const saved =
+            JSON.parse(raw);
 
         /*
-         * Preserve defaults while allowing older
-         * versions to load.
+         * Merge top-level state.
          */
 
-        if (saved.world) {
-            Object.assign(state.world, saved.world);
-        }
+        Object.assign(
+            state,
+            saved
+        );
 
-        if (saved.settings) {
-            Object.assign(state.settings, saved.settings);
-        }
 
-        if (saved.pos) {
-            Object.assign(state.pos, saved.pos);
-        }
+        /*
+         * Make sure important nested structures
+         * exist even if an older version of the
+         * application saved incomplete data.
+         */
 
-        if (typeof saved.distance === "number") {
-            state.distance = saved.distance;
-        }
+        state.workstation ??= {
+            x: 0,
+            y: 0
+        };
 
-        if (typeof saved.tracking === "boolean") {
-            state.tracking = saved.tracking;
-        }
+        state.sensors ??= {
+            motionPermission: false,
+            orientationPermission: false,
+            motionData: false,
+            orientationData: false
+        };
 
-        if (saved.trackingStarted) {
-            state.trackingStarted = saved.trackingStarted;
-        }
+        state.mapping ??= {
+            active: false,
+            x: 0,
+            y: 0,
+            heading: 0,
+            distance: 0,
+            path: [],
+            references: []
+        };
 
-        if (saved.lastSample) {
-            state.lastSample = saved.lastSample;
-        }
+        state.tracking ??= {
+            active: false,
+            x: 0,
+            y: 0,
+            heading: 0,
+            distance: 0,
+            path: []
+        };
 
-        if (Array.isArray(saved.trail)) {
-            state.trail = saved.trail;
-        }
-
-        if (Array.isArray(saved.samples)) {
-            state.samples = saved.samples;
-        }
-
-        if (Array.isArray(saved.checkpoints)) {
-            state.checkpoints = saved.checkpoints;
-        }
-
-        if (Array.isArray(saved.areas)) {
-            state.areas = saved.areas;
-        }
-
-        if (saved.areaTime) {
-            state.areaTime = saved.areaTime;
-        }
-
-        if (saved.currentArea) {
-            state.currentArea = saved.currentArea;
-        }
-
-        if (saved.calibration) {
-            Object.assign(
-                state.calibration,
-                saved.calibration
-            );
-        }
-
-        if (saved.pdf) {
-            Object.assign(
-                state.pdf,
-                saved.pdf
-            );
-        }
-
-        if (saved.sensor) {
-            Object.assign(
-                state.sensor,
-                saved.sensor
-            );
-
-            /*
-             * Sensor permissions are not persistent application
-             * state. They must be requested again after reload.
-             */
-            state.sensor.motion = false;
-            state.sensor.orientation = false;
-        }
-
-        if (saved.setup) {
-
-            if (
-                typeof saved.setup.currentStep === "number"
-            ) {
-
-                state.setup.currentStep =
-                    Math.max(
-                        0,
-                        Math.min(
-                            5,
-                            saved.setup.currentStep
-                        )
-                    );
-
+        state.plan ??= {
+            jpegUrl: null,
+            jpegName: null,
+            pdfName: null,
+            pdfUrl: null,
+            imageTransform: {
+                x: 0,
+                y: 0,
+                scale: 1,
+                rotation: 0
             }
+        };
 
-            if (saved.setup.completed) {
+        state.plan.imageTransform ??= {
+            x: 0,
+            y: 0,
+            scale: 1,
+            rotation: 0
+        };
 
-                Object.assign(
-                    state.setup.completed,
-                    saved.setup.completed
-                );
+        state.mapping.path ??= [];
+        state.mapping.references ??= [];
 
-            }
+        state.tracking.path ??= [];
 
-            if (saved.setup.test) {
+        /*
+         * Make sure the origin always exists.
+         */
 
-                Object.assign(
-                    state.setup.test,
-                    saved.setup.test
-                );
+        state.workstation.x = 0;
+        state.workstation.y = 0;
 
-            }
+
+        /*
+         * Make sure mapping has an origin point.
+         */
+
+        if (
+            state.mapping.path.length === 0
+        ) {
+
+            state.mapping.path.push({
+                x: 0,
+                y: 0,
+                t: Date.now()
+            });
 
         }
 
-        state.pdf.fileObject = null;
 
-    } catch (e) {
+        /*
+         * Mapping/tracking should never remain
+         * active after a page reload.
+         */
+
+        state.mapping.active = false;
+        state.tracking.active = false;
+
+    } catch (error) {
 
         console.warn(
             "Could not load saved state:",
-            e
+            error
         );
 
     }
-
-    syncInputValues();
-
 }
 
 
 /* =========================================================
-   INPUT SYNCHRONIZATION
+   MAIN PAGE NAVIGATION
    ========================================================= */
 
-function syncInputValues() {
+function bindNavigation() {
 
-    if ($("originName")) {
-        $("originName").value =
-            state.world.originName;
-    }
+    document
+        .querySelectorAll(".mainTab")
+        .forEach(button => {
 
-    if ($("worldWidth")) {
-        $("worldWidth").value =
-            state.world.width;
-    }
+            button.addEventListener(
+                "click",
+                () => {
 
-    if ($("worldHeight")) {
-        $("worldHeight").value =
-            state.world.height;
-    }
+                    const page =
+                        button.dataset.page;
 
-    if ($("stepLength")) {
-        $("stepLength").value =
-            state.settings.stepLength;
-    }
+                    openPage(page);
 
-    if ($("stepSensitivity")) {
-        $("stepSensitivity").value =
-            state.settings.sensitivity;
-    }
+                }
+            );
 
-    if ($("headingOffset")) {
-        $("headingOffset").value =
-            state.settings.headingOffset;
-    }
-
-    if ($("pdfPage")) {
-        $("pdfPage").value =
-            state.pdf.page || 1;
-    }
-
-    if ($("pdfZoom")) {
-        $("pdfZoom").value =
-            state.pdf.scale || 1;
-    }
+        });
 
 }
 
 
-/* =========================================================
-   UI BINDING
-   ========================================================= */
+function openPage(pageId) {
 
-function bindUI() {
-
-
-    /* =====================================================
-       MAIN TABS
-       ===================================================== */
-
-    document.querySelectorAll(".tab").forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            const tab = button.dataset.tab;
-
-            document.querySelectorAll(".tab")
-                .forEach(b => b.classList.remove("active"));
-
-            document.querySelectorAll(".panel")
-                .forEach(p => p.classList.remove("active"));
-
-            button.classList.add("active");
-
-            const panel = $(tab);
-
-            if (panel) {
-                panel.classList.add("active");
-            }
-
-            if (tab === "setup") {
-                updateSetupUI();
-            }
-
-            if (tab === "map") {
-                drawMapOverlay();
-            }
-
-            if (tab === "areas") {
-                renderAreas();
-            }
-
-        });
-
-    });
-
-
-    /* =====================================================
-       SETUP SIDEBAR
-       ===================================================== */
-
-    document.querySelectorAll(".setupStep")
-        .forEach(button => {
-
-            button.addEventListener("click", () => {
-
-                const step =
-                    Number(button.dataset.setupStep);
-
-                goToSetupStep(step);
-
-            });
-
-        });
-
-
-    /* =====================================================
-       SETUP NEXT / PREVIOUS
-       ===================================================== */
-
-    document.querySelectorAll("[data-setup-next]")
-        .forEach(button => {
-
-            button.addEventListener("click", () => {
-
-                const current =
-                    state.setup.currentStep;
-
-                const next =
-                    Math.min(5, current + 1);
-
-                goToSetupStep(next);
-
-            });
-
-        });
-
-
-    document.querySelectorAll("[data-setup-prev]")
-        .forEach(button => {
-
-            button.addEventListener("click", () => {
-
-                const current =
-                    state.setup.currentStep;
-
-                const previous =
-                    Math.max(0, current - 1);
-
-                goToSetupStep(previous);
-
-            });
-
-        });
-
-
-    /* =====================================================
-       TRACKING
-       ===================================================== */
-
-    $("startBtn")?.addEventListener(
-        "click",
-        startTracking
-    );
-
-    $("stopBtn")?.addEventListener(
-        "click",
-        stopTracking
-    );
-
-    $("resetBtn")?.addEventListener(
-        "click",
-        resetPosition
-    );
-
-
-    /* =====================================================
-       WORLD SETTINGS
-       ===================================================== */
-
-    $("saveWorldBtn")?.addEventListener(
-        "click",
-        saveWorldSettings
-    );
-
-
-    /* =====================================================
-       SENSOR BUTTON
-       ===================================================== */
-
-    $("requestSensorsBtn")?.addEventListener(
-        "click",
-        requestSensors
-    );
-
-
-    /* =====================================================
-       CHECKPOINTS
-       ===================================================== */
-
-    $("addCheckpointBtn")?.addEventListener(
-        "click",
-        addCheckpointAtCurrent
-    );
-
-    $("applyCheckpointBtn")?.addEventListener(
-        "click",
-        applyCheckpoint
-    );
-
-
-    /* =====================================================
-       PDF
-       ===================================================== */
-
-    $("renderPdfBtn")?.addEventListener(
-        "click",
-        loadPDF
-    );
-
-
-    $("pdfZoom")?.addEventListener(
-        "change",
-        renderPDFPage
-    );
-
-
-    $("pdfPage")?.addEventListener(
-        "change",
-        renderPDFPage
-    );
-
-
-    /* =====================================================
-       CALIBRATION
-       ===================================================== */
-
-    $("startCalibrationBtn")?.addEventListener(
-        "click",
-        startCalibration
-    );
-
-    $("finishCalibrationBtn")?.addEventListener(
-        "click",
-        finishCalibration
-    );
-
-    $("clearCalibrationBtn")?.addEventListener(
-        "click",
-        clearCalibration
-    );
-
-
-    /* =====================================================
-       AREAS
-       ===================================================== */
-
-    $("startAreaBtn")?.addEventListener(
-        "click",
-        startArea
-    );
-
-    $("finishAreaBtn")?.addEventListener(
-        "click",
-        finishArea
-    );
-
-
-    $("worldCanvas")?.addEventListener(
-        "click",
-        worldCanvasClick
-    );
-
-
-    /* =====================================================
-       DATA
-       ===================================================== */
-
-    $("exportCsvBtn")?.addEventListener(
-        "click",
-        exportCSV
-    );
-
-    $("exportJsonBtn")?.addEventListener(
-        "click",
-        exportJSON
-    );
-
-    $("importJsonBtn")?.addEventListener(
-        "click",
-        () => $("jsonFile")?.click()
-    );
-
-    $("jsonFile")?.addEventListener(
-        "change",
-        importJSON
-    );
-
-
-    /* =====================================================
-       SETUP PDF
-       ===================================================== */
-
-    $("setupPdfFile")?.addEventListener(
-        "change",
-        setupPdfFileSelected
-    );
-
-    $("setupLoadPdfBtn")?.addEventListener(
-        "click",
-        setupLoadPDF
-    );
-
-    $("setupOpenMapBtn")?.addEventListener(
-        "click",
-        openMapTab
-    );
-
-
-    /* =====================================================
-       SETUP CALIBRATION
-       ===================================================== */
-
-    $("setupStartCalibrationBtn")?.addEventListener(
-        "click",
-        startCalibration
-    );
-
-    $("setupFinishCalibrationBtn")?.addEventListener(
-        "click",
-        finishCalibration
-    );
-
-    $("setupClearCalibrationBtn")?.addEventListener(
-        "click",
-        clearCalibration
-    );
-
-
-    /* =====================================================
-       FIRST TEST
-       ===================================================== */
-
-    $("setTestOriginBtn")?.addEventListener(
-        "click",
-        setTestOrigin
-    );
-
-    $("finishTestBtn")?.addEventListener(
-        "click",
-        finishFirstTest
-    );
-
-
-    /* =====================================================
-       COMPLETE
-       ===================================================== */
-
-    $("goTrackBtn")?.addEventListener(
-        "click",
-        () => {
-
-            activateTab("track");
-
-        }
-    );
-
-
-    $("resetSetupBtn")?.addEventListener(
-        "click",
-        resetSetupStatus
-    );
-
-
-    /* =====================================================
-       MAP OVERLAY
-       ===================================================== */
-
-    $("mapOverlay")?.addEventListener(
-        "click",
-        pdfCanvasClick
-    );
-
-
-    /* =====================================================
-       SENSOR INPUT CHANGES
-       ===================================================== */
-
-    $("stepLength")?.addEventListener(
-        "change",
-        saveSensorSettings
-    );
-
-    $("stepSensitivity")?.addEventListener(
-        "change",
-        saveSensorSettings
-    );
-
-    $("headingOffset")?.addEventListener(
-        "change",
-        saveSensorSettings
-    );
-
-}
-
-
-/* =========================================================
-   MAIN TAB ACTIVATION
-   ========================================================= */
-
-function activateTab(tabName) {
-
-    document.querySelectorAll(".tab")
+    document
+        .querySelectorAll(".mainTab")
         .forEach(button => {
 
             button.classList.toggle(
                 "active",
-                button.dataset.tab === tabName
+                button.dataset.page === pageId
             );
 
         });
 
-    document.querySelectorAll(".panel")
-        .forEach(panel => {
 
-            panel.classList.toggle(
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
+
+            page.classList.toggle(
                 "active",
-                panel.id === tabName
+                page.id === pageId
             );
 
         });
+
+
+    if (
+        pageId === "trackPage"
+    ) {
+
+        drawLiveMap();
+        updateTrackingPage();
+
+    }
 
 }
 
 
 /* =========================================================
-   SETUP NAVIGATION
+   SETUP STEP NAVIGATION
    ========================================================= */
 
-function goToSetupStep(step) {
+function bindSetupSteps() {
 
-    step = Math.max(
-        0,
-        Math.min(5, Number(step) || 0)
-    );
+    document
+        .querySelectorAll(".setupStep")
+        .forEach(button => {
 
-    state.setup.currentStep = step;
+            button.addEventListener(
+                "click",
+                () => {
 
-    saveState();
+                    const step =
+                        Number(
+                            button.dataset.step
+                        );
 
-    updateSetupUI();
+                    /*
+                     * Don't allow jumping to later
+                     * steps unless the basic requirements
+                     * have been completed.
+                     */
 
-    const setupPanel = $("setup");
+                    if (
+                        !canOpenSetupStep(step)
+                    ) {
 
-    if (
-        setupPanel &&
-        !setupPanel.classList.contains("active")
-    ) {
+                        return;
 
-        activateTab("setup");
+                    }
 
-    }
+                    showSetupStep(step);
+
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(".nextStepBtn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const next =
+                        Number(
+                            button.dataset.next
+                        );
+
+                    if (
+                        !canOpenSetupStep(next)
+                    ) {
+
+                        return;
+
+                    }
+
+                    showSetupStep(next);
+
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(".prevStepBtn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    showSetupStep(
+                        Number(
+                            button.dataset.prev
+                        )
+                    );
+
+                }
+            );
+
+        });
 
 }
 
 
-function updateSetupUI() {
+function canOpenSetupStep(step) {
 
-    const step = state.setup.currentStep;
+    /*
+     * Step 1 is always available.
+     */
 
-    const titles = [
-        "Project setup",
-        "PDF setup",
-        "Mapping synchronization",
-        "iPhone setup",
-        "First iPhone test",
-        "Setup complete"
-    ];
-
-    const subtitles = [
-        "Define the physical coordinate system.",
-        "Load the production floor PDF.",
-        "Connect PDF coordinates to real-world metres.",
-        "Enable the phone sensors used by the tracker.",
-        "Walk a known distance and check the result.",
-        "Review the complete setup checklist."
-    ];
-
-
-    if ($("setupTitle")) {
-        $("setupTitle").textContent =
-            titles[step];
-    }
-
-    if ($("setupSubtitle")) {
-        $("setupSubtitle").textContent =
-            subtitles[step];
+    if (step <= 1) {
+        return true;
     }
 
 
-    const percentage =
-        (step / 5) * 100;
+    /*
+     * Step 2 is always available because the user
+     * needs to start the mapping process there.
+     */
 
-    if ($("setupProgressBar")) {
-        $("setupProgressBar").style.width =
-            percentage + "%";
+    if (step === 2) {
+        return true;
     }
 
 
-    document.querySelectorAll(".setupStep")
+    /*
+     * Step 3 requires movement.
+     */
+
+    if (
+        step >= 3 &&
+        state.mapping.path.length < 2
+    ) {
+
+        alert(
+            "Complete Step 2 first. Start Mapping and walk around the area."
+        );
+
+        return false;
+
+    }
+
+
+    /*
+     * Step 4 requires a JPEG.
+     */
+
+    if (
+        step >= 4 &&
+        !state.plan.jpegUrl
+    ) {
+
+        alert(
+            "Upload a JPEG floor plan in Step 3 first."
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+function showSetupStep(step) {
+
+    state.setupStep = step;
+
+    document
+        .querySelectorAll(".setupStep")
         .forEach(button => {
 
             const buttonStep =
-                Number(button.dataset.setupStep);
+                Number(
+                    button.dataset.step
+                );
 
             button.classList.toggle(
                 "active",
                 buttonStep === step
             );
 
-            button.classList.toggle(
-                "completed",
-                isSetupStepComplete(buttonStep)
-            );
-
-            const number =
-                button.querySelector(".stepNumber");
-
-            if (!number) return;
-
-            if (isSetupStepComplete(buttonStep)) {
-                number.textContent = "✓";
-            } else {
-                number.textContent =
-                    String(buttonStep + 1);
-            }
-
         });
 
 
-    document.querySelectorAll(".setupPanel")
+    document
+        .querySelectorAll(".setupPanel")
         .forEach(panel => {
 
             const panelStep =
-                Number(panel.dataset.setupPanel);
+                Number(
+                    panel.dataset.panel
+                );
 
             panel.classList.toggle(
                 "active",
@@ -928,172 +565,268 @@ function updateSetupUI() {
         });
 
 
-    updateSetupCompletion();
+    if (step === 4) {
 
-    updateProjectSetupUI();
+        syncAlignmentControls();
 
-    updatePDFSetupUI();
+        drawAlignment();
 
-    updateCalibrationSetupUI();
+    }
 
-    updateSensorSetupUI();
 
-    updateTestSetupUI();
+    if (step === 5) {
 
-    updateSetupCompleteUI();
+        updateCompletionSummary();
+
+    }
+
+
+    renderSetup();
+
+}
+
+
+/* =========================================================
+   SETUP VISUAL STATE
+   ========================================================= */
+
+function renderSetup() {
+
+    document
+        .querySelectorAll(".setupStep")
+        .forEach(button => {
+
+            const step =
+                Number(
+                    button.dataset.step
+                );
+
+            button.classList.remove(
+                "completed"
+            );
+
+
+            if (
+                isSetupStepComplete(step)
+            ) {
+
+                button.classList.add(
+                    "completed"
+                );
+
+            }
+
+        });
+
+
+    if (state.locked) {
+
+        $("statusBadge").textContent =
+            "Setup locked";
+
+    } else {
+
+        $("statusBadge").textContent =
+            "Setup required";
+
+    }
 
 }
 
 
 function isSetupStepComplete(step) {
 
-    switch (step) {
+    if (step === 1) {
 
-        case 0:
-            return state.setup.completed.project;
-
-        case 1:
-            return state.setup.completed.pdf;
-
-        case 2:
-            return state.setup.completed.calibration;
-
-        case 3:
-            return state.setup.completed.iphone;
-
-        case 4:
-            return state.setup.completed.test;
-
-        case 5:
-            return (
-                state.setup.completed.project &&
-                state.setup.completed.pdf &&
-                state.setup.completed.calibration &&
-                state.setup.completed.iphone &&
-                state.setup.completed.test
-            );
-
-        default:
-            return false;
+        return true;
 
     }
 
-}
 
+    if (step === 2) {
 
-/* =========================================================
-   PROJECT SETUP
-   ========================================================= */
-
-function saveWorldSettings() {
-
-    const originName =
-        $("originName")?.value.trim() ||
-        "My workstation";
-
-    const width =
-        Number($("worldWidth")?.value);
-
-    const height =
-        Number($("worldHeight")?.value);
-
-
-    if (
-        !Number.isFinite(width) ||
-        width <= 0
-    ) {
-
-        alert("Enter a valid world width.");
-
-        return;
-    }
-
-
-    if (
-        !Number.isFinite(height) ||
-        height <= 0
-    ) {
-
-        alert("Enter a valid world height.");
-
-        return;
-    }
-
-
-    state.world.originName =
-        originName;
-
-    state.world.width =
-        width;
-
-    state.world.height =
-        height;
-
-
-    state.setup.completed.project = true;
-
-    saveState();
-
-    drawWorld();
-
-    updateUI();
-
-    updateSetupUI();
-
-    $("status").textContent =
-        "Project configured";
-
-}
-
-
-function updateProjectSetupUI() {
-
-    const complete =
-        state.setup.completed.project;
-
-
-    setSetupCheck(
-        "projectCheckOrigin",
-        complete
-    );
-
-    setSetupCheck(
-        "projectCheckSize",
-        complete
-    );
-
-
-    if ($("setupProjectStatus")) {
-
-        setSetupStatus(
-            $("setupProjectStatus"),
-            complete,
-            complete
-                ? "Project coordinate system is ready."
-                : "Project settings have not been saved yet."
+        return (
+            state.mapping.path.length > 1
         );
 
     }
 
+
+    if (step === 3) {
+
+        return Boolean(
+            state.plan.jpegUrl
+        );
+
+    }
+
+
+    if (step === 4) {
+
+        return Boolean(
+            state.plan.jpegUrl &&
+            state.mapping.path.length > 1
+        );
+
+    }
+
+
+    if (step === 5) {
+
+        return state.locked;
+
+    }
+
+
+    return false;
+
 }
 
 
 /* =========================================================
-   SENSOR SETTINGS
+   BUTTON BINDINGS
    ========================================================= */
 
-function saveSensorSettings() {
+function bindButtons() {
 
-    state.settings.stepLength =
-        Number($("stepLength")?.value) || 0.72;
+    /*
+     * Sensor permission.
+     */
 
-    state.settings.sensitivity =
-        Number($("stepSensitivity")?.value) || 1.15;
+    $("sensorBtn")
+        .addEventListener(
+            "click",
+            requestSensorPermissions
+        );
 
-    state.settings.headingOffset =
-        Number($("headingOffset")?.value) || 0;
 
-    saveState();
+    /*
+     * Mapping.
+     */
+
+    $("startMapBtn")
+        .addEventListener(
+            "click",
+            startMapping
+        );
+
+
+    $("stopMapBtn")
+        .addEventListener(
+            "click",
+            stopMapping
+        );
+
+
+    $("dropPointBtn")
+        .addEventListener(
+            "click",
+            dropReferencePoint
+        );
+
+
+    $("resetMapBtn")
+        .addEventListener(
+            "click",
+            resetMapping
+        );
+
+
+    /*
+     * JPEG upload.
+     */
+
+    $("jpegUpload")
+        .addEventListener(
+            "change",
+            uploadJPEG
+        );
+
+
+    /*
+     * PDF.
+     */
+
+    $("loadPdfBtn")
+        .addEventListener(
+            "click",
+            loadSelectedPDF
+        );
+
+
+    /*
+     * Lock setup.
+     */
+
+    $("lockSetupBtn")
+        .addEventListener(
+            "click",
+            lockSetup
+        );
+
+
+    $("goTrackBtn")
+        .addEventListener(
+            "click",
+            () => {
+
+                openPage(
+                    "trackPage"
+                );
+
+            }
+        );
+
+
+    /*
+     * Setup page from tracking page.
+     */
+
+    $("goSetupBtn")
+        .addEventListener(
+            "click",
+            () => {
+
+                openPage(
+                    "setupPage"
+                );
+
+                showSetupStep(
+                    state.setupStep
+                );
+
+            }
+        );
+
+
+    /*
+     * Tracking sensors.
+     */
+
+    $("trackSensorBtn")
+        .addEventListener(
+            "click",
+            requestSensorPermissions
+        );
+
+
+    /*
+     * Tracking.
+
+     */
+
+    $("startTrackBtn")
+        .addEventListener(
+            "click",
+            startTracking
+        );
+
+
+    $("stopTrackBtn")
+        .addEventListener(
+            "click",
+            stopTracking
+        );
 
 }
 
@@ -1102,58 +835,77 @@ function saveSensorSettings() {
    SENSOR PERMISSIONS
    ========================================================= */
 
-async function requestSensors() {
+async function requestSensorPermissions() {
+
+    const setupStatus =
+        $("sensorStatus");
 
     try {
 
-        $("sensorStatus").textContent =
+        setupStatus.textContent =
             "Requesting iPhone sensor permissions...";
 
 
+        let motionGranted = true;
+        let orientationGranted = true;
+
+
         /*
-         * iOS requires these permission requests to happen
-         * from a user gesture.
+         * iOS requires this call to happen from
+         * a user interaction.
          */
 
         if (
             typeof DeviceMotionEvent !== "undefined" &&
-            typeof DeviceMotionEvent.requestPermission === "function"
+            typeof DeviceMotionEvent.requestPermission ===
+                "function"
         ) {
 
-            const permission =
+            const result =
                 await DeviceMotionEvent.requestPermission();
 
-            if (permission !== "granted") {
+            console.log(
+                "DeviceMotionEvent permission:",
+                result
+            );
 
-                throw new Error(
-                    "Motion permission denied."
-                );
-
-            }
+            motionGranted =
+                result === "granted";
 
         }
 
 
         if (
             typeof DeviceOrientationEvent !== "undefined" &&
-            typeof DeviceOrientationEvent.requestPermission === "function"
+            typeof DeviceOrientationEvent.requestPermission ===
+                "function"
         ) {
 
-            const permission =
+            const result =
                 await DeviceOrientationEvent.requestPermission();
 
-            if (permission !== "granted") {
+            console.log(
+                "DeviceOrientationEvent permission:",
+                result
+            );
 
-                throw new Error(
-                    "Orientation permission denied."
-                );
-
-            }
+            orientationGranted =
+                result === "granted";
 
         }
 
 
-        if (!sensorsBound) {
+        /*
+         * Motion listener.
+         */
+
+        if (motionGranted) {
+
+            window.removeEventListener(
+                "devicemotion",
+                onMotion,
+                true
+            );
 
             window.addEventListener(
                 "devicemotion",
@@ -1161,72 +913,108 @@ async function requestSensors() {
                 true
             );
 
+            state.sensors.motionPermission =
+                true;
+
+        } else {
+
+            state.sensors.motionPermission =
+                false;
+
+        }
+
+
+        /*
+         * Orientation listener.
+         */
+
+        if (orientationGranted) {
+
+            window.removeEventListener(
+                "deviceorientation",
+                onOrientation,
+                true
+            );
+
+            window.removeEventListener(
+                "deviceorientationabsolute",
+                onOrientation,
+                true
+            );
+
+
             window.addEventListener(
                 "deviceorientation",
                 onOrientation,
                 true
             );
 
-            sensorsBound = true;
+            window.addEventListener(
+                "deviceorientationabsolute",
+                onOrientation,
+                true
+            );
+
+
+            state.sensors.orientationPermission =
+                true;
+
+        } else {
+
+            state.sensors.orientationPermission =
+                false;
 
         }
 
 
-        state.sensor.motion = true;
+        /*
+         * Status.
+         */
 
-        state.sensor.orientation = true;
+        if (
+            motionGranted &&
+            orientationGranted
+        ) {
 
-        state.setup.completed.iphone = true;
+            setupStatus.textContent =
+                "Motion and orientation permissions granted.";
+
+        } else if (motionGranted) {
+
+            setupStatus.textContent =
+                "Motion granted. Orientation was not granted.";
+
+        } else if (orientationGranted) {
+
+            setupStatus.textContent =
+                "Orientation granted. Motion was not granted.";
+
+        } else {
+
+            setupStatus.textContent =
+                "Sensor permissions were not granted.";
+
+        }
 
 
-        $("sensorStatus").textContent =
-            "Sensors enabled. Motion and orientation are ready.";
-
-        $("status").textContent =
-            "Sensors ready";
-
+        updateSensorStatus();
 
         saveState();
 
-        updateSetupUI();
+    } catch (error) {
 
-        updateUI();
-
-    } catch (e) {
-
-        state.sensor.motion = false;
-
-        state.sensor.orientation = false;
-
-        $("sensorStatus").textContent =
-            "Sensor permission failed: " +
-            e.message;
-
-        $("status").textContent =
-            "Sensor permission failed";
-
-        updateSetupUI();
-
-    }
-
-}
+        console.error(
+            "Sensor permission error:",
+            error
+        );
 
 
-function updateSensorSetupUI() {
-
-    const complete =
-        state.setup.completed.iphone;
-
-    const status =
-        $("sensorStatus");
-
-    if (!status) return;
-
-
-    if (complete) {
-
-        status.textContent =
-            "Sensors enabled. Motion and orientation are ready.";
+        setupStatus.textContent =
+            "Sensor permission error: " +
+            (
+                error?.message ||
+                error
+            );
 
     }
 
@@ -1242,65 +1030,87 @@ function onOrientation(event) {
     let heading = null;
 
 
+    /*
+     * iPhone Safari exposes the compass heading
+     * through webkitCompassHeading.
+     */
+
     if (
-        event.webkitCompassHeading != null
+        event.webkitCompassHeading != null &&
+        Number.isFinite(
+            event.webkitCompassHeading
+        )
     ) {
 
         heading =
             event.webkitCompassHeading;
 
-    } else if (
-        event.alpha != null
+    }
+
+
+    /*
+     * Fallback.
+     */
+
+    else if (
+        event.alpha != null &&
+        Number.isFinite(
+            event.alpha
+        )
     ) {
 
         heading =
-            (360 - event.alpha) % 360;
+            (
+                360 -
+                event.alpha
+            ) % 360;
 
     }
 
 
     if (
-        heading != null &&
-        Number.isFinite(heading)
+        heading == null ||
+        !Number.isFinite(heading)
     ) {
 
-        const offset =
-            Number($("headingOffset")?.value) ||
-            state.settings.headingOffset ||
-            0;
-
-        headingDeg =
-            normalizeAngle(
-                heading + offset
-            );
-
-        state.pos.heading =
-            headingDeg;
-
-        if (state.tracking) {
-
-            updateUI();
-
-        }
+        return;
 
     }
+
+
+    headingDeg =
+        normalizeAngle(
+            heading
+        );
+
+
+    state.sensors.orientationData =
+        true;
+
+
+    state.mapping.heading =
+        headingDeg;
+
+
+    state.tracking.heading =
+        headingDeg;
+
+
+    updateSensorStatus();
+    updateAllUI();
 
 }
 
 
 /* =========================================================
-   MOTION / STEP DETECTION
+   MOTION
    ========================================================= */
 
 function onMotion(event) {
 
-    if (!state.tracking) {
-        return;
-    }
-
-
     const acceleration =
         event.accelerationIncludingGravity;
+
 
     if (!acceleration) {
         return;
@@ -1325,67 +1135,71 @@ function onMotion(event) {
         );
 
 
+    /*
+     * Smooth the accelerometer signal.
+     */
+
     motion.filtered =
         motion.filtered * 0.85 +
         magnitude * 0.15;
 
 
-    motion.accelSamples.push(
-        motion.filtered
-    );
+    state.sensors.motionData =
+        true;
 
+
+    /*
+     * Don't detect steps when the user
+     * isn't actively mapping/tracking.
+     */
 
     if (
-        motion.accelSamples.length > 20
+        !state.mapping.active &&
+        !state.tracking.active
     ) {
 
-        motion.accelSamples.shift();
+        updateSensorStatus();
+
+        return;
 
     }
+
+
+    /*
+     * Basic step detection.
+     *
+     * This is deliberately simple for the
+     * first clean version.
+     */
+
+    const sensitivity =
+        1.12;
+
+
+    const baseline =
+        9.81;
 
 
     const now =
         performance.now();
 
 
-    const sensitivity =
-        Number(
-            $("stepSensitivity")?.value
-        ) ||
-        state.settings.sensitivity ||
-        1.15;
-
-
-    const baseline = 9.81;
-
-
     if (
         motion.filtered >
-        baseline * sensitivity &&
-
+            baseline * sensitivity &&
         now - motion.lastPeak >
-        300 &&
-
-        motion.accelSamples.length >= 5
+            300
     ) {
 
-        const recent =
-            motion.accelSamples.slice(-5);
+        motion.lastPeak =
+            now;
 
-
-        if (
-            motion.filtered >=
-            Math.max(...recent)
-        ) {
-
-            motion.lastPeak =
-                now;
-
-            takeStep();
-
-        }
+        takeStep();
 
     }
+
+
+    updateSensorStatus();
 
 }
 
@@ -1396,20 +1210,18 @@ function onMotion(event) {
 
 function takeStep() {
 
-    const step =
-        Number(
-            $("stepLength")?.value
-        ) ||
-        state.settings.stepLength ||
+    /*
+     * Initial estimated step length.
+     *
+     * We can make this configurable later.
+     */
+
+    const stepLength =
         0.72;
 
 
-    const heading =
-        state.pos.heading;
-
-
     const radians =
-        heading *
+        headingDeg *
         Math.PI /
         180;
 
@@ -1417,104 +1229,101 @@ function takeStep() {
     /*
      * Heading convention:
      *
-     * 0° = +Y
-     * 90° = +X
+     * 0° = North / +Y
+     * 90° = East / +X
      */
 
     const dx =
-        Math.sin(radians) *
-        step;
+        Math.sin(
+            radians
+        ) *
+        stepLength;
+
 
     const dy =
-        Math.cos(radians) *
-        step;
+        Math.cos(
+            radians
+        ) *
+        stepLength;
 
 
-    const previousTime =
-        state.lastSample ||
-        Date.now();
+    /*
+     * Mapping mode.
+     */
+
+    if (
+        state.mapping.active
+    ) {
+
+        state.mapping.x += dx;
+
+        state.mapping.y += dy;
+
+        state.mapping.distance +=
+            Math.hypot(
+                dx,
+                dy
+            );
 
 
-    const now =
-        Date.now();
+        state.mapping.path.push({
+
+            x:
+                state.mapping.x,
+
+            y:
+                state.mapping.y,
+
+            t:
+                Date.now()
+
+        });
 
 
-    const elapsed =
-        Math.max(
-            1,
-            now - previousTime
-        );
+        drawMovement();
+
+    }
 
 
-    state.pos.x += dx;
+    /*
+     * Live tracking mode.
+     */
 
-    state.pos.y += dy;
+    if (
+        state.tracking.active
+    ) {
 
+        state.tracking.x += dx;
 
-    state.distance +=
-        Math.hypot(dx, dy);
+        state.tracking.y += dy;
 
-
-    state.pos.speed =
-        Math.hypot(dx, dy) /
-        (elapsed / 1000);
-
-
-    state.lastSample =
-        now;
-
-
-    const sample = {
-
-        t:
-            new Date(now)
-                .toISOString(),
-
-        x:
-            state.pos.x,
-
-        y:
-            state.pos.y,
-
-        heading:
-            state.pos.heading,
-
-        event:
-            "step"
-
-    };
+        state.tracking.distance +=
+            Math.hypot(
+                dx,
+                dy
+            );
 
 
-    state.trail.push({
+        state.tracking.path.push({
 
-        x:
-            state.pos.x,
+            x:
+                state.tracking.x,
 
-        y:
-            state.pos.y,
+            y:
+                state.tracking.y,
 
-        t:
-            now
+            t:
+                Date.now()
 
-    });
-
-
-    state.samples.push(
-        sample
-    );
+        });
 
 
-    updateAreaTime();
+        drawLiveMap();
 
-    detectArea();
+    }
 
-    drawWorld();
 
-    drawMapOverlay();
-
-    updateUI();
-
-    updateTestLive();
+    updateAllUI();
 
     saveState();
 
@@ -1522,165 +1331,101 @@ function takeStep() {
 
 
 /* =========================================================
-   TRACKING
+   ANGLE
    ========================================================= */
 
-async function startTracking() {
+function normalizeAngle(value) {
 
-    if (
-        !state.sensor.motion ||
-        !state.sensor.orientation
-    ) {
-
-        await requestSensors();
-
-    }
-
-
-    if (
-        !state.sensor.motion ||
-        !state.sensor.orientation
-    ) {
-
-        return;
-
-    }
-
-
-    state.tracking =
-        true;
-
-    state.trackingStarted =
-        Date.now();
-
-    state.lastSample =
-        Date.now();
-
-
-    motion.lastPeak =
-        performance.now();
-
-    motion.accelSamples =
-        [];
-
-
-    $("status").textContent =
-        "Tracking";
-
-
-    $("startBtn").disabled =
-        true;
-
-
-    updateUI();
-
-    saveState();
-
-}
-
-
-function stopTracking() {
-
-    state.tracking =
-        false;
-
-
-    $("status").textContent =
-        "Stopped";
-
-
-    $("startBtn").disabled =
-        false;
-
-
-    saveState();
-
-    updateUI();
-
-}
-
-
-function resetPosition() {
-
-    if (
-        !confirm(
-            "Reset X/Y, distance and trail to the origin?"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    state.pos.x = 0;
-
-    state.pos.y = 0;
-
-    state.pos.speed = 0;
-
-    state.distance = 0;
-
-    state.trail = [];
-
-    state.samples = [];
-
-    state.currentArea = null;
-
-    state.lastSample =
-        state.tracking
-            ? Date.now()
-            : null;
-
-
-    drawWorld();
-
-    drawMapOverlay();
-
-    updateUI();
-
-    saveState();
+    return (
+        (
+            value % 360
+        ) +
+        360
+    ) % 360;
 
 }
 
 
 /* =========================================================
-   TEST ORIGIN
+   MAPPING
    ========================================================= */
 
-function setTestOrigin() {
+function startMapping() {
+
+    /*
+     * We need accelerometer permission.
+     */
 
     if (
-        state.setup.test.active
-    ) {
-
-        alert(
-            "The test is already running."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !state.setup.completed.iphone
+        !state.sensors.motionPermission
     ) {
 
         alert(
             "Enable the iPhone sensors first."
         );
 
-        goToSetupStep(3);
-
         return;
 
     }
 
 
+    state.mapping.active =
+        true;
+
+
+    $("startMapBtn").disabled =
+        true;
+
+    $("stopMapBtn").disabled =
+        false;
+
+    $("dropPointBtn").disabled =
+        false;
+
+
+    setStatus(
+        "Mapping"
+    );
+
+
+    updateAllUI();
+
+}
+
+
+function stopMapping() {
+
+    state.mapping.active =
+        false;
+
+
+    $("startMapBtn").disabled =
+        false;
+
+    $("stopMapBtn").disabled =
+        true;
+
+    $("dropPointBtn").disabled =
+        true;
+
+
+    setStatus(
+        "Mapping saved"
+    );
+
+
+    saveState();
+
+    renderSetup();
+
+}
+
+
+function resetMapping() {
+
     if (
         !confirm(
-            "Set the current physical position as the test origin (0,0)?"
+            "Delete the recorded movement and all reference points?"
         )
     ) {
 
@@ -1689,82 +1434,62 @@ function setTestOrigin() {
     }
 
 
-    state.pos.x = 0;
+    state.mapping = {
 
-    state.pos.y = 0;
+        active: false,
 
-    state.distance = 0;
+        x: 0,
 
-    state.pos.speed = 0;
+        y: 0,
 
-    state.trail = [];
+        heading: 0,
 
-    state.samples = [];
+        distance: 0,
 
+        path: [
+            {
+                x: 0,
+                y: 0,
+                t: Date.now()
+            }
+        ],
 
-    state.setup.test.active =
-        true;
+        references: []
 
-    state.setup.test.startedAt =
-        Date.now();
-
-    state.setup.test.startPos = {
-        x:0,
-        y:0
     };
 
-    state.setup.test.startDistance =
-        0;
 
-    state.setup.test.startHeading =
-        state.pos.heading;
+    $("startMapBtn").disabled =
+        false;
 
-    state.setup.test.startSampleCount =
-        0;
+    $("stopMapBtn").disabled =
+        true;
 
-    state.setup.test.result =
-        null;
+    $("dropPointBtn").disabled =
+        true;
 
 
-    if (!state.tracking) {
+    drawMovement();
 
-        startTracking();
-
-    }
-
-
-    $("testResult").textContent =
-        "Test running. Walk approximately 5 metres in a straight line.";
-
-    $("testResult").className =
-        "testWaiting";
-
-
-    $("status").textContent =
-        "5 m test running";
-
-
-    updateTestLive();
+    updateAllUI();
 
     saveState();
-
-    updateSetupUI();
 
 }
 
 
 /* =========================================================
-   FINISH FIRST TEST
+   DROP REFERENCE POINT
    ========================================================= */
 
-function finishFirstTest() {
+function dropReferencePoint() {
 
     if (
-        !state.setup.test.active
+        !state.mapping.active
     ) {
 
         alert(
-            "Start the test first using Set test origin."
+            "Start Mapping before dropping a reference point."
         );
 
         return;
@@ -1772,115 +1497,55 @@ function finishFirstTest() {
     }
 
 
-    const start =
-        state.setup.test.startPos || {
-            x:0,
-            y:0
-        };
+    const number =
+        state.mapping.references.length + 1;
 
 
-    const end = {
+    const reference = {
+
+        id:
+            (
+                crypto &&
+                typeof crypto.randomUUID ===
+                    "function"
+            )
+                ? crypto.randomUUID()
+                : String(
+                    Date.now()
+                ),
+
+        name:
+            `Reference ${number}`,
 
         x:
-            state.pos.x,
+            Number(
+                state.mapping.x.toFixed(3)
+            ),
 
         y:
-            state.pos.y
+            Number(
+                state.mapping.y.toFixed(3)
+            ),
+
+        heading:
+            Number(
+                state.mapping.heading.toFixed(1)
+            ),
+
+        time:
+            new Date().toISOString()
 
     };
 
 
-    const travelDistance =
-        state.distance -
-        state.setup.test.startDistance;
+    state.mapping.references.push(
+        reference
+    );
 
 
-    const displacement =
-        Math.hypot(
-            end.x - start.x,
-            end.y - start.y
-        );
+    drawMovement();
 
-
-    const targetDistance = 5;
-
-
-    /*
-     * Expected endpoint based on the heading when
-     * the test started.
-     */
-
-    const radians =
-        state.setup.test.startHeading *
-        Math.PI /
-        180;
-
-
-    const expectedX =
-        Math.sin(radians) *
-        targetDistance;
-
-
-    const expectedY =
-        Math.cos(radians) *
-        targetDistance;
-
-
-    const endpointError =
-        Math.hypot(
-            end.x - expectedX,
-            end.y - expectedY
-        );
-
-
-    const steps =
-        state.samples.length -
-        state.setup.test.startSampleCount;
-
-
-    const elapsed =
-        Math.max(
-            1,
-            Date.now() -
-            state.setup.test.startedAt
-        );
-
-
-    state.setup.test.active =
-        false;
-
-
-    state.setup.test.result = {
-
-        steps,
-
-        travelDistance,
-
-        displacement,
-
-        endpointError,
-
-        elapsed,
-
-        finalX:
-            end.x,
-
-        finalY:
-            end.y
-
-    };
-
-
-    state.setup.completed.test =
-        steps > 0;
-
-
-    stopTracking();
-
-
-    renderTestResult();
-
-    updateSetupUI();
+    updateAllUI();
 
     saveState();
 
@@ -1888,136 +1553,797 @@ function finishFirstTest() {
 
 
 /* =========================================================
-   TEST RESULT
+   MOVEMENT CANVAS
    ========================================================= */
 
-function renderTestResult() {
+function drawMovement() {
 
-    const result =
-        state.setup.test.result;
+    const canvas =
+        $("movementCanvas");
 
 
-    if (!result) {
+    if (!canvas) {
+        return;
+    }
 
-        $("testResult").textContent =
-            "Test has not been started.";
 
-        $("testResult").className =
-            "testWaiting";
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    drawGrid(
+        ctx,
+        canvas.width,
+        canvas.height
+    );
+
+
+    const points =
+        state.mapping.path;
+
+
+    if (
+        !points ||
+        points.length === 0
+    ) {
 
         return;
 
     }
 
 
-    $("testSteps").textContent =
-        result.steps;
+    const bounds =
+        calculateBounds(
+            points
+        );
 
 
-    $("testDistance").textContent =
-        result.travelDistance.toFixed(2) +
-        " m";
+    const transform =
+        createFitTransform(
+            bounds,
+            canvas.width,
+            canvas.height,
+            70
+        );
 
 
-    $("testDisplacement").textContent =
-        result.displacement.toFixed(2) +
-        " m";
+    /*
+     * Movement path.
+     */
+
+    ctx.beginPath();
 
 
-    $("testError").textContent =
-        result.endpointError.toFixed(2) +
-        " m";
+    points.forEach(
+        (point, index) => {
+
+            const p =
+                worldToCanvas(
+                    point.x,
+                    point.y,
+                    transform
+                );
 
 
-    $("testX").textContent =
-        result.finalX.toFixed(2);
+            if (index === 0) {
+
+                ctx.moveTo(
+                    p.x,
+                    p.y
+                );
+
+            } else {
+
+                ctx.lineTo(
+                    p.x,
+                    p.y
+                );
+
+            }
+
+        }
+    );
 
 
-    $("testY").textContent =
-        result.finalY.toFixed(2);
+    ctx.lineWidth =
+        4;
+
+    ctx.strokeStyle =
+        "#55b7ff";
+
+    ctx.stroke();
 
 
-    if (result.steps > 0) {
+    /*
+     * Workstation.
+     */
 
-        $("testResult").textContent =
-            "Test completed. Review the measured distance and endpoint error.";
+    const origin =
+        worldToCanvas(
+            0,
+            0,
+            transform
+        );
 
-        $("testResult").className =
-            "testPassed";
 
-    } else {
+    drawCircle(
+        ctx,
+        origin.x,
+        origin.y,
+        9,
+        "#45d483"
+    );
 
-        $("testResult").textContent =
-            "No steps were detected. Check sensor permissions and step settings.";
 
-        $("testResult").className =
-            "testFailed";
+    ctx.fillStyle =
+        "#edf2f7";
+
+    ctx.font =
+        "bold 13px sans-serif";
+
+
+    ctx.fillText(
+        "WORKSTATION",
+        origin.x + 14,
+        origin.y - 12
+    );
+
+
+    /*
+     * Reference points.
+     */
+
+    state.mapping.references
+        .forEach(
+            (reference, index) => {
+
+                const p =
+                    worldToCanvas(
+                        reference.x,
+                        reference.y,
+                        transform
+                    );
+
+
+                drawCircle(
+                    ctx,
+                    p.x,
+                    p.y,
+                    9,
+                    "#e9a84b"
+                );
+
+
+                ctx.fillStyle =
+                    "#edf2f7";
+
+                ctx.font =
+                    "bold 12px sans-serif";
+
+
+                ctx.fillText(
+                    `R${index + 1}`,
+                    p.x + 12,
+                    p.y + 4
+                );
+
+            }
+        );
+
+
+    /*
+     * Current mapping position.
+     */
+
+    if (
+        state.mapping.active
+    ) {
+
+        const current =
+            worldToCanvas(
+                state.mapping.x,
+                state.mapping.y,
+                transform
+            );
+
+
+        drawCircle(
+            ctx,
+            current.x,
+            current.y,
+            7,
+            "#ffffff"
+        );
+
+
+        ctx.fillStyle =
+            "#edf2f7";
+
+        ctx.font =
+            "12px sans-serif";
+
+
+        ctx.fillText(
+            "Current",
+            current.x + 10,
+            current.y + 4
+        );
 
     }
 
 }
 
 
-function updateTestLive() {
+/* =========================================================
+   GRID
+   ========================================================= */
 
-    if (!$("testX")) {
-        return;
+function drawGrid(
+    ctx,
+    width,
+    height
+) {
+
+    ctx.fillStyle =
+        "#080d18";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    ctx.strokeStyle =
+        "#18243a";
+
+    ctx.lineWidth =
+        1;
+
+
+    const spacing =
+        40;
+
+
+    for (
+        let x = 0;
+        x <= width;
+        x += spacing
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            0
+        );
+
+        ctx.lineTo(
+            x,
+            height
+        );
+
+        ctx.stroke();
+
     }
 
-    $("testX").textContent =
-        state.pos.x.toFixed(2);
 
-    $("testY").textContent =
-        state.pos.y.toFixed(2);
+    for (
+        let y = 0;
+        y <= height;
+        y += spacing
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+        ctx.lineTo(
+            width,
+            y
+        );
+
+        ctx.stroke();
+
+    }
 
 }
 
 
 /* =========================================================
-   SETUP TEST UI
+   CIRCLE
    ========================================================= */
 
-function updateTestSetupUI() {
+function drawCircle(
+    ctx,
+    x,
+    y,
+    radius,
+    color
+) {
 
-    updateTestLive();
+    ctx.beginPath();
 
-    renderTestResult();
+    ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        color;
+
+    ctx.fill();
 
 }
 
 
 /* =========================================================
-   PDF SETUP
+   WORLD BOUNDS
    ========================================================= */
 
-function setupPdfFileSelected(event) {
+function calculateBounds(
+    points
+) {
+
+    let minX =
+        Infinity;
+
+    let maxX =
+        -Infinity;
+
+    let minY =
+        Infinity;
+
+    let maxY =
+        -Infinity;
+
+
+    points.forEach(
+        point => {
+
+            minX =
+                Math.min(
+                    minX,
+                    point.x
+                );
+
+            maxX =
+                Math.max(
+                    maxX,
+                    point.x
+                );
+
+            minY =
+                Math.min(
+                    minY,
+                    point.y
+                );
+
+            maxY =
+                Math.max(
+                    maxY,
+                    point.y
+                );
+
+        }
+    );
+
+
+    /*
+     * Always include workstation.
+     */
+
+    minX =
+        Math.min(
+            minX,
+            0
+        );
+
+    maxX =
+        Math.max(
+            maxX,
+            0
+        );
+
+    minY =
+        Math.min(
+            minY,
+            0
+        );
+
+    maxY =
+        Math.max(
+            maxY,
+            0
+        );
+
+
+    /*
+     * Prevent zero-size maps.
+     */
+
+    if (
+        maxX - minX < 4
+    ) {
+
+        minX -= 2;
+        maxX += 2;
+
+    }
+
+
+    if (
+        maxY - minY < 4
+    ) {
+
+        minY -= 2;
+        maxY += 2;
+
+    }
+
+
+    return {
+
+        minX,
+        maxX,
+        minY,
+        maxY
+
+    };
+
+}
+
+
+/* =========================================================
+   FIT TRANSFORM
+   ========================================================= */
+
+function createFitTransform(
+    bounds,
+    width,
+    height,
+    margin
+) {
+
+    const worldWidth =
+        bounds.maxX -
+        bounds.minX;
+
+
+    const worldHeight =
+        bounds.maxY -
+        bounds.minY;
+
+
+    const scale =
+        Math.min(
+
+            (
+                width -
+                margin * 2
+            ) /
+            worldWidth,
+
+            (
+                height -
+                margin * 2
+            ) /
+            worldHeight
+
+        );
+
+
+    return {
+
+        minX:
+            bounds.minX,
+
+        minY:
+            bounds.minY,
+
+        scale,
+
+        margin
+
+    };
+
+}
+
+
+/* =========================================================
+   WORLD → CANVAS
+   ========================================================= */
+
+function worldToCanvas(
+    x,
+    y,
+    transform
+) {
+
+    return {
+
+        x:
+            transform.margin +
+            (
+                x -
+                transform.minX
+            ) *
+            transform.scale,
+
+
+        /*
+         * Canvas Y increases downward.
+         *
+         * World Y increases upward.
+         */
+
+        y:
+            transform.margin +
+            (
+                transform.maxY -
+                y
+            ) *
+            transform.scale
+
+    };
+
+}
+
+
+/* =========================================================
+   JPEG UPLOAD
+   ========================================================= */
+
+async function uploadJPEG(event) {
 
     const file =
-        event.target.files?.[0];
+        event.target.files[0];
+
 
     if (!file) {
         return;
     }
 
 
-    $("setupPdfStatus").className =
-        "setupStatus ready";
+    if (
+        file.type !==
+        "image/jpeg"
+    ) {
+
+        alert(
+            "Please select a JPEG image."
+        );
+
+        return;
+
+    }
 
 
-    $("setupPdfStatus").innerHTML = `
-        <span class="setupStatusDot"></span>
-        <span>${escapeHTML(file.name)} selected.</span>
-    `;
+    $("uploadStatus").textContent =
+        "Uploading JPEG to server...";
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/upload",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const errorData =
+                await response
+                    .json()
+                    .catch(
+                        () => null
+                    );
+
+
+            throw new Error(
+                errorData?.error ||
+                "Upload failed."
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        state.plan.jpegUrl =
+            result.url;
+
+        state.plan.jpegName =
+            result.name;
+
+
+        $("uploadStatus").textContent =
+            "Uploaded: " +
+            result.name;
+
+
+        $("uploadedImagePreview").innerHTML =
+            "";
+
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            result.url;
+
+        image.alt =
+            "Uploaded floor plan";
+
+
+        $("uploadedImagePreview")
+            .appendChild(
+                image
+            );
+
+
+        saveState();
+
+        renderSetup();
+
+        drawAlignment();
+
+
+    } catch (error) {
+
+        console.error(
+            "JPEG upload failed:",
+            error
+        );
+
+
+        $("uploadStatus").textContent =
+            "Upload failed: " +
+            error.message;
+
+    }
 
 }
 
 
-async function setupLoadPDF() {
+/* =========================================================
+   SERVER FILE LIST
+   ========================================================= */
 
-    const input =
-        $("setupPdfFile");
+async function loadServerFiles() {
 
-    if (!input?.files?.[0]) {
+    const select =
+        $("pdfSelect");
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/files"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Cannot load server file list."
+            );
+
+        }
+
+
+        const files =
+            await response.json();
+
+
+        select.innerHTML =
+            `
+            <option value="">
+                Select a PDF...
+            </option>
+            `;
+
+
+        files
+            .filter(
+                file =>
+                    file.extension ===
+                        ".pdf"
+            )
+            .forEach(
+                file => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        file.url;
+
+
+                    option.textContent =
+                        file.name;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+    } catch (error) {
+
+        console.warn(
+            "Could not load PDF list:",
+            error
+        );
+
+
+        select.innerHTML =
+            `
+            <option value="">
+                No PDFs available
+            </option>
+            `;
+
+    }
+
+}
+
+
+/* =========================================================
+   PDF
+   ========================================================= */
+
+async function loadSelectedPDF() {
+
+    const url =
+        $("pdfSelect").value;
+
+
+    if (!url) {
 
         alert(
             "Select a PDF first."
@@ -2028,211 +2354,47 @@ async function setupLoadPDF() {
     }
 
 
-    /*
-     * Copy setup values into the main Map controls.
-     */
-
-    const setupFile =
-        input.files[0];
-
-
-    const page =
-        Number(
-            $("setupPdfPage")?.value
-        ) || 1;
-
-
-    const zoom =
-        Number(
-            $("setupPdfZoom")?.value
-        ) || 1;
-
-
-    const mainInput =
-        $("pdfFile");
-
-
-    /*
-     * File inputs cannot be assigned programmatically
-     * in all browsers, so use the setup file directly.
-     */
-
-    state.pdf.fileObject =
-        setupFile;
-
-    state.pdf.fileName =
-        setupFile.name;
-
-    state.pdf.page =
-        page;
-
-    state.pdf.scale =
-        zoom;
-
-
-    if ($("pdfPage")) {
-        $("pdfPage").value =
-            page;
-    }
-
-    if ($("pdfZoom")) {
-        $("pdfZoom").value =
-            zoom;
-    }
-
-
-    await renderPDFFile(
-        setupFile,
-        page,
-        zoom
-    );
-
-
-    state.setup.completed.pdf =
-        true;
-
-
-    saveState();
-
-    updateSetupUI();
-
-    $("setupPdfStatus").className =
-        "setupStatus ready";
-
-
-    $("setupPdfStatus").innerHTML = `
-        <span class="setupStatusDot"></span>
-        <span>${escapeHTML(setupFile.name)} loaded.</span>
-    `;
-
-
-    $("status").textContent =
-        "PDF loaded";
-
-}
-
-
-async function loadPDF() {
-
-    const file =
-        $("pdfFile")?.files?.[0];
-
-
-    if (!file) {
-
-        alert(
-            "Choose a PDF."
-        );
-
-        return;
-
-    }
-
-
-    const page =
-        Math.max(
-            1,
-            Number(
-                $("pdfPage")?.value
-            ) || 1
-        );
-
-
-    const zoom =
-        Number(
-            $("pdfZoom")?.value
-        ) || 1;
-
-
-    state.pdf.fileObject =
-        file;
-
-    state.pdf.fileName =
-        file.name;
-
-    state.pdf.page =
-        page;
-
-    state.pdf.scale =
-        zoom;
-
-
-    await renderPDFFile(
-        file,
-        page,
-        zoom
-    );
-
-
-    state.setup.completed.pdf =
-        true;
-
-
-    saveState();
-
-    updateSetupUI();
-
-}
-
-
-/* =========================================================
-   PDF RENDERING
-   ========================================================= */
-
-async function renderPDFFile(
-    file,
-    pageNumber,
-    zoom
-) {
-
-    if (!pdfjsLib) {
-
-        alert(
-            "PDF.js could not load. Internet access is required by this prototype."
-        );
-
-        return;
-
-    }
+    $("pdfStatus").textContent =
+        "Loading PDF...";
 
 
     try {
 
-        const buffer =
-            await file.arrayBuffer();
+        if (!pdfjsLib) {
+
+            const module =
+                await import(
+                    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs"
+                );
 
 
-        const pdf =
+            pdfjsLib =
+                module;
+
+
+            pdfjsLib
+                .GlobalWorkerOptions
+                .workerSrc =
+                "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
+
+        }
+
+
+        pdfDocument =
             await pdfjsLib
-                .getDocument({
-                    data: buffer
-                })
+                .getDocument(url)
                 .promise;
 
 
-        const actualPage =
-            Math.min(
-                Math.max(
-                    1,
-                    pageNumber
-                ),
-                pdf.numPages
-            );
-
-
-        state.pdf.page =
-            actualPage;
-
-
         const page =
-            await pdf.getPage(
-                actualPage
+            await pdfDocument.getPage(
+                1
             );
 
 
         const viewport =
             page.getViewport({
-                scale: zoom
+                scale: 1.5
             });
 
 
@@ -2240,12 +2402,10 @@ async function renderPDFFile(
             $("pdfCanvas");
 
 
-        const overlay =
-            $("mapOverlay");
-
-
-        const context =
-            canvas.getContext("2d");
+        const ctx =
+            canvas.getContext(
+                "2d"
+            );
 
 
         canvas.width =
@@ -2255,1449 +2415,172 @@ async function renderPDFFile(
             viewport.height;
 
 
-        overlay.width =
-            viewport.width;
-
-        overlay.height =
-            viewport.height;
-
-
-        overlay.style.width =
-            viewport.width + "px";
-
-        overlay.style.height =
-            viewport.height + "px";
-
-
         await page.render({
 
             canvasContext:
-                context,
+                ctx,
 
             viewport
 
         }).promise;
 
 
-        state.pdf.width =
-            viewport.width;
-
-        state.pdf.height =
-            viewport.height;
-
-        state.pdf.scale =
-            zoom;
+        state.plan.pdfUrl =
+            url;
 
 
-        if ($("pdfStatus")) {
-
-            $("pdfStatus").textContent =
-                `${file.name} — page ${actualPage} / ${pdf.numPages}`;
-
-        }
+        const selected =
+            $("pdfSelect")
+                .selectedOptions[0];
 
 
-        drawMapOverlay();
+        state.plan.pdfName =
+            selected
+                ? selected.textContent
+                : url;
+
+
+        $("pdfStatus").textContent =
+            "Loaded: " +
+            state.plan.pdfName;
+
+
+        saveState();
 
     } catch (error) {
 
-        console.error(error);
-
-        alert(
-            "Could not render the PDF: " +
-            error.message
+        console.error(
+            "PDF loading failed:",
+            error
         );
+
+
+        $("pdfStatus").textContent =
+            "PDF error: " +
+            error.message;
 
     }
 
 }
 
 
-/*
- * Used by the Map tab's zoom/page controls.
- */
-async function renderPDFPage() {
+/* =========================================================
+   ALIGNMENT CONTROLS
+   ========================================================= */
 
-    const file =
-        $("pdfFile")?.files?.[0] ||
-        state.pdf.fileObject;
+function bindAlignmentControls() {
+
+    [
+        "imageX",
+        "imageY",
+        "imageScale",
+        "imageRotation"
+    ]
+    .forEach(
+        id => {
+
+            $(id).addEventListener(
+                "input",
+                updateImageTransform
+            );
+
+        }
+    );
+
+}
 
 
-    if (!file) {
-        return;
-    }
+function initializeAlignmentControls() {
+
+    syncAlignmentControls();
+
+}
 
 
-    const page =
-        Math.max(
-            1,
+function syncAlignmentControls() {
+
+    $("imageX").value =
+        state.plan.imageTransform.x;
+
+
+    $("imageY").value =
+        state.plan.imageTransform.y;
+
+
+    $("imageScale").value =
+        state.plan.imageTransform.scale;
+
+
+    $("imageRotation").value =
+        state.plan.imageTransform.rotation;
+
+
+    $("imageXValue").textContent =
+        state.plan.imageTransform.x;
+
+
+    $("imageYValue").textContent =
+        state.plan.imageTransform.y;
+
+
+    $("imageScaleValue").textContent =
+        state.plan.imageTransform.scale
+            .toFixed(2);
+
+
+    $("imageRotationValue").textContent =
+        state.plan.imageTransform.rotation +
+        "°";
+
+}
+
+
+function updateImageTransform() {
+
+    state.plan.imageTransform = {
+
+        x:
             Number(
-                $("pdfPage")?.value
-            ) || 1
-        );
-
-
-    const zoom =
-        Number(
-            $("pdfZoom")?.value
-        ) || 1;
-
-
-    state.pdf.page =
-        page;
-
-    state.pdf.scale =
-        zoom;
-
-
-    await renderPDFFile(
-        file,
-        page,
-        zoom
-    );
-
-
-    saveState();
-
-}
-
-
-/* =========================================================
-   MAP TAB
-   ========================================================= */
-
-function openMapTab() {
-
-    activateTab("map");
-
-    drawMapOverlay();
-
-}
-
-
-/* =========================================================
-   CALIBRATION
-   ========================================================= */
-
-function startCalibration() {
-
-    if (!state.pdf.fileName) {
-
-        alert(
-            "Load a PDF first."
-        );
-
-        goToSetupStep(1);
-
-        return;
-
-    }
-
-
-    state.calibrationMode =
-        true;
-
-
-    /*
-     * This fixes the original issue where the overlay
-     * had pointer-events:none.
-     */
-
-    $("mapOverlay").style.pointerEvents =
-        "auto";
-
-
-    $("calibrationStatus").textContent =
-        "Calibration active: click a known point on the PDF.";
-
-
-    if ($("setupCalibrationStatus")) {
-
-        $("setupCalibrationStatus").innerHTML = `
-            <span class="setupStatusDot"></span>
-            <span>Calibration active. Click a known point on the PDF.</span>
-        `;
-
-        $("setupCalibrationStatus").className =
-            "setupStatus warning";
-
-    }
-
-
-    drawMapOverlay();
-
-}
-
-
-function finishCalibration() {
-
-    if (
-        state.calibration.points.length < 3
-    ) {
-
-        alert(
-            "Use at least 3 calibration points."
-        );
-
-        return;
-
-    }
-
-
-    const matrix =
-        computeAffine(
-            state.calibration.points
-        );
-
-
-    if (!matrix) {
-
-        alert(
-            "Could not calculate calibration. Check the points."
-        );
-
-        return;
-
-    }
-
-
-    state.calibration.matrix =
-        matrix;
-
-    state.calibration.locked =
-        true;
-
-    state.calibrationMode =
-        false;
-
-
-    $("mapOverlay").style.pointerEvents =
-        "none";
-
-
-    const message =
-        "Calibration LOCKED. RMS error: " +
-        matrix.rms.toFixed(3) +
-        " world units.";
-
-
-    if ($("calibrationStatus")) {
-
-        $("calibrationStatus").textContent =
-            message;
-
-    }
-
-
-    if ($("setupCalibrationStatus")) {
-
-        $("setupCalibrationStatus").className =
-            "setupStatus ready";
-
-        $("setupCalibrationStatus").innerHTML = `
-            <span class="setupStatusDot"></span>
-            <span>${escapeHTML(message)}</span>
-        `;
-
-    }
-
-
-    state.setup.completed.calibration =
-        true;
-
-
-    state.setup.completed.mapping =
-        true;
-
-
-    drawMapOverlay();
-
-    saveState();
-
-    updateUI();
-
-    updateSetupUI();
-
-}
-
-
-function clearCalibration() {
-
-    if (
-        !confirm(
-            "Clear all calibration points?"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    state.calibration.points =
-        [];
-
-    state.calibration.matrix =
-        null;
-
-    state.calibration.locked =
-        false;
-
-    state.calibrationMode =
-        false;
-
-
-    $("mapOverlay").style.pointerEvents =
-        "none";
-
-
-    if ($("calibrationStatus")) {
-
-        $("calibrationStatus").textContent =
-            "Not calibrated";
-
-    }
-
-
-    if ($("setupCalibrationStatus")) {
-
-        $("setupCalibrationStatus").className =
-            "setupStatus warning";
-
-        $("setupCalibrationStatus").innerHTML = `
-            <span class="setupStatusDot"></span>
-            <span>Calibration has not been completed.</span>
-        `;
-
-    }
-
-
-    state.setup.completed.calibration =
-        false;
-
-    state.setup.completed.mapping =
-        false;
-
-
-    renderCalibrationPoints();
-
-    drawMapOverlay();
-
-    saveState();
-
-    updateSetupUI();
-
-}
-
-
-/* =========================================================
-   PDF CALIBRATION CLICK
-   ========================================================= */
-
-function pdfCanvasClick(event) {
-
-    if (
-        !state.calibrationMode ||
-        state.calibration.locked
-    ) {
-
-        return;
-
-    }
-
-
-    const overlay =
-        $("mapOverlay");
-
-
-    const rect =
-        overlay.getBoundingClientRect();
-
-
-    if (
-        rect.width <= 0 ||
-        rect.height <= 0
-    ) {
-
-        return;
-
-    }
-
-
-    const scaleX =
-        overlay.width /
-        rect.width;
-
-
-    const scaleY =
-        overlay.height /
-        rect.height;
-
-
-    const px =
-        (event.clientX - rect.left) *
-        scaleX;
-
-
-    const py =
-        (event.clientY - rect.top) *
-        scaleY;
-
-
-    const x =
-        parseFloat(
-            prompt(
-                "Real-world X (metres):",
-                "0"
-            )
-        );
-
-
-    const y =
-        parseFloat(
-            prompt(
-                "Real-world Y (metres):",
-                "0"
-            )
-        );
-
-
-    if (
-        !Number.isFinite(x) ||
-        !Number.isFinite(y)
-    ) {
-
-        return;
-
-    }
-
-
-    state.calibration.points.push({
-
-        px,
-
-        py,
-
-        x,
-
-        y
-
-    });
-
-
-    renderCalibrationPoints();
-
-    drawMapOverlay();
-
-    saveState();
-
-}
-
-
-/* =========================================================
-   CALIBRATION LIST
-   ========================================================= */
-
-function renderCalibrationPoints() {
-
-    const containers = [
-        $("calibrationPoints"),
-        $("setupCalibrationPoints")
-    ];
-
-
-    containers.forEach(container => {
-
-        if (!container) {
-            return;
-        }
-
-
-        container.innerHTML = "";
-
-
-        state.calibration.points
-            .forEach((point, index) => {
-
-                const row =
-                    document.createElement("div");
-
-
-                row.className =
-                    "calPoint";
-
-
-                row.innerHTML = `
-
-                    <strong>
-                        P${index + 1}
-                    </strong>
-
-                    <span>
-                        PDF:
-                        ${point.px.toFixed(1)},
-                        ${point.py.toFixed(1)}
-                    </span>
-
-                    <span>
-                        World:
-                        ${point.x.toFixed(2)} m,
-                        ${point.y.toFixed(2)} m
-                    </span>
-
-                    <button
-                        data-cal-delete="${index}">
-                        Delete
-                    </button>
-
-                `;
-
-
-                row.querySelector(
-                    "[data-cal-delete]"
-                )?.addEventListener(
-                    "click",
-                    () => {
-
-                        state.calibration.points
-                            .splice(index, 1);
-
-
-                        if (
-                            state.calibration.points.length <
-                            3
-                        ) {
-
-                            state.calibration.locked =
-                                false;
-
-                            state.calibration.matrix =
-                                null;
-
-                            state.setup.completed.calibration =
-                                false;
-
-                            state.setup.completed.mapping =
-                                false;
-
-                        }
-
-
-                        renderCalibrationPoints();
-
-                        drawMapOverlay();
-
-                        saveState();
-
-                        updateSetupUI();
-
-                    }
-                );
-
-
-                container.appendChild(
-                    row
-                );
-
-            });
-
-    });
-
-}
-
-
-/* =========================================================
-   CALIBRATION UI
-   ========================================================= */
-
-function updateCalibrationSetupUI() {
-
-    renderCalibrationPoints();
-
-
-    const complete =
-        state.setup.completed.calibration &&
-        state.calibration.locked;
-
-
-    if ($("setupCalibrationStatus")) {
-
-        if (complete) {
-
-            const rms =
-                state.calibration.matrix?.rms;
-
-            $("setupCalibrationStatus").className =
-                "setupStatus ready";
-
-            $("setupCalibrationStatus").innerHTML = `
-                <span class="setupStatusDot"></span>
-                <span>
-                    Synchronization locked.
-                    RMS error:
-                    ${Number(rms || 0).toFixed(3)} m
-                </span>
-            `;
-
-        } else if (
-            state.calibrationMode
-        ) {
-
-            $("setupCalibrationStatus").className =
-                "setupStatus warning";
-
-            $("setupCalibrationStatus").innerHTML = `
-                <span class="setupStatusDot"></span>
-                <span>
-                    Calibration active.
-                    ${state.calibration.points.length}
-                    point(s) recorded.
-                </span>
-            `;
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   AFFINE CALIBRATION
-   ========================================================= */
-
-function computeAffine(points) {
-
-    const rows = [];
-
-    const bx = [];
-
-    const by = [];
-
-
-    for (
-        const point of points
-    ) {
-
-        rows.push([
-            point.px,
-            point.py,
-            1
-        ]);
-
-        bx.push(point.x);
-
-        by.push(point.y);
-
-    }
-
-
-    const sx =
-        solveLeastSquares(
-            rows,
-            bx
-        );
-
-
-    const sy =
-        solveLeastSquares(
-            rows,
-            by
-        );
-
-
-    if (!sx || !sy) {
-
-        return null;
-
-    }
-
-
-    let errorSquared = 0;
-
-
-    for (
-        const point of points
-    ) {
-
-        const x =
-            sx[0] * point.px +
-            sx[1] * point.py +
-            sx[2];
-
-
-        const y =
-            sy[0] * point.px +
-            sy[1] * point.py +
-            sy[2];
-
-
-        errorSquared +=
-            (x - point.x) ** 2 +
-            (y - point.y) ** 2;
-
-    }
-
-
-    return {
-
-        a: sx,
-
-        b: sy,
-
-        rms:
-            Math.sqrt(
-                errorSquared /
-                points.length
+                $("imageX").value
+            ),
+
+        y:
+            Number(
+                $("imageY").value
+            ),
+
+        scale:
+            Number(
+                $("imageScale").value
+            ),
+
+        rotation:
+            Number(
+                $("imageRotation").value
             )
 
     };
 
-}
 
+    $("imageXValue").textContent =
+        state.plan.imageTransform.x;
 
-function solveLeastSquares(A, b) {
 
-    /*
-     * Normal equation:
-     *
-     * (AᵀA)x = Aᵀb
-     */
+    $("imageYValue").textContent =
+        state.plan.imageTransform.y;
 
-    const rows =
-        A.length;
 
+    $("imageScaleValue").textContent =
+        state.plan.imageTransform.scale
+            .toFixed(2);
 
-    if (rows < 3) {
-        return null;
-    }
 
+    $("imageRotationValue").textContent =
+        state.plan.imageTransform.rotation +
+        "°";
 
-    const ATA = [
-        [0,0,0],
-        [0,0,0],
-        [0,0,0]
-    ];
 
-
-    const ATb = [
-        0,
-        0,
-        0
-    ];
-
-
-    for (
-        let i = 0;
-        i < rows;
-        i++
-    ) {
-
-        const row =
-            A[i];
-
-
-        for (
-            let j = 0;
-            j < 3;
-            j++
-        ) {
-
-            ATb[j] +=
-                row[j] *
-                b[i];
-
-
-            for (
-                let k = 0;
-                k < 3;
-                k++
-            ) {
-
-                ATA[j][k] +=
-                    row[j] *
-                    row[k];
-
-            }
-
-        }
-
-    }
-
-
-    return solve3(
-        ATA,
-        ATb
-    );
-
-}
-
-
-function solve3(A, b) {
-
-    const m = [
-
-        [
-            A[0][0],
-            A[0][1],
-            A[0][2],
-            b[0]
-        ],
-
-        [
-            A[1][0],
-            A[1][1],
-            A[1][2],
-            b[1]
-        ],
-
-        [
-            A[2][0],
-            A[2][1],
-            A[2][2],
-            b[2]
-        ]
-
-    ];
-
-
-    for (
-        let col = 0;
-        col < 3;
-        col++
-    ) {
-
-        let pivot = col;
-
-
-        for (
-            let row = col + 1;
-            row < 3;
-            row++
-        ) {
-
-            if (
-                Math.abs(m[row][col]) >
-                Math.abs(m[pivot][col])
-            ) {
-
-                pivot = row;
-
-            }
-
-        }
-
-
-        if (
-            Math.abs(
-                m[pivot][col]
-            ) < 1e-12
-        ) {
-
-            return null;
-
-        }
-
-
-        [
-            m[col],
-            m[pivot]
-        ] = [
-            m[pivot],
-            m[col]
-        ];
-
-
-        const divisor =
-            m[col][col];
-
-
-        for (
-            let j = col;
-            j < 4;
-            j++
-        ) {
-
-            m[col][j] /=
-                divisor;
-
-        }
-
-
-        for (
-            let row = 0;
-            row < 3;
-            row++
-        ) {
-
-            if (row === col) {
-                continue;
-            }
-
-
-            const factor =
-                m[row][col];
-
-
-            for (
-                let j = col;
-                j < 4;
-                j++
-            ) {
-
-                m[row][j] -=
-                    factor *
-                    m[col][j];
-
-            }
-
-        }
-
-    }
-
-
-    return [
-        m[0][3],
-        m[1][3],
-        m[2][3]
-    ];
-
-}
-
-
-/* =========================================================
-   WORLD ↔ PDF
-   ========================================================= */
-
-function worldToPdf(x, y) {
-
-    const matrix =
-        state.calibration.matrix;
-
-
-    if (!matrix) {
-        return null;
-    }
-
-
-    /*
-     * World = A * PDF
-     *
-     * We need the inverse mapping:
-     *
-     * PDF = inverse(A) * World
-     */
-
-    const a =
-        matrix.a[0];
-
-    const b =
-        matrix.a[1];
-
-    const c =
-        matrix.a[2];
-
-    const d =
-        matrix.b[0];
-
-    const e =
-        matrix.b[1];
-
-    const f =
-        matrix.b[2];
-
-
-    const determinant =
-        a * e -
-        b * d;
-
-
-    if (
-        Math.abs(determinant) <
-        1e-12
-    ) {
-
-        return null;
-
-    }
-
-
-    const wx =
-        x - c;
-
-    const wy =
-        y - f;
-
-
-    const px =
-        (
-            e * wx -
-            b * wy
-        ) /
-        determinant;
-
-
-    const py =
-        (
-            -d * wx +
-            a * wy
-        ) /
-        determinant;
-
-
-    return {
-        px,
-        py
-    };
-
-}
-
-
-/* =========================================================
-   MAP OVERLAY
-   ========================================================= */
-
-function drawMapOverlay() {
-
-    const canvas =
-        $("mapOverlay");
-
-
-    if (
-        !canvas ||
-        !canvas.width ||
-        !canvas.height
-    ) {
-
-        return;
-
-    }
-
-
-    const context =
-        canvas.getContext("2d");
-
-
-    context.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-
-    /*
-     * Calibration points
-     */
-
-    state.calibration.points
-        .forEach((point, index) => {
-
-            context.beginPath();
-
-            context.arc(
-                point.px,
-                point.py,
-                7,
-                0,
-                Math.PI * 2
-            );
-
-            context.fillStyle =
-                "#ffcc00";
-
-            context.fill();
-
-
-            context.fillStyle =
-                "#111";
-
-            context.font =
-                "12px sans-serif";
-
-
-            context.fillText(
-                "P" + (index + 1),
-                point.px + 9,
-                point.py - 9
-            );
-
-        });
-
-
-    /*
-     * Current position
-     */
-
-    if (
-        state.calibration.locked
-    ) {
-
-        const point =
-            worldToPdf(
-                state.pos.x,
-                state.pos.y
-            );
-
-
-        if (
-            point &&
-            point.px >= 0 &&
-            point.py >= 0 &&
-            point.px <= canvas.width &&
-            point.py <= canvas.height
-        ) {
-
-            context.beginPath();
-
-            context.arc(
-                point.px,
-                point.py,
-                10,
-                0,
-                Math.PI * 2
-            );
-
-            context.fillStyle =
-                "#55b7ff";
-
-            context.fill();
-
-
-            context.strokeStyle =
-                "#fff";
-
-            context.lineWidth =
-                2;
-
-            context.stroke();
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   CHECKPOINTS
-   ========================================================= */
-
-function addCheckpointAtCurrent() {
-
-    const name =
-        prompt(
-            "Checkpoint name:",
-            `Checkpoint ${state.checkpoints.length + 1}`
-        );
-
-
-    if (!name) {
-        return;
-    }
-
-
-    state.checkpoints.push({
-
-        name,
-
-        x:
-            state.pos.x,
-
-        y:
-            state.pos.y
-
-    });
-
-
-    renderCheckpoints();
-
-    saveState();
-
-    updateUI();
-
-}
-
-
-function applyCheckpoint() {
-
-    const index =
-        Number(
-            $("checkpointSelect")?.value
-        );
-
-
-    if (
-        !Number.isInteger(index) ||
-        !state.checkpoints[index]
-    ) {
-
-        alert(
-            "Select a checkpoint first."
-        );
-
-        return;
-
-    }
-
-
-    const checkpoint =
-        state.checkpoints[index];
-
-
-    state.pos.x =
-        checkpoint.x;
-
-    state.pos.y =
-        checkpoint.y;
-
-
-    state.pos.speed =
-        0;
-
-
-    state.trail.push({
-
-        x:
-            state.pos.x,
-
-        y:
-            state.pos.y,
-
-        t:
-            Date.now()
-
-    });
-
-
-    detectArea();
-
-    drawWorld();
-
-    drawMapOverlay();
-
-    updateUI();
-
-    saveState();
-
-
-    $("status").textContent =
-        "Position corrected";
-
-}
-
-
-function renderCheckpoints() {
-
-    const list =
-        $("checkpointList");
-
-
-    if (!list) {
-        return;
-    }
-
-
-    list.innerHTML = "";
-
-
-    const select =
-        $("checkpointSelect");
-
-
-    if (select) {
-
-        select.innerHTML =
-            `<option value="">Select checkpoint</option>`;
-
-    }
-
-
-    state.checkpoints
-        .forEach((checkpoint, index) => {
-
-            if (select) {
-
-                const option =
-                    document.createElement("option");
-
-                option.value =
-                    String(index);
-
-                option.textContent =
-                    `${checkpoint.name} (${checkpoint.x.toFixed(2)}, ${checkpoint.y.toFixed(2)})`;
-
-                select.appendChild(
-                    option
-                );
-
-            }
-
-
-            const row =
-                document.createElement("div");
-
-
-            row.className =
-                "checkpointRow";
-
-
-            row.innerHTML = `
-
-                <strong>
-                    ${escapeHTML(checkpoint.name)}
-                </strong>
-
-                <span>
-                    X:
-                    ${checkpoint.x.toFixed(2)} m
-                </span>
-
-                <span>
-                    Y:
-                    ${checkpoint.y.toFixed(2)} m
-                </span>
-
-                <button>
-                    Delete
-                </button>
-
-            `;
-
-
-            row.querySelector("button")
-                .addEventListener(
-                    "click",
-                    () => {
-
-                        state.checkpoints
-                            .splice(index, 1);
-
-                        renderCheckpoints();
-
-                        saveState();
-
-                    }
-                );
-
-
-            list.appendChild(
-                row
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   AREAS
-   ========================================================= */
-
-function startArea() {
-
-    const name =
-        $("areaName")?.value.trim();
-
-
-    if (!name) {
-
-        alert(
-            "Enter an area name first."
-        );
-
-        return;
-
-    }
-
-
-    state.areaMode =
-        true;
-
-    state.areaDraft =
-        [];
-
-
-    $("areaHint").textContent =
-        "Area drawing active. Click points on the world canvas.";
-
-    drawWorld();
-
-}
-
-
-function finishArea() {
-
-    if (
-        !state.areaMode
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        state.areaDraft.length < 3
-    ) {
-
-        alert(
-            "Use at least 3 points to create an area."
-        );
-
-        return;
-
-    }
-
-
-    const name =
-        $("areaName")?.value.trim();
-
-
-    if (!name) {
-
-        alert(
-            "Enter an area name."
-        );
-
-        return;
-
-    }
-
-
-    state.areas.push({
-
-        name,
-
-        polygon:
-            state.areaDraft.map(
-                point => ({
-                    x:point.x,
-                    y:point.y
-                })
-            )
-
-    });
-
-
-    state.areaDraft =
-        [];
-
-    state.areaMode =
-        false;
-
-
-    $("areaName").value =
-        "";
-
-
-    $("areaHint").textContent =
-        "Click points on the world-coordinate canvas.";
-
-
-    renderAreas();
-
-    drawWorld();
+    drawAlignment();
 
     saveState();
 
@@ -3705,71 +2588,13 @@ function finishArea() {
 
 
 /* =========================================================
-   WORLD CANVAS CLICK
+   ALIGNMENT CANVAS
    ========================================================= */
 
-function worldCanvasClick(event) {
-
-    if (
-        !state.areaMode
-    ) {
-
-        return;
-
-    }
-
+function drawAlignment() {
 
     const canvas =
-        $("worldCanvas");
-
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-
-    const canvasX =
-        (
-            event.clientX -
-            rect.left
-        ) *
-        canvas.width /
-        rect.width;
-
-
-    const canvasY =
-        (
-            event.clientY -
-            rect.top
-        ) *
-        canvas.height /
-        rect.height;
-
-
-    const point =
-        canvasToWorld(
-            canvasX,
-            canvasY
-        );
-
-
-    state.areaDraft.push(
-        point
-    );
-
-
-    drawWorld();
-
-}
-
-
-/* =========================================================
-   WORLD DRAWING
-   ========================================================= */
-
-function drawWorld() {
-
-    const canvas =
-        $("worldCanvas");
+        $("alignmentCanvas");
 
 
     if (!canvas) {
@@ -3777,328 +2602,256 @@ function drawWorld() {
     }
 
 
-    const context =
-        canvas.getContext("2d");
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
 
 
-    const width =
-        canvas.width;
-
-    const height =
-        canvas.height;
-
-
-    context.clearRect(
+    ctx.clearRect(
         0,
         0,
-        width,
-        height
+        canvas.width,
+        canvas.height
     );
 
 
-    /*
-     * Background
-     */
-
-    context.fillStyle =
-        "#0b1324";
-
-    context.fillRect(
-        0,
-        0,
-        width,
-        height
+    drawGrid(
+        ctx,
+        canvas.width,
+        canvas.height
     );
 
 
-    /*
-     * Grid
-     */
-
-    const gridStep =
-        5;
-
-
-    for (
-        let x = 0;
-        x <= state.world.width;
-        x += gridStep
+    if (
+        !state.plan.jpegUrl
     ) {
 
-        const canvasX =
-            x / state.world.width *
-            width;
+        ctx.fillStyle =
+            "#9aa8bd";
 
 
-        context.beginPath();
+        ctx.font =
+            "16px sans-serif";
 
-        context.moveTo(
-            canvasX,
-            0
+
+        ctx.fillText(
+            "Upload a JPEG floor plan in Step 3.",
+            30,
+            40
         );
 
-        context.lineTo(
-            canvasX,
-            height
-        );
 
-        context.strokeStyle =
-            "#1d2940";
-
-        context.lineWidth =
-            1;
-
-        context.stroke();
-
-
-        context.fillStyle =
-            "#66758d";
-
-        context.font =
-            "11px sans-serif";
-
-        context.fillText(
-            `${x}m`,
-            canvasX + 3,
-            14
-        );
+        return;
 
     }
 
 
-    for (
-        let y = 0;
-        y <= state.world.height;
-        y += gridStep
-    ) {
+    const image =
+        new Image();
 
-        const canvasY =
-            height -
-            (
-                y /
-                state.world.height *
-                height
+
+    image.onload = () => {
+
+        /*
+         * Draw JPEG first.
+         */
+
+        const centerX =
+            canvas.width / 2 +
+            state.plan.imageTransform.x;
+
+
+        const centerY =
+            canvas.height / 2 +
+            state.plan.imageTransform.y;
+
+
+        ctx.save();
+
+
+        ctx.translate(
+            centerX,
+            centerY
+        );
+
+
+        ctx.rotate(
+            state.plan.imageTransform.rotation *
+            Math.PI /
+            180
+        );
+
+
+        const baseScale =
+            Math.min(
+
+                canvas.width /
+                    image.width,
+
+                canvas.height /
+                    image.height
+
+            ) * 0.8;
+
+
+        const imageScale =
+            baseScale *
+            state.plan.imageTransform.scale;
+
+
+        ctx.globalAlpha =
+            0.9;
+
+
+        ctx.drawImage(
+
+            image,
+
+            -image.width *
+                imageScale /
+                2,
+
+            -image.height *
+                imageScale /
+                2,
+
+            image.width *
+                imageScale,
+
+            image.height *
+                imageScale
+
+        );
+
+
+        ctx.restore();
+
+
+        /*
+         * Draw movement above JPEG.
+         */
+
+        const transform =
+            calculateOverlayTransform(
+                canvas.width,
+                canvas.height
             );
 
 
-        context.beginPath();
-
-        context.moveTo(
-            0,
-            canvasY
+        drawWorldLayer(
+            ctx,
+            transform
         );
 
-        context.lineTo(
-            width,
-            canvasY
-        );
+    };
 
-        context.strokeStyle =
-            "#1d2940";
 
-        context.stroke();
-
-
-        context.fillStyle =
-            "#66758d";
-
-        context.font =
-            "11px sans-serif";
-
-        context.fillText(
-            `${y}m`,
-            4,
-            canvasY - 4
-        );
-
-    }
-
-
-    /*
-     * Areas
-     */
-
-    state.areas.forEach(
-        area => {
-
-            drawPolygon(
-                context,
-                area.polygon,
-                "#254563",
-                "#55b7ff"
-            );
-
-        }
-    );
-
-
-    /*
-     * Area currently being created
-     */
-
-    if (
-        state.areaDraft.length
-    ) {
-
-        drawPolygon(
-            context,
-            state.areaDraft,
-            "#3b5266",
-            "#ffcc00"
-        );
-
-    }
-
-
-    /*
-     * Trail
-     */
-
-    if (
-        state.trail.length > 1
-    ) {
-
-        context.beginPath();
-
-
-        state.trail.forEach(
-            (point, index) => {
-
-                const canvasPoint =
-                    worldToCanvas(
-                        point
-                    );
-
-
-                if (index === 0) {
-
-                    context.moveTo(
-                        canvasPoint.x,
-                        canvasPoint.y
-                    );
-
-                } else {
-
-                    context.lineTo(
-                        canvasPoint.x,
-                        canvasPoint.y
-                    );
-
-                }
-
-            }
-        );
-
-
-        context.strokeStyle =
-            "#55b7ff";
-
-        context.lineWidth =
-            3;
-
-        context.stroke();
-
-    }
-
-
-    /*
-     * Current position
-     */
-
-    const position =
-        worldToCanvas(
-            state.pos
-        );
-
-
-    context.beginPath();
-
-    context.arc(
-        position.x,
-        position.y,
-        9,
-        0,
-        Math.PI * 2
-    );
-
-    context.fillStyle =
-        "#55b7ff";
-
-    context.fill();
-
-
-    context.strokeStyle =
-        "#ffffff";
-
-    context.lineWidth =
-        2;
-
-    context.stroke();
-
-
-    /*
-     * Heading arrow
-     */
-
-    const headingRadians =
-        state.pos.heading *
-        Math.PI /
-        180;
-
-
-    const arrowLength =
-        28;
-
-
-    const arrowX =
-        position.x +
-        Math.sin(
-            headingRadians
-        ) *
-        arrowLength;
-
-
-    const arrowY =
-        position.y -
-        Math.cos(
-            headingRadians
-        ) *
-        arrowLength;
-
-
-    context.beginPath();
-
-    context.moveTo(
-        position.x,
-        position.y
-    );
-
-    context.lineTo(
-        arrowX,
-        arrowY
-    );
-
-    context.strokeStyle =
-        "#ffffff";
-
-    context.lineWidth =
-        3;
-
-    context.stroke();
+    image.src =
+        state.plan.jpegUrl;
 
 }
 
 
-function drawPolygon(
-    context,
-    polygon,
-    fill,
-    stroke
+/* =========================================================
+   OVERLAY TRANSFORM
+   ========================================================= */
+
+function calculateOverlayTransform(
+    width,
+    height
 ) {
 
+    const points =
+        state.mapping.path;
+
+
+    const bounds =
+        calculateBounds(
+            points
+        );
+
+
+    const worldWidth =
+        Math.max(
+            bounds.maxX -
+            bounds.minX,
+            1
+        );
+
+
+    const worldHeight =
+        Math.max(
+            bounds.maxY -
+            bounds.minY,
+            1
+        );
+
+
+    const scale =
+        Math.min(
+
+            (
+                width *
+                0.75
+            ) /
+            worldWidth,
+
+            (
+                height *
+                0.75
+            ) /
+            worldHeight
+
+        );
+
+
+    return {
+
+        scale,
+
+        offsetX:
+            width / 2 -
+            (
+                (
+                    bounds.minX +
+                    bounds.maxX
+                ) / 2
+            ) *
+            scale,
+
+
+        offsetY:
+            height / 2 -
+            (
+                (
+                    bounds.minY +
+                    bounds.maxY
+                ) / 2
+            ) *
+            scale
+
+    };
+
+}
+
+
+/* =========================================================
+   DRAW WORLD LAYER
+   ========================================================= */
+
+function drawWorldLayer(
+    ctx,
+    transform
+) {
+
+    const points =
+        state.mapping.path;
+
+
     if (
-        !polygon ||
-        polygon.length < 2
+        !points ||
+        points.length === 0
     ) {
 
         return;
@@ -4106,30 +2859,57 @@ function drawPolygon(
     }
 
 
-    context.beginPath();
+    function mapPoint(
+        x,
+        y
+    ) {
+
+        return {
+
+            x:
+                x *
+                transform.scale +
+                transform.offsetX,
+
+            y:
+                y *
+                transform.scale +
+                transform.offsetY
+
+        };
+
+    }
 
 
-    polygon.forEach(
+    /*
+     * Recorded movement.
+     */
+
+    ctx.beginPath();
+
+
+    points.forEach(
         (point, index) => {
 
-            const canvasPoint =
-                worldToCanvas(
-                    point
+            const p =
+                mapPoint(
+                    point.x,
+                    point.y
                 );
 
 
             if (index === 0) {
 
-                context.moveTo(
-                    canvasPoint.x,
-                    canvasPoint.y
+                ctx.moveTo(
+                    p.x,
+                    p.y
                 );
 
             } else {
 
-                context.lineTo(
-                    canvasPoint.x,
-                    canvasPoint.y
+                ctx.lineTo(
+                    p.x,
+                    p.y
                 );
 
             }
@@ -4138,417 +2918,652 @@ function drawPolygon(
     );
 
 
-    context.closePath();
+    ctx.lineWidth =
+        4;
 
+    ctx.strokeStyle =
+        "#55b7ff";
 
-    context.fillStyle =
-        fill;
+    ctx.stroke();
 
-    context.globalAlpha =
-        0.35;
 
-    context.fill();
+    /*
+     * Workstation.
+     */
 
-    context.globalAlpha =
-        1;
-
-
-    context.strokeStyle =
-        stroke;
-
-    context.lineWidth =
-        2;
-
-    context.stroke();
-
-}
-
-
-function worldToCanvas(point) {
-
-    return {
-
-        x:
-            point.x /
-            state.world.width *
-            $("worldCanvas").width,
-
-        y:
-            $("worldCanvas").height -
-            (
-                point.y /
-                state.world.height *
-                $("worldCanvas").height
-            )
-
-    };
-
-}
-
-
-function canvasToWorld(
-    canvasX,
-    canvasY
-) {
-
-    const canvas =
-        $("worldCanvas");
-
-
-    return {
-
-        x:
-            canvasX /
-            canvas.width *
-            state.world.width,
-
-        y:
-            (
-                canvas.height -
-                canvasY
-            ) /
-            canvas.height *
-            state.world.height
-
-    };
-
-}
-
-
-/* =========================================================
-   AREA DETECTION
-   ========================================================= */
-
-function pointInPolygon(
-    point,
-    polygon
-) {
-
-    let inside = false;
-
-
-    for (
-        let i = 0,
-        j = polygon.length - 1;
-        i < polygon.length;
-        j = i++
-    ) {
-
-        const xi =
-            polygon[i].x;
-
-        const yi =
-            polygon[i].y;
-
-        const xj =
-            polygon[j].x;
-
-        const yj =
-            polygon[j].y;
-
-
-        const intersects =
-            (
-                yi > point.y
-            ) !==
-            (
-                yj > point.y
-            ) &&
-            (
-                point.x <
-                (
-                    xj - xi
-                ) *
-                (
-                    point.y - yi
-                ) /
-                (
-                    yj - yi
-                ) +
-                xi
-            );
-
-
-        if (intersects) {
-
-            inside =
-                !inside;
-
-        }
-
-    }
-
-
-    return inside;
-
-}
-
-
-function detectArea() {
-
-    let detected =
-        null;
-
-
-    for (
-        const area of state.areas
-    ) {
-
-        if (
-            pointInPolygon(
-                state.pos,
-                area.polygon
-            )
-        ) {
-
-            detected =
-                area.name;
-
-            break;
-
-        }
-
-    }
-
-
-    if (
-        detected !==
-        state.currentArea
-    ) {
-
-        state.currentArea =
-            detected;
-
-        updateAreaTime();
-
-        saveState();
-
-    }
-
-}
-
-
-/* =========================================================
-   AREA TIME
-   ========================================================= */
-
-function updateAreaTime() {
-
-    if (!state.tracking) {
-        return;
-    }
-
-
-    const now =
-        Date.now();
-
-
-    if (!state.lastSample) {
-
-        state.lastSample =
-            now;
-
-        return;
-
-    }
-
-
-    const elapsed =
-        now -
-        state.lastSample;
-
-
-    if (
-        state.currentArea
-    ) {
-
-        state.areaTime[
-            state.currentArea
-        ] =
-            (
-                state.areaTime[
-                    state.currentArea
-                ] ||
-                0
-            ) +
-            elapsed;
-
-    }
-
-
-    state.lastSample =
-        now;
-
-}
-
-
-/* =========================================================
-   AREA RENDERING
-   ========================================================= */
-
-function renderAreas() {
-
-    const list =
-        $("areaList");
-
-
-    if (!list) {
-        return;
-    }
-
-
-    list.innerHTML = "";
-
-
-    state.areas.forEach(
-        (area, index) => {
-
-            const row =
-                document.createElement("div");
-
-
-            row.className =
-                "areaRow";
-
-
-            row.innerHTML = `
-
-                <strong>
-                    ${escapeHTML(area.name)}
-                </strong>
-
-                <span>
-                    ${area.polygon.length}
-                    points
-                </span>
-
-                <span>
-                    ${area.polygon
-                        .map(
-                            p =>
-                                `(${p.x.toFixed(1)}, ${p.y.toFixed(1)})`
-                        )
-                        .join(" ")}
-                </span>
-
-                <button>
-                    Delete
-                </button>
-
-            `;
-
-
-            row.querySelector("button")
-                .addEventListener(
-                    "click",
-                    () => {
-
-                        state.areas
-                            .splice(index, 1);
-
-                        renderAreas();
-
-                        drawWorld();
-
-                        saveState();
-
-                    }
-                );
-
-
-            list.appendChild(
-                row
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   AREA TIME TABLE
-   ========================================================= */
-
-function renderAreaTime() {
-
-    const container =
-        $("areaTimeTable");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    const entries =
-        Object.entries(
-            state.areaTime
+    const origin =
+        mapPoint(
+            0,
+            0
         );
 
 
-    if (!entries.length) {
+    drawCircle(
+        ctx,
+        origin.x,
+        origin.y,
+        10,
+        "#45d483"
+    );
 
-        container.innerHTML =
-            `<div class="hint">No area time recorded yet.</div>`;
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.font =
+        "bold 12px sans-serif";
+
+
+    ctx.fillText(
+        "WORKSTATION",
+        origin.x + 13,
+        origin.y - 12
+    );
+
+
+    /*
+     * Reference points.
+     */
+
+    state.mapping.references
+        .forEach(
+            (reference, index) => {
+
+                const p =
+                    mapPoint(
+                        reference.x,
+                        reference.y
+                    );
+
+
+                drawCircle(
+                    ctx,
+                    p.x,
+                    p.y,
+                    9,
+                    "#e9a84b"
+                );
+
+
+                ctx.fillStyle =
+                    "#ffffff";
+
+                ctx.font =
+                    "bold 12px sans-serif";
+
+
+                ctx.fillText(
+                    `R${index + 1}`,
+                    p.x + 12,
+                    p.y + 4
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   LOCK SETUP
+   ========================================================= */
+
+function updateCompletionSummary() {
+
+    const summary =
+        $("completionSummary");
+
+
+    summary.innerHTML = `
+
+        <div class="summaryRow">
+            <span>Workstation</span>
+            <strong>
+                X 0.00 / Y 0.00
+            </strong>
+        </div>
+
+        <div class="summaryRow">
+            <span>Movement distance</span>
+            <strong>
+                ${state.mapping.distance.toFixed(2)} m
+            </strong>
+        </div>
+
+        <div class="summaryRow">
+            <span>Movement samples</span>
+            <strong>
+                ${state.mapping.path.length}
+            </strong>
+        </div>
+
+        <div class="summaryRow">
+            <span>Reference points</span>
+            <strong>
+                ${state.mapping.references.length}
+            </strong>
+        </div>
+
+        <div class="summaryRow">
+            <span>JPEG floor plan</span>
+            <strong>
+                ${state.plan.jpegName || "Not uploaded"}
+            </strong>
+        </div>
+
+        <div class="summaryRow">
+            <span>PDF</span>
+            <strong>
+                ${state.plan.pdfName || "Optional"}
+            </strong>
+        </div>
+
+    `;
+
+}
+
+
+function lockSetup() {
+
+    if (
+        !state.plan.jpegUrl
+    ) {
+
+        alert(
+            "Upload a JPEG floor plan before locking the setup."
+        );
 
         return;
 
     }
 
 
-    let html = `
+    if (
+        state.mapping.path.length < 2
+    ) {
 
-        <table>
+        alert(
+            "Record movement before locking the setup."
+        );
 
-            <thead>
+        return;
 
-                <tr>
-                    <th>Area</th>
-                    <th>Time</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-    `;
+    }
 
 
-    entries.forEach(
-        ([name, milliseconds]) => {
+    state.locked =
+        true;
 
-            html += `
 
-                <tr>
+    state.mapping.active =
+        false;
 
-                    <td>
-                        ${escapeHTML(name)}
-                    </td>
 
-                    <td>
-                        ${formatMs(milliseconds)}
-                    </td>
+    saveState();
 
-                </tr>
 
-            `;
+    $("lockedSetup")
+        .classList.remove(
+            "hidden"
+        );
+
+
+    $("lockSetupBtn")
+        .disabled = true;
+
+
+    setStatus(
+        "Setup locked"
+    );
+
+
+    renderSetup();
+
+    updateCompletionSummary();
+
+}
+
+
+/* =========================================================
+   LIVE TRACKING
+   ========================================================= */
+
+function startTracking() {
+
+    if (!state.locked) {
+
+        alert(
+            "Complete and lock the setup first."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * We do NOT call requestSensorPermissions()
+     * here because iOS permission requests need
+     * to originate from a direct user interaction.
+     */
+
+    if (
+        !state.sensors.motionPermission
+    ) {
+
+        alert(
+            "Enable the iPhone sensors first."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Start at workstation.
+     */
+
+    state.tracking = {
+
+        active: true,
+
+        x: 0,
+
+        y: 0,
+
+        heading:
+            headingDeg,
+
+        distance: 0,
+
+        path: [
+
+            {
+                x: 0,
+                y: 0,
+                t: Date.now()
+            }
+
+        ]
+
+    };
+
+
+    $("startTrackBtn")
+        .disabled = true;
+
+
+    $("stopTrackBtn")
+        .disabled = false;
+
+
+    $("trackingState")
+        .textContent =
+        "Tracking";
+
+
+    setStatus(
+        "Tracking"
+    );
+
+
+    drawLiveMap();
+
+    updateTrackingPage();
+
+}
+
+
+function stopTracking() {
+
+    state.tracking.active =
+        false;
+
+
+    $("startTrackBtn")
+        .disabled = false;
+
+
+    $("stopTrackBtn")
+        .disabled = true;
+
+
+    $("trackingState")
+        .textContent =
+        "Stopped";
+
+
+    setStatus(
+        "Ready"
+    );
+
+
+    saveState();
+
+}
+
+
+/* =========================================================
+   LIVE MAP
+   ========================================================= */
+
+function drawLiveMap() {
+
+    const canvas =
+        $("liveCanvas");
+
+
+    if (!canvas) {
+        return;
+    }
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    drawGrid(
+        ctx,
+        canvas.width,
+        canvas.height
+    );
+
+
+    if (
+        !state.plan.jpegUrl
+    ) {
+
+        return;
+
+    }
+
+
+    const image =
+        new Image();
+
+
+    image.onload = () => {
+
+        /*
+         * Draw saved JPEG.
+         */
+
+        const centerX =
+            canvas.width / 2 +
+            state.plan.imageTransform.x;
+
+
+        const centerY =
+            canvas.height / 2 +
+            state.plan.imageTransform.y;
+
+
+        ctx.save();
+
+
+        ctx.translate(
+            centerX,
+            centerY
+        );
+
+
+        ctx.rotate(
+            state.plan.imageTransform.rotation *
+            Math.PI /
+            180
+        );
+
+
+        const baseScale =
+            Math.min(
+
+                canvas.width /
+                    image.width,
+
+                canvas.height /
+                    image.height
+
+            ) * 0.8;
+
+
+        const imageScale =
+            baseScale *
+            state.plan.imageTransform.scale;
+
+
+        ctx.globalAlpha =
+            0.95;
+
+
+        ctx.drawImage(
+
+            image,
+
+            -image.width *
+                imageScale /
+                2,
+
+            -image.height *
+                imageScale /
+                2,
+
+            image.width *
+                imageScale,
+
+            image.height *
+                imageScale
+
+        );
+
+
+        ctx.restore();
+
+
+        /*
+         * Draw the original setup path
+         * and reference points.
+         */
+
+        const transform =
+            calculateOverlayTransform(
+                canvas.width,
+                canvas.height
+            );
+
+
+        drawWorldLayer(
+            ctx,
+            transform
+        );
+
+
+        /*
+         * Draw LIVE tracking path.
+         */
+
+        drawLivePath(
+            ctx,
+            transform
+        );
+
+
+        /*
+         * Draw current position.
+         */
+
+        const current =
+            worldToLiveCanvas(
+                state.tracking.x,
+                state.tracking.y,
+                transform
+            );
+
+
+        drawCircle(
+            ctx,
+            current.x,
+            current.y,
+            12,
+            "#ffffff"
+        );
+
+
+        drawCircle(
+            ctx,
+            current.x,
+            current.y,
+            7,
+            "#ff6464"
+        );
+
+
+        ctx.fillStyle =
+            "#ffffff";
+
+        ctx.font =
+            "bold 13px sans-serif";
+
+
+        ctx.fillText(
+            "YOU",
+            current.x + 15,
+            current.y + 5
+        );
+
+    };
+
+
+    image.src =
+        state.plan.jpegUrl;
+
+}
+
+
+/* =========================================================
+   LIVE PATH
+   ========================================================= */
+
+function drawLivePath(
+    ctx,
+    transform
+) {
+
+    const path =
+        state.tracking.path;
+
+
+    if (
+        !path ||
+        path.length < 2
+    ) {
+
+        return;
+
+    }
+
+
+    function mapPoint(
+        x,
+        y
+    ) {
+
+        return {
+
+            x:
+                x *
+                transform.scale +
+                transform.offsetX,
+
+            y:
+                y *
+                transform.scale +
+                transform.offsetY
+
+        };
+
+    }
+
+
+    ctx.beginPath();
+
+
+    path.forEach(
+        (point, index) => {
+
+            const p =
+                mapPoint(
+                    point.x,
+                    point.y
+                );
+
+
+            if (index === 0) {
+
+                ctx.moveTo(
+                    p.x,
+                    p.y
+                );
+
+            } else {
+
+                ctx.lineTo(
+                    p.x,
+                    p.y
+                );
+
+            }
 
         }
     );
 
 
-    html += `
+    ctx.lineWidth =
+        5;
 
-            </tbody>
+    ctx.strokeStyle =
+        "#ff6464";
 
-        </table>
+    ctx.stroke();
 
-    `;
+}
 
 
-    container.innerHTML =
-        html;
+/* =========================================================
+   LIVE POSITION
+   ========================================================= */
+
+function worldToLiveCanvas(
+    x,
+    y,
+    transform
+) {
+
+    return {
+
+        x:
+            x *
+            transform.scale +
+            transform.offsetX,
+
+        y:
+            y *
+            transform.scale +
+            transform.offsetY
+
+    };
 
 }
 
@@ -4557,920 +3572,327 @@ function renderAreaTime() {
    UI
    ========================================================= */
 
-function updateUI() {
+function updateAllUI() {
 
-    $("xValue").textContent =
-        state.pos.x.toFixed(2);
+    updateMappingUI();
 
+    updateReferenceList();
 
-    $("yValue").textContent =
-        state.pos.y.toFixed(2);
+    updateTrackingPage();
 
+    updateSensorStatus();
 
-    $("headingValue").textContent =
-        Math.round(
-            state.pos.heading
-        ) +
-        "°";
+    renderSetup();
+
+}
 
 
-    $("speedValue").textContent =
-        state.pos.speed.toFixed(2) +
-        " m/s";
+function updateMappingUI() {
+
+    $("mapX").textContent =
+        state.mapping.x.toFixed(2);
 
 
-    $("distanceValue").textContent =
-        state.distance.toFixed(2) +
+    $("mapY").textContent =
+        state.mapping.y.toFixed(2);
+
+
+    $("mapDistance").textContent =
+        state.mapping.distance.toFixed(2) +
         " m";
 
 
-    $("timeValue").textContent =
-        formatTrackingTime();
+    $("referenceCount").textContent =
+        state.mapping.references.length;
+
+}
 
 
-    $("currentArea").textContent =
-        state.currentArea ||
-        "—";
+function updateReferenceList() {
 
-
-    $("sampleCount").textContent =
-        state.samples.length;
-
-
-    $("areaChangeCount").textContent =
-        countAreaChanges();
-
-
-    $("dataCalibration").textContent =
-        state.calibration.locked
-            ? "Locked"
-            : "Not locked";
+    const container =
+        $("referenceList");
 
 
     if (
-        $("startBtn")
+        state.mapping.references.length === 0
     ) {
 
-        $("startBtn").disabled =
-            state.tracking;
-
-    }
-
-
-    renderCheckpoints();
-
-    renderAreas();
-
-    renderAreaTime();
-
-    renderCalibrationPoints();
-
-    updateTestLive();
-
-}
-
-
-function formatTrackingTime() {
-
-    if (
-        !state.trackingStarted
-    ) {
-
-        return "00:00:00";
-
-    }
-
-
-    const elapsed =
-        (
-            state.tracking
-                ? Date.now()
-                : Date.now()
-        ) -
-        state.trackingStarted;
-
-
-    return formatMs(
-        elapsed
-    );
-
-}
-
-
-function countAreaChanges() {
-
-    let count = 0;
-
-    let previous =
-        null;
-
-
-    state.samples.forEach(
-        sample => {
-
-            if (
-                sample.area !==
-                previous
-            ) {
-
-                if (
-                    previous !== null
-                ) {
-
-                    count++;
-
-                }
-
-                previous =
-                    sample.area;
-
-            }
-
-        }
-    );
-
-
-    return count;
-
-}
-
-
-/* =========================================================
-   SETUP COMPLETION
-   ========================================================= */
-
-function updateSetupCompletion() {
-
-    /*
-     * PDF
-     */
-
-    state.setup.completed.pdf =
-        Boolean(
-            state.pdf.fileName
-        );
-
-
-    /*
-     * Calibration
-     */
-
-    state.setup.completed.calibration =
-        Boolean(
-            state.calibration.locked
-        );
-
-
-    state.setup.completed.mapping =
-        state.setup.completed.calibration;
-
-
-    /*
-     * Project is considered complete if the values are valid.
-     */
-
-    state.setup.completed.project =
-        Boolean(
-            state.world.originName &&
-            state.world.width > 0 &&
-            state.world.height > 0
-        );
-
-
-    /*
-     * Sensor completion is reset after page reload,
-     * because browser permissions must be verified again.
-     */
-
-    updateSetupSidebarCompletion();
-
-}
-
-
-function updateSetupSidebarCompletion() {
-
-    document.querySelectorAll(".setupStep")
-        .forEach(button => {
-
-            const step =
-                Number(
-                    button.dataset.setupStep
-                );
-
-
-            button.classList.toggle(
-                "completed",
-                isSetupStepComplete(step)
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   SETUP COMPLETE SCREEN
-   ========================================================= */
-
-function updateSetupCompleteUI() {
-
-    const checks = {
-
-        completeProject:
-            state.setup.completed.project,
-
-        completePdf:
-            state.setup.completed.pdf,
-
-        completeCalibration:
-            state.setup.completed.calibration,
-
-        completeSensors:
-            state.setup.completed.iphone,
-
-        completeTest:
-            state.setup.completed.test
-
-    };
-
-
-    Object.entries(checks)
-        .forEach(
-            ([id, complete]) => {
-
-                setSetupCheck(
-                    id,
-                    complete
-                );
-
-            }
-        );
-
-
-    const ready =
-        Object.values(checks)
-            .every(Boolean);
-
-
-    if ($("setupReadyBox")) {
-
-        if (ready) {
-
-            $("setupReadyBox").className =
-                "setupStatus ready";
-
-            $("setupReadyBox").innerHTML = `
-                <span class="setupStatusDot"></span>
-                <span>
-                    Setup complete. The tracker is ready for a real session.
-                </span>
+        container.innerHTML =
+            `
+            <div class="emptyMessage">
+                No reference points yet.
+            </div>
             `;
 
-        } else {
-
-            $("setupReadyBox").className =
-                "setupStatus warning";
-
-            $("setupReadyBox").innerHTML = `
-                <span class="setupStatusDot"></span>
-                <span>
-                    Complete the setup checklist before starting production tracking.
-                </span>
-            `;
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   SETUP CHECKMARK HELPER
-   ========================================================= */
-
-function setSetupCheck(
-    id,
-    complete
-) {
-
-    const element =
-        $(id);
-
-
-    if (!element) {
         return;
-    }
-
-
-    element.classList.toggle(
-        "complete",
-        complete
-    );
-
-
-    const icon =
-        element.querySelector(
-            ".setupCheckIcon"
-        );
-
-
-    if (icon) {
-
-        icon.textContent =
-            complete
-                ? "✓"
-                : "○";
 
     }
 
-}
 
-
-/* =========================================================
-   PDF SETUP UI
-   ========================================================= */
-
-function updatePDFSetupUI() {
-
-    if (!$("setupPdfStatus")) {
-        return;
-    }
-
-
-    if (
-        state.setup.completed.pdf
-    ) {
-
-        $("setupPdfStatus").className =
-            "setupStatus ready";
-
-        $("setupPdfStatus").innerHTML = `
-            <span class="setupStatusDot"></span>
-            <span>
-                ${escapeHTML(state.pdf.fileName || "PDF loaded")}
-            </span>
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   EXPORT CSV
-   ========================================================= */
-
-function exportCSV() {
-
-    const rows = [
-
-        [
-            "Timestamp",
-            "X",
-            "Y",
-            "Heading",
-            "Event"
-        ]
-
-    ];
-
-
-    state.samples.forEach(
-        sample => {
-
-            rows.push([
-
-                sample.t,
-
-                sample.x,
-
-                sample.y,
-
-                sample.heading,
-
-                sample.event
-
-            ]);
-
-        }
-    );
-
-
-    const csv =
-        rows
+    container.innerHTML =
+        state.mapping.references
             .map(
-                row =>
-                    row
-                        .map(csvCell)
-                        .join(",")
+                (reference, index) => `
+
+                    <div class="referenceRow">
+
+                        <div class="referenceBadge">
+                            R${index + 1}
+                        </div>
+
+                        <div>
+                            <strong>
+                                ${reference.name}
+                            </strong>
+                        </div>
+
+                        <div>
+                            X:
+                            ${reference.x.toFixed(2)}
+                            m
+                        </div>
+
+                        <div>
+                            Y:
+                            ${reference.y.toFixed(2)}
+                            m
+                        </div>
+
+                    </div>
+
+                `
             )
-            .join("\n");
-
-
-    download(
-        "production-floor-tracker.csv",
-        csv,
-        "text/csv"
-    );
+            .join("");
 
 }
 
 
-/* =========================================================
-   EXPORT JSON
-   ========================================================= */
+function updateSensorStatus() {
 
-function exportJSON() {
+    const setupStatus =
+        $("sensorStatus");
 
-    const data =
-        JSON.parse(
-            JSON.stringify(state)
+
+    const parts = [];
+
+
+    if (
+        state.sensors.motionPermission
+    ) {
+
+        parts.push(
+            "Motion permission OK"
         );
 
-
-    data.pdf.fileObject =
-        null;
-
-
-    download(
-        "production-floor-tracker-project.json",
-        JSON.stringify(
-            data,
-            null,
-            2
-        ),
-        "application/json"
-    );
-
-}
-
-
-/* =========================================================
-   IMPORT JSON
-   ========================================================= */
-
-function importJSON(event) {
-
-    const file =
-        event.target.files?.[0];
-
-
-    if (!file) {
-        return;
     }
 
 
-    const reader =
-        new FileReader();
+    if (
+        state.sensors.orientationPermission
+    ) {
+
+        parts.push(
+            "Orientation permission OK"
+        );
+
+    }
 
 
-    reader.onload = () => {
+    if (
+        state.sensors.motionData
+    ) {
 
-        try {
+        parts.push(
+            "Motion data OK"
+        );
 
-            const imported =
-                JSON.parse(
-                    reader.result
-                );
-
-
-            if (!imported.world) {
-
-                throw new Error(
-                    "Invalid project file."
-                );
-
-            }
+    }
 
 
-            /*
-             * Merge the project.
-             */
+    if (
+        state.sensors.orientationData
+    ) {
 
-            if (imported.world) {
-                Object.assign(
-                    state.world,
-                    imported.world
-                );
-            }
+        parts.push(
+            "Heading data OK"
+        );
 
-            if (imported.settings) {
-                Object.assign(
-                    state.settings,
-                    imported.settings
-                );
-            }
-
-            if (imported.pos) {
-                Object.assign(
-                    state.pos,
-                    imported.pos
-                );
-            }
-
-            if (
-                typeof imported.distance ===
-                "number"
-            ) {
-
-                state.distance =
-                    imported.distance;
-
-            }
-
-            if (
-                Array.isArray(
-                    imported.trail
-                )
-            ) {
-
-                state.trail =
-                    imported.trail;
-
-            }
-
-            if (
-                Array.isArray(
-                    imported.samples
-                )
-            ) {
-
-                state.samples =
-                    imported.samples;
-
-            }
-
-            if (
-                Array.isArray(
-                    imported.checkpoints
-                )
-            ) {
-
-                state.checkpoints =
-                    imported.checkpoints;
-
-            }
-
-            if (
-                Array.isArray(
-                    imported.areas
-                )
-            ) {
-
-                state.areas =
-                    imported.areas;
-
-            }
-
-            if (imported.areaTime) {
-
-                state.areaTime =
-                    imported.areaTime;
-
-            }
-
-            if (imported.calibration) {
-
-                Object.assign(
-                    state.calibration,
-                    imported.calibration
-                );
-
-            }
-
-            if (imported.pdf) {
-
-                Object.assign(
-                    state.pdf,
-                    imported.pdf
-                );
-
-            }
-
-            if (imported.setup) {
-
-                if (
-                    imported.setup.completed
-                ) {
-
-                    Object.assign(
-                        state.setup.completed,
-                        imported.setup.completed
-                    );
-
-                }
-
-            }
+    }
 
 
-            state.pdf.fileObject =
-                null;
+    if (
+        parts.length > 0
+    ) {
 
-
-            syncInputValues();
-
-            saveState();
-
-            drawWorld();
-
-            drawMapOverlay();
-
-            updateUI();
-
-            updateSetupUI();
-
-
-            alert(
-                "Project imported successfully."
+        setupStatus.textContent =
+            parts.join(
+                " • "
             );
 
-        } catch (error) {
-
-            alert(
-                "Could not import project: " +
-                error.message
-            );
-
-        }
-
-    };
-
-
-    reader.readAsText(
-        file
-    );
+    }
 
 }
 
 
 /* =========================================================
-   DOWNLOAD
+   TRACKING PAGE UI
    ========================================================= */
 
-function download(
-    filename,
-    text,
-    type
+function updateTrackingPage() {
+
+    if (
+        !state.locked
+    ) {
+
+        $("trackLockedMessage")
+            .classList.remove(
+                "hidden"
+            );
+
+
+        $("trackingApplication")
+            .classList.add(
+                "hidden"
+            );
+
+
+        return;
+
+    }
+
+
+    $("trackLockedMessage")
+        .classList.add(
+            "hidden"
+        );
+
+
+    $("trackingApplication")
+        .classList.remove(
+            "hidden"
+        );
+
+
+    $("trackX").textContent =
+        state.tracking.x.toFixed(2);
+
+
+    $("trackY").textContent =
+        state.tracking.y.toFixed(2);
+
+
+    $("trackHeading").textContent =
+        Math.round(
+            state.tracking.heading
+        ) + "°";
+
+
+    $("trackDistance").textContent =
+        state.tracking.distance.toFixed(2) +
+        " m";
+
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function setStatus(text) {
+
+    $("statusBadge").textContent =
+        text;
+
+}
+
+
+function updateAllUIStatusBadge() {
+
+    if (
+        state.locked
+    ) {
+
+        setStatus(
+            "Setup locked"
+        );
+
+    } else {
+
+        setStatus(
+            "Setup required"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RESTORE UPLOADED IMAGE
+   ========================================================= */
+
+function restoreUploadedImage() {
+
+    if (
+        !state.plan.jpegUrl
+    ) {
+
+        return;
+
+    }
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.src =
+        state.plan.jpegUrl;
+
+    image.alt =
+        "Uploaded floor plan";
+
+
+    $("uploadedImagePreview")
+        .innerHTML =
+        "";
+
+
+    $("uploadedImagePreview")
+        .appendChild(
+            image
+        );
+
+
+    $("uploadStatus").textContent =
+        "Uploaded: " +
+        state.plan.jpegName;
+
+}
+
+
+/* =========================================================
+   FINAL INITIALIZATION
+   ========================================================= */
+
+if (
+    state.locked
 ) {
 
-    const blob =
-        new Blob(
-            [text],
-            {type}
-        );
+    $("lockSetupBtn")
+        .disabled = true;
 
 
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const anchor =
-        document.createElement("a");
-
-
-    anchor.href =
-        url;
-
-    anchor.download =
-        filename;
-
-
-    document.body.appendChild(
-        anchor
-    );
-
-
-    anchor.click();
-
-
-    anchor.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function csvCell(value) {
-
-    const string =
-        String(value ?? "");
-
-
-    return `"${string.replace(
-        /"/g,
-        '""'
-    )}"`;
-
-}
-
-
-function formatMs(ms) {
-
-    const totalSeconds =
-        Math.max(
-            0,
-            Math.floor(
-                ms / 1000
-            )
-        );
-
-
-    const hours =
-        Math.floor(
-            totalSeconds / 3600
-        );
-
-
-    const minutes =
-        Math.floor(
-            (
-                totalSeconds % 3600
-            ) / 60
-        );
-
-
-    const seconds =
-        totalSeconds % 60;
-
-
-    return [
-
-        String(hours).padStart(2,"0"),
-
-        String(minutes).padStart(2,"0"),
-
-        String(seconds).padStart(2,"0")
-
-    ].join(":");
-
-}
-
-
-function normalizeAngle(angle) {
-
-    return (
-        (
-            angle % 360
-        ) +
-        360
-    ) % 360;
-
-}
-
-
-function escapeHTML(value) {
-
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
+    $("lockedSetup")
+        .classList.remove(
+            "hidden"
         );
 
 }
 
 
-/* =========================================================
-   SETUP RESET
-   ========================================================= */
-
-function resetSetupStatus() {
-
-    if (
-        !confirm(
-            "Reset the setup checklist? Your project, PDF and calibration data will remain."
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    state.setup.completed = {
-
-        project:
-            state.setup.completed.project,
-
-        pdf:
-            state.setup.completed.pdf,
-
-        calibration:
-            state.setup.completed.calibration,
-
-        mapping:
-            state.setup.completed.mapping,
-
-        iphone:
-            false,
-
-        test:
-            false
-
-    };
-
-
-    state.setup.test.active =
-        false;
-
-    state.setup.test.result =
-        null;
-
-
-    state.setup.currentStep =
-        0;
-
-
-    saveState();
-
-    updateSetupUI();
-
-}
-
-
-/* =========================================================
-   SERVICE WORKER
-   ========================================================= */
-
-async function registerServiceWorker() {
-
-    if (
-        !("serviceWorker" in navigator)
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await navigator.serviceWorker.register(
-            "./service-worker.js"
-        );
-
-        console.log(
-            "Production Floor Tracker service worker registered."
-        );
-
-    } catch (error) {
-
-        console.warn(
-            "Service worker registration failed:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   PERIODIC UPDATE
-   ========================================================= */
-
-setInterval(
-    () => {
-
-        if (
-            state.tracking
-        ) {
-
-            updateAreaTime();
-
-            updateUI();
-
-            updateTestLive();
-
-        }
-
-    },
-    1000
-);
+renderSetup();
+updateAllUI();
