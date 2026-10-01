@@ -39,10 +39,13 @@ const FLOOR_MAPS = [
 const STEP_LENGTH = 0.72;
 const STEP_THRESHOLD = 1.15;
 const STEP_COOLDOWN = 280;
+const GRAVITY_FILTER_ALPHA = 0.08;
 
 const CANVAS_PADDING = 50;
 
 const DEG_TO_RAD = Math.PI / 180;
+
+let gravityVectorBaseline = null;
 
 
 // ============================================================
@@ -547,28 +550,75 @@ function attachMotionSensor() {
 
 function handleMotion(event) {
 
-    const acceleration =
-        event.accelerationIncludingGravity;
+    let magnitude;
 
-    if (!acceleration) {
-        return;
+    if (event.acceleration) {
+
+        const acceleration =
+            event.acceleration;
+
+        const x =
+            safeNumber(acceleration.x, 0);
+
+        const y =
+            safeNumber(acceleration.y, 0);
+
+        const z =
+            safeNumber(acceleration.z, 0);
+
+        magnitude =
+            Math.sqrt(
+                x * x +
+                y * y +
+                z * z
+            );
+
+    } else {
+
+        const acceleration =
+            event.accelerationIncludingGravity;
+
+        if (!acceleration) {
+            return;
+        }
+
+        const x =
+            safeNumber(acceleration.x, 0);
+
+        const y =
+            safeNumber(acceleration.y, 0);
+
+        const z =
+            safeNumber(acceleration.z, 0);
+
+        if (gravityVectorBaseline === null) {
+
+            gravityVectorBaseline = {
+                x,
+                y,
+                z
+            };
+        }
+
+        gravityVectorBaseline.x +=
+            (x - gravityVectorBaseline.x) *
+            GRAVITY_FILTER_ALPHA;
+
+        gravityVectorBaseline.y +=
+            (y - gravityVectorBaseline.y) *
+            GRAVITY_FILTER_ALPHA;
+
+        gravityVectorBaseline.z +=
+            (z - gravityVectorBaseline.z) *
+            GRAVITY_FILTER_ALPHA;
+
+        magnitude =
+            Math.sqrt(
+                (x - gravityVectorBaseline.x) ** 2 +
+                (y - gravityVectorBaseline.y) ** 2 +
+                (z - gravityVectorBaseline.z) ** 2
+            );
     }
-
-    const x =
-        safeNumber(acceleration.x, 0);
-
-    const y =
-        safeNumber(acceleration.y, 0);
-
-    const z =
-        safeNumber(acceleration.z, 0);
-
-    const magnitude =
-        Math.sqrt(
-            x * x +
-            y * y +
-            z * z
-        );
 
     if (!state.sensors.motionData) {
 
@@ -677,8 +727,7 @@ function processStepDetection(magnitude) {
     const rising =
         magnitude >
         STEP_THRESHOLD &&
-        magnitude >
-        previous;
+        previous <= STEP_THRESHOLD;
 
     if (
         rising &&
@@ -817,7 +866,8 @@ async function startMapping() {
 
     state.mapping.references = [];
 
-    state.mapping.lastStepTime = 0;
+    state.mapping.lastStepTime =
+        performance.now();
 
     state.mapping.lastStepAcceleration = 0;
 
