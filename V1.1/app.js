@@ -28,18 +28,6 @@ const FLOOR_MAPS = [
         id: "factory",
         name: "Factory Floor",
         image: "./maps/factory.jpg"
-    },
-
-    {
-        id: "assembly",
-        name: "Assembly Area",
-        image: "./maps/assembly.jpg"
-    },
-
-    {
-        id: "welding",
-        name: "Welding Area",
-        image: "./maps/welding.jpg"
     }
 ];
 
@@ -330,10 +318,16 @@ function showSetupStep(step) {
                 section.dataset.setupStep
             );
 
+        const isActive =
+            sectionStep === step;
+
+        section.classList.toggle(
+            "active",
+            isActive
+        );
+
         section.style.display =
-            sectionStep === step
-                ? ""
-                : "none";
+            isActive ? "" : "none";
     });
 
     const indicators =
@@ -359,10 +353,30 @@ function showSetupStep(step) {
         );
     });
 
+    const sideButtons =
+        document.querySelectorAll(
+            ".setupStep"
+        );
+
+    sideButtons.forEach(button => {
+
+        const buttonStep =
+            Number(
+                button.dataset.goStep
+            );
+
+        button.classList.toggle(
+            "active",
+            buttonStep === step
+        );
+    });
+
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
+    drawMapping();
 
     saveState();
 }
@@ -911,6 +925,14 @@ function getCanvas(id) {
     const rect =
         canvas.getBoundingClientRect();
 
+    if (
+        rect.width <= 1 ||
+        rect.height <= 1
+    ) {
+
+        return null;
+    }
+
     const dpr =
         window.devicePixelRatio || 1;
 
@@ -1042,7 +1064,11 @@ function calculatePathBounds(path) {
 function drawMapping() {
 
     const result =
-        getCanvas("mappingCanvas");
+        getCanvas(
+            state.setupStep === 4
+                ? "alignmentCanvas"
+                : "mappingCanvas"
+        );
 
     if (!result) {
         return;
@@ -1061,11 +1087,102 @@ function drawMapping() {
         height
     );
 
+    context.fillStyle =
+        "#080f1b";
+
+    context.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    const image =
+        state.setupStep === 4
+            ? document.querySelector(
+                "[data-floor-map-image]"
+            )
+            : null;
+
+    if (image && image.complete && image.naturalWidth > 0) {
+
+        const transform =
+            state.plan.imageTransform;
+
+        context.save();
+
+        context.translate(
+            width / 2 +
+            transform.x,
+
+            height / 2 +
+            transform.y
+        );
+
+        context.rotate(
+            transform.rotation *
+            DEG_TO_RAD
+        );
+
+        const imageWidth =
+            image.naturalWidth *
+            transform.scale;
+
+        const imageHeight =
+            image.naturalHeight *
+            transform.scale;
+
+        const maxDimension =
+            Math.max(
+                imageWidth,
+                imageHeight
+            );
+
+        let drawScale = 1;
+
+        if (
+            maxDimension >
+            Math.max(width, height) * 3
+        ) {
+
+            drawScale =
+                Math.max(width, height) /
+                maxDimension *
+                3;
+        }
+
+        context.drawImage(
+
+            image,
+
+            -imageWidth *
+            drawScale / 2,
+
+            -imageHeight *
+            drawScale / 2,
+
+            imageWidth *
+            drawScale,
+
+            imageHeight *
+            drawScale
+        );
+
+        context.restore();
+    }
+
     const path =
         state.mapping.path;
 
     const bounds =
-        calculatePathBounds(path);
+        calculatePathBounds([
+            ...path,
+            ...state.mapping.references,
+            {
+                x: state.mapping.x,
+                y: state.mapping.y
+            }
+        ]);
 
     const availableWidth =
         Math.max(
@@ -1116,6 +1233,131 @@ function drawMapping() {
         );
     }
 
+    if (state.setupStep !== 4) {
+
+        const rawGridInterval =
+            80 / scale;
+
+        const gridMagnitude =
+            10 ** Math.floor(
+                Math.log10(rawGridInterval)
+            );
+
+        const normalizedGridInterval =
+            rawGridInterval / gridMagnitude;
+
+        const gridFactor =
+            normalizedGridInterval <= 1
+                ? 1
+                : normalizedGridInterval <= 2
+                    ? 2
+                    : normalizedGridInterval <= 5
+                        ? 5
+                        : 10;
+
+        const gridInterval =
+            gridFactor * gridMagnitude;
+
+        const scaleDisplay =
+            document.querySelector(
+                "[data-mapping-scale]"
+            );
+
+        if (scaleDisplay) {
+
+            scaleDisplay.textContent =
+                `${Number(gridInterval.toPrecision(2))} m per grid`;
+        }
+
+        context.strokeStyle =
+            "rgba(255, 255, 255, 0.12)";
+
+        context.lineWidth = 1;
+
+        context.fillStyle =
+            "#d5dde8";
+
+        context.font =
+            "11px sans-serif";
+
+        context.textAlign =
+            "center";
+
+        const firstXTick =
+            Math.ceil(bounds.minX / gridInterval) *
+            gridInterval;
+
+        for (
+            let x = firstXTick;
+            x <= bounds.maxX;
+            x += gridInterval
+        ) {
+
+            const pixelX =
+                screenX(x);
+
+            context.beginPath();
+            context.moveTo(pixelX, CANVAS_PADDING);
+            context.lineTo(pixelX, height - CANVAS_PADDING);
+            context.stroke();
+
+            context.fillText(
+                `${Number(x.toPrecision(3))}`,
+                pixelX,
+                height - 18
+            );
+        }
+
+        const firstYTick =
+            Math.ceil(bounds.minY / gridInterval) *
+            gridInterval;
+
+        context.textAlign =
+            "right";
+
+        for (
+            let y = firstYTick;
+            y <= bounds.maxY;
+            y += gridInterval
+        ) {
+
+            const pixelY =
+                screenY(y);
+
+            context.beginPath();
+            context.moveTo(CANVAS_PADDING, pixelY);
+            context.lineTo(width - CANVAS_PADDING, pixelY);
+            context.stroke();
+
+            context.fillText(
+                `${Number(y.toPrecision(3))}`,
+                CANVAS_PADDING - 8,
+                pixelY + 4
+            );
+        }
+
+        context.textAlign =
+            "start";
+
+        context.fillStyle =
+            "#ffffff";
+
+        context.font =
+            "12px sans-serif";
+
+        context.fillText(
+            "X (m)",
+            width - CANVAS_PADDING - 36,
+            height - 8
+        );
+
+        context.fillText(
+            "Y (m)",
+            8,
+            CANVAS_PADDING - 12
+        );
+    }
+
     // Path
 
     if (path.length > 1) {
@@ -1145,7 +1387,7 @@ function drawMapping() {
         });
 
         context.strokeStyle =
-            "#00d4ff";
+            "#ffffff";
 
         context.lineWidth = 3;
 
@@ -1282,7 +1524,7 @@ function populateFloorMaps() {
 
     const selects =
         document.querySelectorAll(
-            "#floorMapSelect, [data-floor-map-select]"
+            "#setupFloorMapSelect, #trackFloorMapSelect, [data-floor-map-select]"
         );
 
     selects.forEach(select => {
@@ -1327,10 +1569,17 @@ function populateFloorMaps() {
         }
     });
 
+
     if (state.plan.selectedMapId) {
 
         updateMapPreview(
             state.plan.selectedMapId
+        );
+
+    } else if (FLOOR_MAPS.length > 0) {
+
+        selectFloorMap(
+            FLOOR_MAPS[0].id
         );
     }
 }
@@ -1391,6 +1640,17 @@ function updateMapPreview(mapId) {
         return;
     }
 
+    const loadStatus =
+        document.querySelector(
+            "[data-map-load-status]"
+        );
+
+    if (loadStatus) {
+
+        loadStatus.textContent =
+            `Loading floor map: ${map.name}...`;
+    }
+
     const images =
         document.querySelectorAll(
             "[data-floor-map-image]"
@@ -1406,6 +1666,30 @@ function updateMapPreview(mapId) {
 
         image.style.display =
             "";
+
+        image.onload =
+            () => {
+
+                if (loadStatus) {
+
+                    loadStatus.textContent =
+                        `Floor map loaded: ${map.name}`;
+                }
+
+                drawMapping();
+            };
+
+        image.onerror =
+            () => {
+
+                if (loadStatus) {
+
+                    loadStatus.textContent =
+                        `Could not load floor map: ${map.image}`;
+                }
+
+                drawMapping();
+            };
     });
 
 
@@ -1469,6 +1753,9 @@ function updateImageTransform() {
                 transform.scale * 100
             )}%`;
     }
+
+    drawMapping();
+    drawTracking();
 }
 
 
@@ -2222,22 +2509,6 @@ function setupEventListeners() {
     // --------------------------------------------------------
     // Map selection
     // --------------------------------------------------------
-
-    const mapSelect =
-        get("floorMapSelect");
-
-    if (mapSelect) {
-
-        mapSelect.addEventListener(
-            "change",
-            event => {
-
-                selectFloorMap(
-                    event.target.value
-                );
-            }
-        );
-    }
 
     document
         .querySelectorAll(

@@ -844,6 +844,7 @@ label > span {
    ========================================================= */
 
 #movementCanvas,
+#mappingCanvas,
 #alignmentCanvas,
 #liveCanvas {
     width: 100%;
@@ -867,6 +868,10 @@ label > span {
     border: 1px solid var(--line);
 
     border-radius: 10px;
+}
+
+#mappingCanvas {
+    height: 420px;
 }
 
 
@@ -1223,9 +1228,14 @@ label > span {
     }
 
     #movementCanvas,
+    #mappingCanvas,
     #alignmentCanvas,
     #liveCanvas {
         min-height: 260px;
+    }
+
+    #mappingCanvas {
+        height: 300px;
     }
 
     #alignmentCanvas,
