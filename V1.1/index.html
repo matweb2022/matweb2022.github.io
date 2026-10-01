@@ -1,0 +1,1622 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#111827">
+
+  <!-- iPhone PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FloorTracker">
+
+  <title>Production Floor Tracker V1.2</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <header>
+    <div>
+      <h1>Production Floor Tracker</h1>
+      <div class="sub">
+        V1.2 — guided setup & indoor tracking
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      Idle
+    </div>
+  </header>
+
+
+  <!-- =====================================================
+       MAIN TABS
+       ===================================================== -->
+
+  <nav class="tabs">
+
+    <button
+      class="tab active"
+      data-tab="track">
+      Track
+    </button>
+
+    <button
+      class="tab"
+      data-tab="setup">
+      Setup
+    </button>
+
+    <button
+      class="tab"
+      data-tab="map">
+      Map
+    </button>
+
+    <button
+      class="tab"
+      data-tab="areas">
+      Areas
+    </button>
+
+    <button
+      class="tab"
+      data-tab="data">
+      Data
+    </button>
+
+  </nav>
+
+
+  <main>
+
+    <!-- ===================================================
+         TRACK
+         =================================================== -->
+
+    <section
+      id="track"
+      class="panel active">
+
+      <div class="grid2">
+
+        <!-- LIVE POSITION -->
+
+        <div class="card">
+
+          <h2>Live position</h2>
+
+          <div class="bigxy">
+
+            <div>
+              <span>X</span>
+              <strong id="xValue">0.00</strong>
+              <small>m</small>
+            </div>
+
+            <div>
+              <span>Y</span>
+              <strong id="yValue">0.00</strong>
+              <small>m</small>
+            </div>
+
+          </div>
+
+
+          <div class="metrics">
+
+            <div>
+              <span>Heading</span>
+              <b id="headingValue">0°</b>
+            </div>
+
+            <div>
+              <span>Speed</span>
+              <b id="speedValue">0.00 m/s</b>
+            </div>
+
+            <div>
+              <span>Distance</span>
+              <b id="distanceValue">0.00 m</b>
+            </div>
+
+            <div>
+              <span>Tracking</span>
+              <b id="timeValue">00:00:00</b>
+            </div>
+
+          </div>
+
+
+          <div class="buttons">
+
+            <button
+              id="startBtn"
+              class="primary">
+              Start tracking
+            </button>
+
+            <button
+              id="stopBtn">
+              Stop
+            </button>
+
+            <button
+              id="resetBtn"
+              class="danger">
+              Reset position
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- CURRENT AREA -->
+
+        <div class="card">
+
+          <h2>Current area</h2>
+
+          <div
+            id="currentArea"
+            class="areaName">
+            —
+          </div>
+
+          <div class="hint">
+            Areas are stored in real-world meters,
+            not PDF pixels.
+          </div>
+
+          <hr>
+
+          <h3>Checkpoint correction</h3>
+
+          <p>
+            When physically standing at a known checkpoint,
+            select it to correct accumulated drift.
+          </p>
+
+          <select id="checkpointSelect"></select>
+
+          <button
+            id="applyCheckpointBtn"
+            class="primary full">
+            Set position to checkpoint
+          </button>
+
+          <button
+            id="addCheckpointBtn"
+            class="full">
+            Add checkpoint at current XY
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- WORLD VIEW -->
+
+      <div class="card">
+
+        <h2>World-coordinate view</h2>
+
+        <canvas
+          id="worldCanvas"
+          width="900"
+          height="520">
+        </canvas>
+
+        <div class="legend">
+          The tracker works here first.
+          The PDF is only a display/calibration layer.
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         SETUP WIZARD
+         =================================================== -->
+
+    <section
+      id="setup"
+      class="panel">
+
+      <div class="setupLayout">
+
+
+        <!-- ===============================================
+             LEFT SETUP NAVIGATION
+             =============================================== -->
+
+        <aside class="setupSidebar">
+
+          <div class="setupSidebarTitle">
+            Setup
+          </div>
+
+
+          <button
+            class="setupStep active"
+            data-setup-step="0">
+
+            <span class="stepNumber">1</span>
+
+            <span class="setupStepText">
+              <span class="setupStepTitle">
+                Project
+              </span>
+
+              <span class="setupStepDescription">
+                World coordinates
+              </span>
+            </span>
+
+          </button>
+
+
+          <button
+            class="setupStep"
+            data-setup-step="1">
+
+            <span class="stepNumber">2</span>
+
+            <span class="setupStepText">
+              <span class="setupStepTitle">
+                PDF
+              </span>
+
+              <span class="setupStepDescription">
+                Floor plan
+              </span>
+            </span>
+
+          </button>
+
+
+          <button
+            class="setupStep"
+            data-setup-step="2">
+
+            <span class="stepNumber">3</span>
+
+            <span class="setupStepText">
+              <span class="setupStepTitle">
+                Synchronize
+              </span>
+
+              <span class="setupStepDescription">
+                PDF ↔ real world
+              </span>
+            </span>
+
+          </button>
+
+
+          <button
+            class="setupStep"
+            data-setup-step="3">
+
+            <span class="stepNumber">4</span>
+
+            <span class="setupStepText">
+              <span class="setupStepTitle">
+                iPhone
+              </span>
+
+              <span class="setupStepDescription">
+                Sensors
+              </span>
+            </span>
+
+          </button>
+
+
+          <button
+            class="setupStep"
+            data-setup-step="4">
+
+            <span class="stepNumber">5</span>
+
+            <span class="setupStepText">
+              <span class="setupStepTitle">
+                First Test
+              </span>
+
+              <span class="setupStepDescription">
+                Walk 5 metres
+              </span>
+            </span>
+
+          </button>
+
+
+          <button
+            class="setupStep"
+            data-setup-step="5">
+
+            <span class="stepNumber">6</span>
+
+            <span class="setupStepText">
+              <span class="setupStepTitle">
+                Complete
+              </span>
+
+              <span class="setupStepDescription">
+                Ready
+              </span>
+            </span>
+
+          </button>
+
+        </aside>
+
+
+
+        <!-- ===============================================
+             SETUP CONTENT
+             =============================================== -->
+
+        <div class="setupContent">
+
+
+          <div class="setupHeader">
+
+            <h2 id="setupTitle">
+              Project setup
+            </h2>
+
+            <div
+              class="sub"
+              id="setupSubtitle">
+              Define the physical coordinate system
+              used by the tracker.
+            </div>
+
+            <div class="setupProgress">
+              <div
+                id="setupProgressBar"
+                class="setupProgressBar">
+              </div>
+            </div>
+
+          </div>
+
+
+
+          <!-- ===========================================
+               STEP 1
+               =========================================== -->
+
+          <section
+            class="setupPanel active"
+            data-setup-panel="0">
+
+            <div class="card">
+
+              <h2>1. Define the production floor</h2>
+
+              <p>
+                Choose a physical origin for your production
+                floor. The origin becomes <b>(0,0)</b>.
+              </p>
+
+              <div class="formgrid">
+
+                <label>
+                  Origin name
+
+                  <input
+                    id="originName"
+                    value="My workstation">
+                </label>
+
+                <label>
+                  World width (m)
+
+                  <input
+                    id="worldWidth"
+                    type="number"
+                    value="40"
+                    step="0.1">
+                </label>
+
+                <label>
+                  World height (m)
+
+                  <input
+                    id="worldHeight"
+                    type="number"
+                    value="25"
+                    step="0.1">
+                </label>
+
+              </div>
+
+
+              <button
+                id="saveWorldBtn"
+                class="primary">
+                Save world settings
+              </button>
+
+
+              <div
+                id="setupProjectStatus"
+                class="setupStatus warning">
+
+                <span class="setupStatusDot"></span>
+
+                <span>
+                  Project settings have not been saved yet.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>Coordinate system</h3>
+
+              <div class="setupChecklist">
+
+                <div
+                  id="projectCheckOrigin"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">○</span>
+
+                  <span>
+                    Define the physical origin
+                  </span>
+
+                </div>
+
+                <div
+                  id="projectCheckSize"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">○</span>
+
+                  <span>
+                    Define the production floor size
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="setupNavigation">
+
+              <span></span>
+
+              <button
+                class="primary"
+                data-setup-next>
+                Next →
+              </button>
+
+            </div>
+
+          </section>
+
+
+
+          <!-- ===========================================
+               STEP 2
+               =========================================== -->
+
+          <section
+            class="setupPanel"
+            data-setup-panel="1">
+
+            <div class="card">
+
+              <h2>2. Load the floor plan</h2>
+
+              <p>
+                Import the PDF floor plan that represents
+                this production floor.
+              </p>
+
+
+              <label class="pdfDropZone">
+
+                <strong>
+                  Select production floor PDF
+                </strong>
+
+                <span>
+                  PDF files only
+                </span>
+
+                <input
+                  id="setupPdfFile"
+                  type="file"
+                  accept="application/pdf"
+                  hidden>
+
+              </label>
+
+
+              <div class="formgrid">
+
+                <label>
+                  PDF page
+
+                  <input
+                    id="setupPdfPage"
+                    type="number"
+                    value="1"
+                    min="1"
+                    step="1">
+                </label>
+
+                <label>
+                  Display zoom
+
+                  <input
+                    id="setupPdfZoom"
+                    type="number"
+                    value="1"
+                    min="0.25"
+                    max="4"
+                    step="0.05">
+                </label>
+
+              </div>
+
+
+              <div class="buttons">
+
+                <button
+                  id="setupLoadPdfBtn"
+                  class="primary">
+                  Load PDF
+                </button>
+
+                <button
+                  id="setupOpenMapBtn">
+                  Open Map
+                </button>
+
+              </div>
+
+
+              <div
+                id="setupPdfStatus"
+                class="setupStatus warning">
+
+                <span class="setupStatusDot"></span>
+
+                <span>
+                  No PDF loaded.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>PDF preview</h3>
+
+              <div class="pdfWrap">
+
+                <canvas id="setupPdfCanvas"></canvas>
+
+              </div>
+
+            </div>
+
+
+            <div class="setupNavigation">
+
+              <button data-setup-prev>
+                ← Back
+              </button>
+
+              <button
+                class="primary"
+                data-setup-next>
+                Next →
+              </button>
+
+            </div>
+
+          </section>
+
+
+
+          <!-- ===========================================
+               STEP 3
+               =========================================== -->
+
+          <section
+            class="setupPanel"
+            data-setup-panel="2">
+
+            <div class="card">
+
+              <h2>3. Synchronize PDF with the real world</h2>
+
+              <p>
+                The PDF contains pixels. The tracker works
+                in real-world metres. We connect the two
+                coordinate systems using known points.
+              </p>
+
+
+              <div class="setupStatus ready">
+
+                <span class="setupStatusDot"></span>
+
+                <span>
+                  Use at least 3 points.
+                  4 points are recommended.
+                </span>
+
+              </div>
+
+
+              <div class="buttons">
+
+                <button
+                  id="setupStartCalibrationBtn"
+                  class="primary">
+                  Start synchronization
+                </button>
+
+                <button
+                  id="setupFinishCalibrationBtn">
+                  Lock synchronization
+                </button>
+
+                <button
+                  id="setupClearCalibrationBtn"
+                  class="danger">
+                  Clear points
+                </button>
+
+              </div>
+
+
+              <div
+                id="setupCalibrationStatus"
+                class="setupStatus warning">
+
+                <span class="setupStatusDot"></span>
+
+                <span>
+                  Calibration has not been completed.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>How to synchronize</h3>
+
+              <div class="setupChecklist">
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    1
+                  </span>
+
+                  <span>
+                    Stand at a known physical point.
+                  </span>
+
+                </div>
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    2
+                  </span>
+
+                  <span>
+                    Click that point on the PDF.
+                  </span>
+
+                </div>
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    3
+                  </span>
+
+                  <span>
+                    Enter its real-world X/Y coordinates.
+                  </span>
+
+                </div>
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    4
+                  </span>
+
+                  <span>
+                    Repeat at 3–4 known locations.
+                  </span>
+
+                </div>
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    5
+                  </span>
+
+                  <span>
+                    Lock the synchronization.
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>Calibration points</h3>
+
+              <div id="setupCalibrationPoints"></div>
+
+            </div>
+
+
+            <div class="setupNavigation">
+
+              <button data-setup-prev>
+                ← Back
+              </button>
+
+              <button
+                class="primary"
+                data-setup-next>
+                Next →
+              </button>
+
+            </div>
+
+          </section>
+
+
+
+          <!-- ===========================================
+               STEP 4
+               =========================================== -->
+
+          <section
+            class="setupPanel"
+            data-setup-panel="3">
+
+            <div class="card">
+
+              <h2>4. Prepare the iPhone</h2>
+
+              <p>
+                The first prototype uses pedestrian
+                dead reckoning:
+              </p>
+
+              <div class="setupChecklist">
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ✓
+                  </span>
+
+                  <span>
+                    Accelerometer detects steps.
+                  </span>
+
+                </div>
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ✓
+                  </span>
+
+                  <span>
+                    Compass/orientation provides heading.
+                  </span>
+
+                </div>
+
+                <div class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ✓
+                  </span>
+
+                  <span>
+                    The tracker converts this into
+                    world X/Y coordinates.
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>Sensor settings</h3>
+
+              <div class="formgrid">
+
+                <label>
+                  Step length (m)
+
+                  <input
+                    id="stepLength"
+                    type="number"
+                    value="0.72"
+                    step="0.01">
+                </label>
+
+                <label>
+                  Step sensitivity
+
+                  <input
+                    id="stepSensitivity"
+                    type="number"
+                    value="1.15"
+                    step="0.05">
+                </label>
+
+                <label>
+                  Heading offset (°)
+
+                  <input
+                    id="headingOffset"
+                    type="number"
+                    value="0"
+                    step="1">
+                </label>
+
+              </div>
+
+
+              <button
+                id="requestSensorsBtn"
+                class="primary">
+                Enable iPhone sensors
+              </button>
+
+
+              <div
+                id="sensorStatus"
+                class="sensorStatus">
+                Not requested
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>Future localization methods</h3>
+
+              <div class="mappingMethods">
+
+                <div class="mappingMethod active">
+
+                  <strong>
+                    Step + compass
+                  </strong>
+
+                  <span>
+                    Current prototype
+                  </span>
+
+                </div>
+
+                <div class="mappingMethod">
+
+                  <strong>
+                    Wi-Fi
+                  </strong>
+
+                  <span>
+                    Future
+                  </span>
+
+                </div>
+
+                <div class="mappingMethod">
+
+                  <strong>
+                    BLE
+                  </strong>
+
+                  <span>
+                    Future
+                  </span>
+
+                </div>
+
+                <div class="mappingMethod">
+
+                  <strong>
+                    External RTLS
+                  </strong>
+
+                  <span>
+                    Future
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="setupNavigation">
+
+              <button data-setup-prev>
+                ← Back
+              </button>
+
+              <button
+                class="primary"
+                data-setup-next>
+                Next →
+              </button>
+
+            </div>
+
+          </section>
+
+
+
+          <!-- ===========================================
+               STEP 5
+               =========================================== -->
+
+          <section
+            class="setupPanel"
+            data-setup-panel="4">
+
+            <div class="card">
+
+              <h2>5. First iPhone test</h2>
+
+              <p>
+                This test checks whether the phone can
+                detect steps, heading and movement.
+              </p>
+
+
+              <div class="phoneTest">
+
+                <div class="phoneTestCard">
+
+                  <div class="phoneTestNumber">
+                    1
+                  </div>
+
+                  <strong>
+                    Stand at the origin
+                  </strong>
+
+                  <p class="hint">
+                    Place the phone in the same
+                    orientation you expect to use
+                    while walking.
+                  </p>
+
+                </div>
+
+
+                <div class="phoneTestCard">
+
+                  <div class="phoneTestNumber">
+                    2
+                  </div>
+
+                  <strong>
+                    Set test origin
+                  </strong>
+
+                  <p class="hint">
+                    Reset X/Y to zero before walking.
+                  </p>
+
+                  <button
+                    id="setTestOriginBtn"
+                    class="full">
+                    Set test origin
+                  </button>
+
+                </div>
+
+
+                <div class="phoneTestCard">
+
+                  <div class="phoneTestNumber">
+                    3
+                  </div>
+
+                  <strong>
+                    Walk 5 metres
+                  </strong>
+
+                  <p class="hint">
+                    Walk in a straight line at normal speed.
+                  </p>
+
+                </div>
+
+
+                <div class="phoneTestCard">
+
+                  <div class="phoneTestNumber">
+                    4
+                  </div>
+
+                  <strong>
+                    Finish test
+                  </strong>
+
+                  <p class="hint">
+                    Stop after approximately 5 metres.
+                  </p>
+
+                  <button
+                    id="finishTestBtn"
+                    class="primary full">
+                    Finish 5 m test
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>Test result</h3>
+
+              <div
+                id="testResult"
+                class="testWaiting">
+
+                Test has not been started.
+
+              </div>
+
+
+              <div
+                id="testMetrics"
+                class="metrics">
+
+                <div>
+                  <span>Steps</span>
+                  <b id="testSteps">0</b>
+                </div>
+
+                <div>
+                  <span>Measured travel</span>
+                  <b id="testDistance">0.00 m</b>
+                </div>
+
+                <div>
+                  <span>Endpoint displacement</span>
+                  <b id="testDisplacement">0.00 m</b>
+                </div>
+
+                <div>
+                  <span>Endpoint error</span>
+                  <b id="testError">—</b>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>Live test position</h3>
+
+              <div class="bigxy">
+
+                <div>
+                  <span>X</span>
+                  <strong id="testX">0.00</strong>
+                  <small>m</small>
+                </div>
+
+                <div>
+                  <span>Y</span>
+                  <strong id="testY">0.00</strong>
+                  <small>m</small>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="setupNavigation">
+
+              <button data-setup-prev>
+                ← Back
+              </button>
+
+              <button
+                class="primary"
+                data-setup-next>
+                Next →
+              </button>
+
+            </div>
+
+          </section>
+
+
+
+          <!-- ===========================================
+               STEP 6
+               =========================================== -->
+
+          <section
+            class="setupPanel"
+            data-setup-panel="5">
+
+            <div class="card">
+
+              <h2>Setup complete</h2>
+
+              <p>
+                Your production floor tracker is ready
+                for the first real tracking session.
+              </p>
+
+
+              <div class="setupChecklist">
+
+                <div
+                  id="completeProject"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ○
+                  </span>
+
+                  <span>
+                    Project configured
+                  </span>
+
+                </div>
+
+
+                <div
+                  id="completePdf"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ○
+                  </span>
+
+                  <span>
+                    PDF loaded
+                  </span>
+
+                </div>
+
+
+                <div
+                  id="completeCalibration"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ○
+                  </span>
+
+                  <span>
+                    PDF synchronized with world coordinates
+                  </span>
+
+                </div>
+
+
+                <div
+                  id="completeSensors"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ○
+                  </span>
+
+                  <span>
+                    iPhone sensors enabled
+                  </span>
+
+                </div>
+
+
+                <div
+                  id="completeTest"
+                  class="setupCheck">
+
+                  <span class="setupCheckIcon">
+                    ○
+                  </span>
+
+                  <span>
+                    First movement test completed
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="setupReadyBox"
+              class="setupStatus warning">
+
+              <span class="setupStatusDot"></span>
+
+              <span>
+                Complete the setup checklist before
+                starting production tracking.
+              </span>
+
+            </div>
+
+
+            <div class="buttons">
+
+              <button
+                id="goTrackBtn"
+                class="primary">
+                Go to Track
+              </button>
+
+              <button
+                id="resetSetupBtn">
+                Reset setup status
+              </button>
+
+            </div>
+
+
+            <div class="setupNavigation">
+
+              <button data-setup-prev>
+                ← Back
+              </button>
+
+              <span></span>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         MAP
+         =================================================== -->
+
+    <section
+      id="map"
+      class="panel">
+
+      <div class="card">
+
+        <h2>PDF floor plan</h2>
+
+        <p>
+          Upload the floor plan. The PDF is displayed
+          separately from the world coordinate system.
+        </p>
+
+
+        <input
+          id="pdfFile"
+          type="file"
+          accept="application/pdf">
+
+
+        <div class="formgrid">
+
+          <label>
+            PDF page
+
+            <input
+              id="pdfPage"
+              type="number"
+              value="1"
+              min="1"
+              step="1">
+          </label>
+
+          <label>
+            Display zoom
+
+            <input
+              id="pdfZoom"
+              type="number"
+              value="1"
+              min="0.25"
+              max="4"
+              step="0.05">
+          </label>
+
+        </div>
+
+
+        <button
+          id="renderPdfBtn"
+          class="primary">
+          Load PDF page
+        </button>
+
+
+        <div class="pdfWrap">
+
+          <canvas id="pdfCanvas"></canvas>
+
+          <canvas id="mapOverlay"></canvas>
+
+        </div>
+
+
+        <div
+          id="pdfStatus"
+          class="hint">
+          No PDF loaded.
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Map calibration</h2>
+
+        <p>
+          Click known points on the PDF and enter their
+          real-world X/Y coordinates. Use at least 3 points.
+          Four points are recommended.
+        </p>
+
+
+        <div class="calibrationButtons">
+
+          <button
+            id="startCalibrationBtn"
+            class="primary">
+            Start calibration
+          </button>
+
+          <button
+            id="finishCalibrationBtn">
+            Lock calibration
+          </button>
+
+          <button
+            id="clearCalibrationBtn"
+            class="danger">
+            Clear calibration
+          </button>
+
+        </div>
+
+
+        <div
+          id="calibrationStatus"
+          class="sensorStatus">
+          Not calibrated
+        </div>
+
+
+        <div id="calibrationPoints"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         AREAS
+         =================================================== -->
+
+    <section
+      id="areas"
+      class="panel">
+
+      <div class="card">
+
+        <h2>Area setup</h2>
+
+        <p>
+          Areas are polygons in world coordinates.
+          Their definitions stay valid even if the PDF changes.
+        </p>
+
+
+        <div class="formgrid">
+
+          <label>
+            Area name
+
+            <input
+              id="areaName"
+              placeholder="Welding cell">
+          </label>
+
+        </div>
+
+
+        <button
+          id="startAreaBtn"
+          class="primary">
+          Draw area in world view
+        </button>
+
+        <button
+          id="finishAreaBtn">
+          Finish area
+        </button>
+
+
+        <div
+          id="areaHint"
+          class="hint">
+          Click points on the world-coordinate canvas.
+        </div>
+
+
+        <div id="areaList"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         DATA
+         =================================================== -->
+
+    <section
+      id="data"
+      class="panel">
+
+      <div class="card">
+
+        <h2>Session data</h2>
+
+
+        <div class="metrics">
+
+          <div>
+            <span>Position samples</span>
+            <b id="sampleCount">0</b>
+          </div>
+
+          <div>
+            <span>Area changes</span>
+            <b id="areaChangeCount">0</b>
+          </div>
+
+          <div>
+            <span>Calibration</span>
+            <b id="dataCalibration">
+              Not locked
+            </b>
+          </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+          <button
+            id="exportCsvBtn"
+            class="primary">
+            Export CSV
+          </button>
+
+          <button
+            id="exportJsonBtn">
+            Export project JSON
+          </button>
+
+          <button
+            id="importJsonBtn">
+            Import project JSON
+          </button>
+
+          <input
+            id="jsonFile"
+            type="file"
+            accept="application/json"
+            hidden>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Area time</h2>
+
+        <div id="areaTimeTable"></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script
+  type="module"
+  src="app.js">
+</script>
+
+</body>
+</html>

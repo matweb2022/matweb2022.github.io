@@ -1,0 +1,688 @@
+:root {
+    --bg:#0b1020;
+    --card:#151c2f;
+    --card2:#1c263d;
+    --text:#edf2f7;
+    --muted:#9aa8bd;
+    --line:#2d3a55;
+    --accent:#55b7ff;
+    --danger:#ff6464;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+.app {
+    max-width:1200px;
+    margin:auto;
+    padding:12px;
+}
+
+header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 4px;
+}
+
+h1 {
+    margin:0;
+    font-size:23px;
+}
+
+h2 {
+    margin-top:0;
+}
+
+h3 {
+    margin-bottom:8px;
+}
+
+hr {
+    border:0;
+    border-top:1px solid var(--line);
+    margin:16px 0;
+}
+
+p {
+    line-height:1.5;
+}
+
+.sub,
+.hint,
+.legend {
+    color:var(--muted);
+    font-size:13px;
+}
+
+.status {
+    padding:7px 12px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    font-size:13px;
+}
+
+.tabs {
+    display:flex;
+    gap:6px;
+    overflow:auto;
+    margin:8px 0 12px;
+}
+
+.tabs button {
+    white-space:nowrap;
+}
+
+button {
+    background:#202b43;
+    border:1px solid #3a4965;
+    color:var(--text);
+    padding:11px 15px;
+    border-radius:9px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+button:hover {
+    filter:brightness(1.15);
+}
+
+button:disabled {
+    opacity:.45;
+    cursor:not-allowed;
+    filter:none;
+}
+
+button.primary {
+    background:#155d91;
+    border-color:#2b8fd0;
+}
+
+button.danger {
+    background:#652a31;
+    border-color:#a9414d;
+}
+
+button.full {
+    width:100%;
+    margin-top:8px;
+}
+
+button.tab.active {
+    background:#2a78ad;
+}
+
+.panel {
+    display:none;
+}
+
+.panel.active {
+    display:block;
+}
+
+.card {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:14px;
+}
+
+.grid2 {
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:14px;
+}
+
+.formgrid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:12px;
+}
+
+label {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+input,
+select {
+    background:#0e1526;
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px;
+    font-size:15px;
+}
+
+input[type="file"] {
+    width:100%;
+    margin-bottom:12px;
+}
+
+.buttons,
+.calibrationButtons {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+}
+
+.bigxy {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.bigxy > div {
+    background:var(--card2);
+    border-radius:10px;
+    padding:13px;
+}
+
+.bigxy span,
+.metrics span {
+    display:block;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.bigxy strong {
+    font-size:34px;
+}
+
+.bigxy small {
+    margin-left:4px;
+    color:var(--muted);
+}
+
+.metrics {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-top:12px;
+}
+
+.metrics > div {
+    background:var(--card2);
+    padding:10px;
+    border-radius:9px;
+}
+
+.areaName {
+    font-size:30px;
+    font-weight:700;
+    padding:18px 0;
+}
+
+canvas {
+    max-width:100%;
+    display:block;
+}
+
+#worldCanvas {
+    width:100%;
+    background:#0b1324;
+    border-radius:9px;
+    border:1px solid var(--line);
+}
+
+.pdfWrap {
+    position:relative;
+    overflow:auto;
+    margin-top:12px;
+    background:#080d18;
+    min-height:200px;
+}
+
+#pdfCanvas {
+    position:relative;
+}
+
+#mapOverlay {
+    position:absolute;
+    left:0;
+    top:0;
+
+    /*
+     * Normally the overlay should not capture clicks.
+     * JavaScript enables pointer events while calibration
+     * is active.
+     */
+    pointer-events:none;
+}
+
+.sensorStatus {
+    margin-top:12px;
+    padding:10px;
+    background:#0e1526;
+    border-radius:8px;
+    color:var(--muted);
+}
+
+.checkpointRow,
+.areaRow,
+.calPoint {
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr auto;
+    gap:8px;
+    align-items:center;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+}
+
+.calPoint {
+    grid-template-columns:40px 1fr 1fr auto;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+td,
+th {
+    text-align:left;
+    padding:8px;
+    border-bottom:1px solid var(--line);
+}
+
+
+/* =========================================================
+   SETUP WIZARD
+   ========================================================= */
+
+.setupLayout {
+    display:grid;
+    grid-template-columns:245px 1fr;
+    gap:14px;
+    align-items:start;
+}
+
+.setupSidebar {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    position:sticky;
+    top:12px;
+}
+
+.setupSidebarTitle {
+    padding:8px 10px 14px;
+    font-size:15px;
+    font-weight:700;
+    border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+}
+
+.setupStep {
+    width:100%;
+    display:grid;
+    grid-template-columns:34px 1fr;
+    align-items:center;
+    text-align:left;
+    gap:8px;
+    background:transparent;
+    border:1px solid transparent;
+    padding:10px;
+    margin-bottom:4px;
+    border-radius:9px;
+}
+
+.setupStep:hover {
+    background:var(--card2);
+    filter:none;
+}
+
+.setupStep.active {
+    background:#202f49;
+    border-color:#315b80;
+}
+
+.setupStep.completed {
+    color:var(--text);
+}
+
+.setupStep.completed .stepNumber {
+    background:#246f4b;
+    border-color:#329b68;
+}
+
+.stepNumber {
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#0e1526;
+    border:1px solid var(--line);
+    font-size:13px;
+    font-weight:700;
+}
+
+.setupStepText {
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.setupStepTitle {
+    color:var(--text);
+    font-size:14px;
+    font-weight:600;
+}
+
+.setupStepDescription {
+    color:var(--muted);
+    font-size:11px;
+}
+
+.setupContent {
+    min-width:0;
+}
+
+.setupPanel {
+    display:none;
+}
+
+.setupPanel.active {
+    display:block;
+}
+
+.setupHeader {
+    margin-bottom:14px;
+}
+
+.setupHeader h2 {
+    margin-bottom:5px;
+}
+
+.setupProgress {
+    height:5px;
+    background:#0e1526;
+    border-radius:5px;
+    overflow:hidden;
+    margin-top:12px;
+}
+
+.setupProgressBar {
+    height:100%;
+    width:0%;
+    background:var(--accent);
+    transition:width .25s ease;
+}
+
+.setupNavigation {
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+}
+
+.setupStatus {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 12px;
+    background:#0e1526;
+    border:1px solid var(--line);
+    border-radius:9px;
+    margin-bottom:14px;
+}
+
+.setupStatusDot {
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--muted);
+    flex-shrink:0;
+}
+
+.setupStatus.ready .setupStatusDot {
+    background:#3fcf82;
+}
+
+.setupStatus.warning .setupStatusDot {
+    background:#e8b44f;
+}
+
+.setupStatus.error .setupStatusDot {
+    background:var(--danger);
+}
+
+.setupChecklist {
+    display:grid;
+    gap:8px;
+}
+
+.setupCheck {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--card2);
+    border-radius:9px;
+    padding:12px;
+}
+
+.setupCheckIcon {
+    width:25px;
+    height:25px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#0e1526;
+    border:1px solid var(--line);
+    flex-shrink:0;
+}
+
+.setupCheck.complete .setupCheckIcon {
+    background:#246f4b;
+    border-color:#329b68;
+}
+
+.pdfDropZone {
+    border:2px dashed var(--line);
+    border-radius:12px;
+    padding:35px 20px;
+    text-align:center;
+    background:#0e1526;
+    cursor:pointer;
+    transition:.2s;
+    display:block;
+    margin-bottom:14px;
+}
+
+.pdfDropZone:hover {
+    border-color:var(--accent);
+    background:#111c31;
+}
+
+.pdfDropZone strong {
+    display:block;
+    font-size:16px;
+    margin-bottom:5px;
+    color:var(--text);
+}
+
+.pdfDropZone span {
+    color:var(--muted);
+    font-size:13px;
+}
+
+.mappingPreview {
+    position:relative;
+    background:#080d18;
+    border:1px solid var(--line);
+    border-radius:10px;
+    min-height:350px;
+    overflow:hidden;
+}
+
+.mappingPoint {
+    position:absolute;
+    width:16px;
+    height:16px;
+    margin-left:-8px;
+    margin-top:-8px;
+    border-radius:50%;
+    background:var(--accent);
+    border:3px solid #ffffff;
+    box-shadow:0 0 0 5px rgba(85,183,255,.15);
+}
+
+.mappingPoint.you {
+    width:20px;
+    height:20px;
+    margin-left:-10px;
+    margin-top:-10px;
+}
+
+.phoneTest {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.phoneTestCard {
+    background:var(--card2);
+    border-radius:10px;
+    padding:14px;
+}
+
+.phoneTestNumber {
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:4px;
+}
+
+.testPassed {
+    color:#58d68d;
+}
+
+.testWaiting {
+    color:var(--muted);
+}
+
+.testFailed {
+    color:var(--danger);
+}
+
+.mappingMethods {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.mappingMethod {
+    background:var(--card2);
+    border:1px solid transparent;
+    border-radius:9px;
+    padding:12px;
+}
+
+.mappingMethod.active {
+    border-color:#3479a8;
+}
+
+.mappingMethod strong,
+.mappingMethod span {
+    display:block;
+}
+
+.mappingMethod span {
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:800px) {
+
+    .grid2,
+    .formgrid {
+        grid-template-columns:1fr;
+    }
+
+    .metrics {
+        grid-template-columns:1fr 1fr;
+    }
+
+    .checkpointRow,
+    .calPoint {
+        grid-template-columns:1fr 1fr;
+    }
+
+    header {
+        align-items:flex-start;
+        gap:10px;
+    }
+
+    .setupLayout {
+        grid-template-columns:1fr;
+    }
+
+    .setupSidebar {
+        position:static;
+        overflow-x:auto;
+    }
+
+    .setupSidebarTitle {
+        display:none;
+    }
+
+    .setupSidebar {
+        display:flex;
+        gap:5px;
+        padding:8px;
+    }
+
+    .setupStep {
+        min-width:145px;
+        width:auto;
+        display:inline-grid;
+    }
+
+    .setupStepDescription {
+        display:none;
+    }
+
+    .setupContent {
+        width:100%;
+    }
+
+    .phoneTest {
+        grid-template-columns:1fr;
+    }
+
+    .mappingMethods {
+        grid-template-columns:1fr 1fr;
+    }
+
+    .setupNavigation {
+        position:sticky;
+        bottom:0;
+        background:var(--bg);
+        padding-bottom:8px;
+    }
+}
