@@ -1,4 +1,4 @@
-const CACHE_NAME = "floor-tracker-v5";
+const CACHE_NAME = "floor-tracker-v6";
 
 const APP_SHELL = [
     "./",

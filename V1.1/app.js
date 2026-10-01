@@ -1202,40 +1202,17 @@ function drawMapping() {
             image.naturalHeight *
             transform.scale;
 
-        const maxDimension =
-            Math.max(
-                imageWidth,
-                imageHeight
-            );
-
-        let drawScale = 1;
-
-        if (
-            maxDimension >
-            Math.max(width, height) * 3
-        ) {
-
-            drawScale =
-                Math.max(width, height) /
-                maxDimension *
-                3;
-        }
-
         context.drawImage(
 
             image,
 
-            -imageWidth *
-            drawScale / 2,
+            -imageWidth / 2,
 
-            -imageHeight *
-            drawScale / 2,
+            -imageHeight / 2,
 
-            imageWidth *
-            drawScale,
+            imageWidth,
 
-            imageHeight *
-            drawScale
+            imageHeight
         );
 
         context.restore();
@@ -2171,40 +2148,17 @@ function drawTracking() {
         image.naturalHeight *
         transform.scale;
 
-    const maxDimension =
-        Math.max(
-            imageWidth,
-            imageHeight
-        );
-
-    let drawScale = 1;
-
-    if (
-        maxDimension >
-        Math.max(width, height) * 3
-    ) {
-
-        drawScale =
-            Math.max(width, height) /
-            maxDimension *
-            3;
-    }
-
     context.drawImage(
 
         image,
 
-        -imageWidth *
-            drawScale / 2,
+        -imageWidth / 2,
 
-        -imageHeight *
-            drawScale / 2,
+        -imageHeight / 2,
 
-        imageWidth *
-            drawScale,
+        imageWidth,
 
-        imageHeight *
-            drawScale
+        imageHeight
     );
 
     context.restore();
