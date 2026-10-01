@@ -417,6 +417,7 @@ async function requestMotionPermission() {
     }
 
     attachMotionSensor();
+    updateSensorStatus();
 }
 
 
@@ -451,6 +452,67 @@ async function requestOrientationPermission() {
     }
 
     attachOrientationSensor();
+    updateSensorStatus();
+}
+
+
+async function enablePhoneSensors() {
+
+    await Promise.all([
+        requestMotionPermission(),
+        requestOrientationPermission()
+    ]);
+
+    updateSensorStatus();
+}
+
+
+function updateSensorStatus() {
+
+    const status =
+        get("sensorStatus");
+
+    if (!status) {
+        return;
+    }
+
+    function sensorState(name, supported, permission, listener, data) {
+
+        if (!supported) {
+            return `${name}: unavailable`;
+        }
+
+        if (data) {
+            return `${name}: receiving data`;
+        }
+
+        if (!permission) {
+            return listener
+                ? `${name}: permission not granted`
+                : `${name}: not enabled`;
+        }
+
+        return listener
+            ? `${name}: waiting for data`
+            : `${name}: listener unavailable`;
+    }
+
+    status.textContent = [
+        sensorState(
+            "Motion",
+            "DeviceMotionEvent" in window,
+            state.sensors.motionPermission,
+            state.sensors.motionListener,
+            state.sensors.motionData
+        ),
+        sensorState(
+            "Orientation",
+            "DeviceOrientationEvent" in window,
+            state.sensors.orientationPermission,
+            state.sensors.orientationListener,
+            state.sensors.orientationData
+        )
+    ].join(" | ");
 }
 
 
@@ -508,7 +570,11 @@ function handleMotion(event) {
             z * z
         );
 
-    state.sensors.motionData = true;
+    if (!state.sensors.motionData) {
+
+        state.sensors.motionData = true;
+        updateSensorStatus();
+    }
 
     processStepDetection(magnitude);
 }
@@ -564,7 +630,11 @@ function handleOrientation(event) {
         return;
     }
 
-    state.sensors.orientationData = true;
+    if (!state.sensors.orientationData) {
+
+        state.sensors.orientationData = true;
+        updateSensorStatus();
+    }
 
     if (state.mapping.active) {
 
@@ -2438,6 +2508,17 @@ function resetSetup() {
 
 function setupEventListeners() {
 
+    const sensorButton =
+        get("sensorBtn");
+
+    if (sensorButton) {
+
+        sensorButton.addEventListener(
+            "click",
+            enablePhoneSensors
+        );
+    }
+
     // --------------------------------------------------------
     // Workstation
     // --------------------------------------------------------
@@ -2766,6 +2847,8 @@ function initializeApplication() {
     updateMappingInformation();
 
     updateTrackingInformation();
+
+    updateSensorStatus();
 
     updateSetupStatus();
 
