@@ -46,6 +46,7 @@ const CANVAS_PADDING = 50;
 const DEG_TO_RAD = Math.PI / 180;
 
 let gravityVectorBaseline = null;
+let lastSensorStatusUpdate = 0;
 
 
 // ============================================================
@@ -54,7 +55,7 @@ let gravityVectorBaseline = null;
 
 const state = {
 
-    setupStep: 1,
+    setupStep: 2,
 
     workstation: {
         x: 0,
@@ -68,6 +69,9 @@ const state = {
 
         motionData: false,
         orientationData: false,
+
+        motionReading: null,
+        orientationReading: null,
 
         motionListener: false,
         orientationListener: false
@@ -116,6 +120,8 @@ const state = {
         imageUrl: null,
 
         imageName: null,
+
+        calibrationBounds: null,
 
         imageTransform: {
 
@@ -261,6 +267,16 @@ function loadState() {
 
             state.plan.imageName =
                 parsed.plan.imageName || null;
+
+            if (parsed.plan.calibrationBounds) {
+
+                state.plan.calibrationBounds = {
+                    minX: safeNumber(parsed.plan.calibrationBounds.minX, -1),
+                    maxX: safeNumber(parsed.plan.calibrationBounds.maxX, 1),
+                    minY: safeNumber(parsed.plan.calibrationBounds.minY, -1),
+                    maxY: safeNumber(parsed.plan.calibrationBounds.maxY, 1)
+                };
+            }
 
             if (parsed.plan.imageTransform) {
 
@@ -479,14 +495,14 @@ function updateSensorStatus() {
         return;
     }
 
-    function sensorState(name, supported, permission, listener, data) {
+    function sensorState(name, supported, permission, listener, data, reading) {
 
         if (!supported) {
             return `${name}: unavailable`;
         }
 
         if (data) {
-            return `${name}: receiving data`;
+            return `${name}: receiving data${reading ? ` (${reading})` : ""}`;
         }
 
         if (!permission) {
@@ -500,22 +516,37 @@ function updateSensorStatus() {
             : `${name}: listener unavailable`;
     }
 
+    const motionReading =
+        state.sensors.motionReading;
+
+    const orientationReading =
+        state.sensors.orientationReading;
+
     status.textContent = [
         sensorState(
             "Motion",
             "DeviceMotionEvent" in window,
             state.sensors.motionPermission,
             state.sensors.motionListener,
-            state.sensors.motionData
+            state.sensors.motionData,
+            motionReading
+                ? `x ${motionReading.x.toFixed(2)}, y ${motionReading.y.toFixed(2)}, z ${motionReading.z.toFixed(2)} m/s^2`
+                : ""
         ),
         sensorState(
             "Orientation",
             "DeviceOrientationEvent" in window,
             state.sensors.orientationPermission,
             state.sensors.orientationListener,
-            state.sensors.orientationData
+            state.sensors.orientationData,
+            orientationReading
+                ? `alpha ${orientationReading.alpha}, beta ${orientationReading.beta}, gamma ${orientationReading.gamma}, heading ${orientationReading.heading} deg`
+                : ""
         )
     ].join(" | ");
+
+    lastSensorStatusUpdate =
+        performance.now();
 }
 
 
@@ -551,6 +582,10 @@ function attachMotionSensor() {
 function handleMotion(event) {
 
     let magnitude;
+    let rawReading;
+
+    const firstReading =
+        !state.sensors.motionData;
 
     if (event.acceleration) {
 
@@ -565,6 +600,8 @@ function handleMotion(event) {
 
         const z =
             safeNumber(acceleration.z, 0);
+
+        rawReading = { x, y, z };
 
         magnitude =
             Math.sqrt(
@@ -590,6 +627,8 @@ function handleMotion(event) {
 
         const z =
             safeNumber(acceleration.z, 0);
+
+        rawReading = { x, y, z };
 
         if (gravityVectorBaseline === null) {
 
@@ -620,9 +659,14 @@ function handleMotion(event) {
             );
     }
 
-    if (!state.sensors.motionData) {
+    state.sensors.motionData = true;
+    state.sensors.motionReading = rawReading;
 
-        state.sensors.motionData = true;
+    if (
+        firstReading ||
+        performance.now() - lastSensorStatusUpdate >= 250
+    ) {
+
         updateSensorStatus();
     }
 
@@ -680,9 +724,22 @@ function handleOrientation(event) {
         return;
     }
 
-    if (!state.sensors.orientationData) {
+    const firstReading =
+        !state.sensors.orientationData;
 
-        state.sensors.orientationData = true;
+    state.sensors.orientationData = true;
+    state.sensors.orientationReading = {
+        alpha: Number.isFinite(event.alpha) ? event.alpha.toFixed(1) : "n/a",
+        beta: Number.isFinite(event.beta) ? event.beta.toFixed(1) : "n/a",
+        gamma: Number.isFinite(event.gamma) ? event.gamma.toFixed(1) : "n/a",
+        heading: heading.toFixed(1)
+    };
+
+    if (
+        firstReading ||
+        performance.now() - lastSensorStatusUpdate >= 250
+    ) {
+
         updateSensorStatus();
     }
 
@@ -881,20 +938,11 @@ async function startMapping() {
     if (startButton) {
 
         startButton.textContent =
-            "MAPPING ACTIVE";
+            "STOP MAPPING";
 
         startButton.classList.add(
             "active"
         );
-    }
-
-    const stopButton =
-        get("stopMappingButton");
-
-    if (stopButton) {
-
-        stopButton.style.display =
-            "";
     }
 
     saveState();
@@ -922,18 +970,17 @@ function stopMapping() {
         );
     }
 
-    const stopButton =
-        get("stopMappingButton");
-
-    if (stopButton) {
-
-        stopButton.style.display =
-            "none";
-    }
-
     saveState();
 
     updateMappingInformation();
+}
+
+
+async function resetMapping() {
+
+    stopMapping();
+
+    await startMapping();
 }
 
 
@@ -1026,6 +1073,7 @@ function updateMappingInformation() {
         element.textContent =
             state.mapping.y.toFixed(2);
     });
+
 }
 
 
@@ -1177,6 +1225,27 @@ function calculatePathBounds(path) {
 }
 
 
+function getMapAreaBounds() {
+
+    if (
+        state.locked &&
+        state.plan.calibrationBounds
+    ) {
+
+        return state.plan.calibrationBounds;
+    }
+
+    return calculatePathBounds([
+        ...state.mapping.path,
+        ...state.mapping.references,
+        {
+            x: state.mapping.x,
+            y: state.mapping.y
+        }
+    ]);
+}
+
+
 // ============================================================
 // DRAW MAPPING
 // ============================================================
@@ -1226,60 +1295,37 @@ function drawMapping() {
 
     if (image && image.complete && image.naturalWidth > 0) {
 
-        const transform =
-            state.plan.imageTransform;
-
-        context.save();
-
-        context.translate(
-            width / 2 +
-            transform.x,
-
-            height / 2 +
-            transform.y
-        );
-
-        context.rotate(
-            transform.rotation *
-            DEG_TO_RAD
-        );
+        const imageScale =
+            Math.min(
+                width / image.naturalWidth,
+                height / image.naturalHeight
+            );
 
         const imageWidth =
-            image.naturalWidth *
-            transform.scale;
+            image.naturalWidth * imageScale;
 
         const imageHeight =
-            image.naturalHeight *
-            transform.scale;
+            image.naturalHeight * imageScale;
 
         context.drawImage(
 
             image,
 
-            -imageWidth / 2,
+            (width - imageWidth) / 2,
 
-            -imageHeight / 2,
+            (height - imageHeight) / 2,
 
             imageWidth,
 
             imageHeight
         );
-
-        context.restore();
     }
 
     const path =
         state.mapping.path;
 
     const bounds =
-        calculatePathBounds([
-            ...path,
-            ...state.mapping.references,
-            {
-                x: state.mapping.x,
-                y: state.mapping.y
-            }
-        ]);
+        getMapAreaBounds();
 
     const availableWidth =
         Math.max(
@@ -1328,6 +1374,22 @@ function drawMapping() {
             (y - bounds.minY) *
             scale
         );
+    }
+
+    function mapAreaScreenPoint(x, y) {
+
+        const point = {
+            x: screenX(x),
+            y: screenY(y)
+        };
+
+        return state.setupStep === 4
+            ? transformMapAreaPoint(
+                point,
+                width,
+                height
+            )
+            : point;
     }
 
     if (state.setupStep !== 4) {
@@ -1463,23 +1525,25 @@ function drawMapping() {
 
         path.forEach((point, index) => {
 
-            const x =
-                screenX(
-                    safeNumber(point.x)
-                );
-
-            const y =
-                screenY(
+            const screenPoint =
+                mapAreaScreenPoint(
+                    safeNumber(point.x),
                     safeNumber(point.y)
                 );
 
             if (index === 0) {
 
-                context.moveTo(x, y);
+                context.moveTo(
+                    screenPoint.x,
+                    screenPoint.y
+                );
 
             } else {
 
-                context.lineTo(x, y);
+                context.lineTo(
+                    screenPoint.x,
+                    screenPoint.y
+                );
             }
         });
 
@@ -1497,17 +1561,17 @@ function drawMapping() {
     state.mapping.references.forEach(
         (reference, index) => {
 
-            const x =
-                screenX(reference.x);
-
-            const y =
-                screenY(reference.y);
+            const screenPoint =
+                mapAreaScreenPoint(
+                    reference.x,
+                    reference.y
+                );
 
             context.beginPath();
 
             context.arc(
-                x,
-                y,
+                screenPoint.x,
+                screenPoint.y,
                 7,
                 0,
                 Math.PI * 2
@@ -1526,8 +1590,8 @@ function drawMapping() {
 
             context.fillText(
                 `R${index + 1}`,
-                x + 10,
-                y - 10
+                screenPoint.x + 10,
+                screenPoint.y - 10
             );
         }
     );
@@ -1535,21 +1599,17 @@ function drawMapping() {
 
     // Current position
 
-    const currentX =
-        screenX(
-            state.mapping.x
-        );
-
-    const currentY =
-        screenY(
+    const currentPoint =
+        mapAreaScreenPoint(
+            state.mapping.x,
             state.mapping.y
         );
 
     context.beginPath();
 
     context.arc(
-        currentX,
-        currentY,
+        currentPoint.x,
+        currentPoint.y,
         9,
         0,
         Math.PI * 2
@@ -1578,17 +1638,17 @@ function drawMapping() {
                 y: 0
             };
 
-    const startX =
-        screenX(start.x);
-
-    const startY =
-        screenY(start.y);
+    const startPoint =
+        mapAreaScreenPoint(
+            start.x,
+            start.y
+        );
 
     context.beginPath();
 
     context.arc(
-        startX,
-        startY,
+        startPoint.x,
+        startPoint.y,
         6,
         0,
         Math.PI * 2
@@ -1607,8 +1667,8 @@ function drawMapping() {
 
     context.fillText(
         "START",
-        startX + 10,
-        startY + 4
+        startPoint.x + 10,
+        startPoint.y + 4
     );
 }
 
@@ -1699,6 +1759,18 @@ function selectFloorMap(mapId) {
         console.warn(
             "Floor map not found:",
             mapId
+        );
+
+        return;
+    }
+
+    if (
+        state.locked &&
+        map.id !== state.plan.selectedMapId
+    ) {
+
+        alert(
+            "Reset the setup before changing the locked floor map."
         );
 
         return;
@@ -1819,24 +1891,40 @@ function updateMapPreview(mapId) {
 // IMAGE TRANSFORM
 // ============================================================
 
-function updateImageTransform() {
-
-    const image =
-        document.querySelector(
-            "[data-floor-map-image]"
-        );
-
-    if (!image) {
-        return;
-    }
+function transformMapAreaPoint(point, width, height) {
 
     const transform =
         state.plan.imageTransform;
 
-    image.style.transform =
-        `translate(${transform.x}px, ${transform.y}px) ` +
-        `scale(${transform.scale}) ` +
-        `rotate(${transform.rotation}deg)`;
+    const offsetX =
+        point.x - width / 2;
+
+    const offsetY =
+        point.y - height / 2;
+
+    const rotation =
+        transform.rotation *
+        DEG_TO_RAD;
+
+    return {
+        x: width / 2 +
+            transform.x +
+            (offsetX * Math.cos(rotation) -
+                offsetY * Math.sin(rotation)) *
+            transform.scale,
+        y: height / 2 +
+            transform.y +
+            (offsetX * Math.sin(rotation) +
+                offsetY * Math.cos(rotation)) *
+            transform.scale
+    };
+}
+
+
+function updateImageTransform() {
+
+    const transform =
+        state.plan.imageTransform;
 
     const scaleDisplay =
         document.querySelector(
@@ -1853,6 +1941,278 @@ function updateImageTransform() {
 
     drawMapping();
     drawTracking();
+}
+
+
+function setupMapGestureControls() {
+
+    const canvas =
+        get("alignmentCanvas");
+
+    if (!canvas) {
+        return;
+    }
+
+    const pointers =
+        new Map();
+
+    let gestureStart = null;
+
+    function getCanvasPoint(event) {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        };
+    }
+
+    function getGestureMetrics(points) {
+
+        const first = points[0];
+
+        const second =
+            points.length > 1
+                ? points[1]
+                : first;
+
+        return {
+            center: {
+                x: (first.x + second.x) / 2,
+                y: (first.y + second.y) / 2
+            },
+            distance: Math.hypot(
+                second.x - first.x,
+                second.y - first.y
+            )
+        };
+    }
+
+    function captureGestureStart() {
+
+        const points =
+            Array.from(
+                pointers.values()
+            ).slice(0, 2);
+
+        if (points.length === 0) {
+            gestureStart = null;
+            return;
+        }
+
+        const metrics =
+            getGestureMetrics(points);
+
+        gestureStart = {
+            points,
+            center: metrics.center,
+            distance: metrics.distance,
+            x: state.plan.imageTransform.x,
+            y: state.plan.imageTransform.y,
+            scale: state.plan.imageTransform.scale
+        };
+    }
+
+    canvas.addEventListener(
+        "pointerdown",
+        event => {
+
+            if (state.locked) {
+                return;
+            }
+
+            if (
+                event.pointerType === "mouse" &&
+                event.button !== 0
+            ) {
+                return;
+            }
+
+            pointers.set(
+                event.pointerId,
+                getCanvasPoint(event)
+            );
+
+            try {
+                canvas.setPointerCapture(event.pointerId);
+            } catch {
+                // Synthetic pointer events do not support capture.
+            }
+
+            canvas.classList.add(
+                "is-dragging"
+            );
+
+            captureGestureStart();
+        }
+    );
+
+    canvas.addEventListener(
+        "pointermove",
+        event => {
+
+            if (!pointers.has(event.pointerId) || !gestureStart) {
+                return;
+            }
+
+            pointers.set(
+                event.pointerId,
+                getCanvasPoint(event)
+            );
+
+            const points =
+                Array.from(
+                    pointers.values()
+                ).slice(0, 2);
+
+            const current =
+                getGestureMetrics(points);
+
+            const transform =
+                state.plan.imageTransform;
+
+            if (points.length === 1) {
+
+                transform.x =
+                    gestureStart.x +
+                    points[0].x -
+                    gestureStart.points[0].x;
+
+                transform.y =
+                    gestureStart.y +
+                    points[0].y -
+                    gestureStart.points[0].y;
+
+            } else {
+
+                if (gestureStart.distance > 0) {
+
+                    transform.scale =
+                        clamp(
+                            gestureStart.scale *
+                            current.distance /
+                            gestureStart.distance,
+                            0.1,
+                            10
+                        );
+                }
+
+                transform.x =
+                    gestureStart.x +
+                    current.center.x -
+                    gestureStart.center.x;
+
+                transform.y =
+                    gestureStart.y +
+                    current.center.y -
+                    gestureStart.center.y;
+            }
+
+            updateImageTransform();
+        }
+    );
+
+    function finishPointer(event) {
+
+        if (!pointers.has(event.pointerId)) {
+            return;
+        }
+
+        pointers.delete(event.pointerId);
+
+        if (pointers.size > 0) {
+
+            captureGestureStart();
+
+        } else {
+
+            gestureStart = null;
+
+            canvas.classList.remove(
+                "is-dragging"
+            );
+
+            saveState();
+        }
+
+        try {
+            canvas.releasePointerCapture(event.pointerId);
+        } catch {
+            // Synthetic pointer events do not support capture.
+        }
+    }
+
+    canvas.addEventListener(
+        "pointerup",
+        finishPointer
+    );
+
+    canvas.addEventListener(
+        "pointercancel",
+        finishPointer
+    );
+
+    canvas.addEventListener(
+        "wheel",
+        event => {
+
+            if (state.locked) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+            const pointerX =
+                event.clientX -
+                rect.left -
+                rect.width / 2;
+
+            const pointerY =
+                event.clientY -
+                rect.top -
+                rect.height / 2;
+
+            const transform =
+                state.plan.imageTransform;
+
+            const oldScale =
+                transform.scale;
+
+            const newScale =
+                clamp(
+                    oldScale *
+                    Math.exp(-event.deltaY * 0.001),
+                    0.1,
+                    10
+                );
+
+            const ratio =
+                newScale / oldScale;
+
+            transform.x =
+                pointerX -
+                (pointerX - transform.x) *
+                ratio;
+
+            transform.y =
+                pointerY -
+                (pointerY - transform.y) *
+                ratio;
+
+            transform.scale =
+                newScale;
+
+            updateImageTransform();
+
+            saveState();
+        },
+        { passive: false }
+    );
 }
 
 
@@ -1888,6 +2248,10 @@ function moveImage(dx, dy) {
 
 function rotateImage(amount) {
 
+    if (state.locked) {
+        return;
+    }
+
     state.plan.imageTransform.rotation +=
         amount;
 
@@ -1902,6 +2266,10 @@ function rotateImage(amount) {
 // ============================================================
 
 function resetImageAlignment() {
+
+    if (state.locked) {
+        return;
+    }
 
     state.plan.imageTransform = {
 
@@ -1944,6 +2312,16 @@ function lockSetup() {
         return;
     }
 
+    state.plan.calibrationBounds =
+        calculatePathBounds([
+            ...state.mapping.path,
+            ...state.mapping.references,
+            {
+                x: state.mapping.x,
+                y: state.mapping.y
+            }
+        ]);
+
     state.locked = true;
 
     stopMapping();
@@ -1981,6 +2359,28 @@ function updateSetupStatus() {
         }
     });
 
+    [
+        "mapRotateLeft",
+        "mapRotateRight",
+        "resetMapAlignment",
+        "lockSetupButton"
+    ].forEach(id => {
+
+        const button =
+            get(id);
+
+        if (button) {
+            button.disabled = state.locked;
+        }
+    });
+
+    const floorMapSelect =
+        get("setupFloorMapSelect");
+
+    if (floorMapSelect) {
+        floorMapSelect.disabled = state.locked;
+    }
+
 
     const mapElements =
         document.querySelectorAll(
@@ -1993,365 +2393,16 @@ function updateSetupStatus() {
             state.plan.imageName ||
             "No map selected";
     });
+
+    document
+        .querySelectorAll("[data-track-map-name]")
+        .forEach(element => {
+            element.textContent =
+                state.plan.imageName ||
+                "No floor map selected";
+        });
 }
 
-
-// ============================================================
-// START TRACKING
-// ============================================================
-
-async function startTracking() {
-
-    if (!state.locked) {
-
-        alert(
-            "Complete and lock the setup first."
-        );
-
-        return;
-    }
-
-    await requestMotionPermission();
-
-    await requestOrientationPermission();
-
-    state.tracking.active = true;
-
-    state.tracking.x =
-        state.workstation.x;
-
-    state.tracking.y =
-        state.workstation.y;
-
-    state.tracking.heading = 0;
-
-    state.tracking.distance = 0;
-
-    state.tracking.path = [
-
-        {
-            x: state.tracking.x,
-            y: state.tracking.y
-        }
-
-    ];
-
-    state.tracking.lastStepTime = 0;
-
-    state.tracking.lastStepAcceleration = 0;
-
-    drawTracking();
-
-    updateTrackingInformation();
-
-    const button =
-        get("startTrackingButton");
-
-    if (button) {
-
-        button.textContent =
-            "TRACKING ACTIVE";
-
-        button.classList.add(
-            "active"
-        );
-    }
-}
-
-
-// ============================================================
-// STOP TRACKING
-// ============================================================
-
-function stopTracking() {
-
-    state.tracking.active = false;
-
-    const button =
-        get("startTrackingButton");
-
-    if (button) {
-
-        button.textContent =
-            "START TRACKING";
-
-        button.classList.remove(
-            "active"
-        );
-    }
-}
-
-
-// ============================================================
-// TRACKING INFORMATION
-// ============================================================
-
-function updateTrackingInformation() {
-
-    const distanceElements =
-        document.querySelectorAll(
-            "[data-tracking-distance]"
-        );
-
-    distanceElements.forEach(element => {
-
-        element.textContent =
-            `${state.tracking.distance.toFixed(1)} m`;
-    });
-
-
-    const xElements =
-        document.querySelectorAll(
-            "[data-tracking-x]"
-        );
-
-    xElements.forEach(element => {
-
-        element.textContent =
-            state.tracking.x.toFixed(2);
-    });
-
-
-    const yElements =
-        document.querySelectorAll(
-            "[data-tracking-y]"
-        );
-
-    yElements.forEach(element => {
-
-        element.textContent =
-            state.tracking.y.toFixed(2);
-    });
-}
-
-
-// ============================================================
-// DRAW TRACKING
-// ============================================================
-
-function drawTracking() {
-
-    const result =
-        getCanvas("trackingCanvas");
-
-    if (!result) {
-        return;
-    }
-
-    const {
-        context,
-        width,
-        height
-    } = result;
-
-    context.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-    const image =
-        document.querySelector(
-            "[data-floor-map-image]"
-        );
-
-    if (!image) {
-        return;
-    }
-
-    if (!image.complete) {
-
-        image.onload =
-            () => drawTracking();
-
-        return;
-    }
-
-    // --------------------------------------------------------
-    // Draw map
-    // --------------------------------------------------------
-
-    const transform =
-        state.plan.imageTransform;
-
-    context.save();
-
-    context.translate(
-        width / 2 +
-        transform.x,
-
-        height / 2 +
-        transform.y
-    );
-
-    context.rotate(
-        transform.rotation *
-        DEG_TO_RAD
-    );
-
-    const imageWidth =
-        image.naturalWidth *
-        transform.scale;
-
-    const imageHeight =
-        image.naturalHeight *
-        transform.scale;
-
-    context.drawImage(
-
-        image,
-
-        -imageWidth / 2,
-
-        -imageHeight / 2,
-
-        imageWidth,
-
-        imageHeight
-    );
-
-    context.restore();
-
-
-    // --------------------------------------------------------
-    // Draw tracking path
-    // --------------------------------------------------------
-
-    const path =
-        state.tracking.path;
-
-    if (path.length < 1) {
-        return;
-    }
-
-    const bounds =
-        calculatePathBounds(
-            path
-        );
-
-    const rangeX =
-        Math.max(
-            bounds.maxX -
-            bounds.minX,
-            0.01
-        );
-
-    const rangeY =
-        Math.max(
-            bounds.maxY -
-            bounds.minY,
-            0.01
-        );
-
-    const scale =
-        Math.min(
-            (width - 40) /
-                rangeX,
-
-            (height - 40) /
-                rangeY
-        );
-
-    function screenX(x) {
-
-        return (
-            20 +
-            (x - bounds.minX) *
-            scale
-        );
-    }
-
-    function screenY(y) {
-
-        return (
-            height -
-            20 -
-            (y - bounds.minY) *
-            scale
-        );
-    }
-
-
-    if (path.length > 1) {
-
-        context.beginPath();
-
-        path.forEach(
-            (point, index) => {
-
-                const x =
-                    screenX(
-                        point.x
-                    );
-
-                const y =
-                    screenY(
-                        point.y
-                    );
-
-                if (index === 0) {
-
-                    context.moveTo(
-                        x,
-                        y
-                    );
-
-                } else {
-
-                    context.lineTo(
-                        x,
-                        y
-                    );
-                }
-            }
-        );
-
-        context.strokeStyle =
-            "#00d4ff";
-
-        context.lineWidth = 4;
-
-        context.stroke();
-    }
-
-
-    // --------------------------------------------------------
-    // Current position
-    // --------------------------------------------------------
-
-    const currentX =
-        screenX(
-            state.tracking.x
-        );
-
-    const currentY =
-        screenY(
-            state.tracking.y
-        );
-
-    context.beginPath();
-
-    context.arc(
-        currentX,
-        currentY,
-        10,
-        0,
-        Math.PI * 2
-    );
-
-    context.fillStyle =
-        "#00ff88";
-
-    context.fill();
-
-    context.strokeStyle =
-        "#ffffff";
-
-    context.lineWidth = 3;
-
-    context.stroke();
-}
 
 
 // ============================================================
@@ -2433,7 +2484,7 @@ function resetSetup() {
         return;
     }
 
-    state.setupStep = 1;
+    state.setupStep = 2;
 
     state.workstation = {
 
@@ -2487,6 +2538,8 @@ function resetSetup() {
 
         imageName: null,
 
+        calibrationBounds: null,
+
         imageTransform: {
 
             x: 0,
@@ -2510,7 +2563,87 @@ function resetSetup() {
 // EVENT CONNECTIONS
 // ============================================================
 
+function showPage(pageName) {
+
+    const showTracking =
+        pageName === "track";
+
+    const setupPage =
+        get("setupPage");
+
+    const trackPage =
+        get("trackPage");
+
+    if (setupPage) {
+        setupPage.classList.toggle(
+            "active",
+            !showTracking
+        );
+    }
+
+    if (trackPage) {
+        trackPage.classList.toggle(
+            "active",
+            showTracking
+        );
+    }
+
+    document
+        .querySelectorAll("[data-page]")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.page === pageName
+            );
+        });
+
+    const lockedMessage =
+        get("trackLockedMessage");
+
+    if (lockedMessage) {
+        lockedMessage.style.display =
+            showTracking && !state.locked
+                ? ""
+                : "none";
+    }
+
+    const trackingApplication =
+        get("trackingApplication");
+
+    if (trackingApplication) {
+        trackingApplication.style.display =
+            showTracking && state.locked
+                ? ""
+                : "none";
+    }
+
+    if (showTracking && state.locked) {
+        drawTracking();
+    }
+}
+
 function setupEventListeners() {
+
+    document
+        .querySelectorAll("[data-page]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => showPage(button.dataset.page)
+            );
+        });
+
+    const goSetupButton =
+        get("goSetupBtn");
+
+    if (goSetupButton) {
+        goSetupButton.addEventListener(
+            "click",
+            () => showPage("setup")
+        );
+    }
 
     const sensorButton =
         get("sensorBtn");
@@ -2550,19 +2683,29 @@ function setupEventListeners() {
 
         startMappingButton.addEventListener(
             "click",
-            startMapping
+            () => {
+
+                if (state.mapping.active) {
+
+                    stopMapping();
+
+                } else {
+
+                    startMapping();
+                }
+            }
         );
     }
 
 
-    const stopMappingButton =
-        get("stopMappingButton");
+    const resetMappingButton =
+        get("resetMappingButton");
 
-    if (stopMappingButton) {
+    if (resetMappingButton) {
 
-        stopMappingButton.addEventListener(
+        resetMappingButton.addEventListener(
             "click",
-            stopMapping
+            resetMapping
         );
     }
 
@@ -2613,100 +2756,25 @@ function setupEventListeners() {
         });
 
 
-    // --------------------------------------------------------
-    // Image controls
-    // --------------------------------------------------------
+    setupMapGestureControls();
 
-    const scalePlus =
-        get("mapScalePlus");
-
-    if (scalePlus) {
-
-        scalePlus.addEventListener(
-            "click",
-            () => changeImageScale(0.1)
-        );
-    }
-
-
-    const scaleMinus =
-        get("mapScaleMinus");
-
-    if (scaleMinus) {
-
-        scaleMinus.addEventListener(
-            "click",
-            () => changeImageScale(-0.1)
-        );
-    }
-
-
-    const moveLeft =
-        get("mapMoveLeft");
-
-    if (moveLeft) {
-
-        moveLeft.addEventListener(
-            "click",
-            () => moveImage(-10, 0)
-        );
-    }
-
-
-    const moveRight =
-        get("mapMoveRight");
-
-    if (moveRight) {
-
-        moveRight.addEventListener(
-            "click",
-            () => moveImage(10, 0)
-        );
-    }
-
-
-    const moveUp =
-        get("mapMoveUp");
-
-    if (moveUp) {
-
-        moveUp.addEventListener(
-            "click",
-            () => moveImage(0, -10)
-        );
-    }
-
-
-    const moveDown =
-        get("mapMoveDown");
-
-    if (moveDown) {
-
-        moveDown.addEventListener(
-            "click",
-            () => moveImage(0, 10)
-        );
-    }
-
-
-    const rotateLeft =
+    const rotateMapLeft =
         get("mapRotateLeft");
 
-    if (rotateLeft) {
+    if (rotateMapLeft) {
 
-        rotateLeft.addEventListener(
+        rotateMapLeft.addEventListener(
             "click",
             () => rotateImage(-2)
         );
     }
 
-
-    const rotateRight =
+    const rotateMapRight =
         get("mapRotateRight");
 
-    if (rotateRight) {
+    if (rotateMapRight) {
 
-        rotateRight.addEventListener(
+        rotateMapRight.addEventListener(
             "click",
             () => rotateImage(2)
         );
@@ -2737,34 +2805,6 @@ function setupEventListeners() {
         lockButton.addEventListener(
             "click",
             lockSetup
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // Tracking
-    // --------------------------------------------------------
-
-    const trackingButton =
-        get("startTrackingButton");
-
-    if (trackingButton) {
-
-        trackingButton.addEventListener(
-            "click",
-            startTracking
-        );
-    }
-
-
-    const stopTrackingButton =
-        get("stopTrackingButton");
-
-    if (stopTrackingButton) {
-
-        stopTrackingButton.addEventListener(
-            "click",
-            stopTracking
         );
     }
 
@@ -2813,6 +2853,8 @@ function setupEventListeners() {
                 }
             );
         });
+
+    setupTrackingEventListeners();
 }
 
 
@@ -2824,7 +2866,10 @@ function handleResize() {
 
     drawMapping();
 
-    drawTracking();
+    if (typeof drawTracking === "function") {
+
+        drawTracking();
+    }
 
     updateImageTransform();
 }
@@ -2843,6 +2888,27 @@ window.addEventListener(
 function initializeApplication() {
 
     loadState();
+
+    state.workstation = {
+        x: 0,
+        y: 0
+    };
+
+    if (
+        state.locked &&
+        !state.plan.calibrationBounds
+    ) {
+
+        state.plan.calibrationBounds =
+            calculatePathBounds([
+                ...state.mapping.path,
+                ...state.mapping.references,
+                {
+                    x: state.workstation.x,
+                    y: state.workstation.y
+                }
+            ]);
+    }
 
     setupEventListeners();
 
@@ -2870,7 +2936,7 @@ function initializeApplication() {
     // using the normal navigation controls.
 
     showSetupStep(
-        state.setupStep || 1
+        state.setupStep || 2
     );
 }
 

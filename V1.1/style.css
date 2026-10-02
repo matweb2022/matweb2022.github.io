@@ -722,7 +722,6 @@ button.full {
     margin-top: 13px;
 }
 
-
 /* =========================================================
    SETUP NAVIGATION
    ========================================================= */
@@ -1058,6 +1057,12 @@ label > span {
 
 #alignmentCanvas {
     min-height: 400px;
+    touch-action: none;
+    cursor: grab;
+}
+
+#alignmentCanvas.is-dragging {
+    cursor: grabbing;
 }
 
 

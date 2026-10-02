@@ -1,11 +1,13 @@
-const CACHE_NAME = "floor-tracker-v7";
+const CACHE_NAME = "floor-tracker-v18";
 
 const APP_SHELL = [
     "./",
     "./index.html",
     "./style.css",
     "./app.js",
-    "./manifest.json"
+    "./tracking.js",
+    "./manifest.json",
+    "./maps/factory.jpg"
 ];
 
 
