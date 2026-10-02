@@ -1,222 +1,1521 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b1220">
-    <title>Production Floor Tracker 17</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0b1020"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <title>Production Floor Tracker</title>
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
+
 <body>
-    <div class="app">
-        <header>
-            <div>
-                <h1>Production Floor Tracker 17</h1>
-                <div class="sub">Setup the floor once, then use it for live tracking.</div>
+
+<div class="app">
+
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <header>
+
+        <div>
+
+            <h1>
+                Production Floor Tracker
+            </h1>
+
+            <div class="sub">
+                Setup the floor once, then use it for live tracking.
             </div>
-            <div class="status warning">Setup required</div>
-        </header>
 
-        <nav class="tabs" aria-label="Main navigation">
-            <button class="active" data-page="setup" type="button">Setup</button>
-            <button data-page="track" type="button">Track</button>
-        </nav>
+        </div>
 
-        <main id="setupPage" class="page active">
-            <div class="setupLayout">
-                <aside class="setupSidebar">
-                    <div class="setupSidebarTitle">Setup</div>
 
-                    <button class="setupStep active" data-go-step="2" data-step-indicator="2" type="button">
-                        <span class="stepNumber">1</span>
-                        <span class="setupStepText">
-                            <span class="setupStepTitle">Map Area</span>
-                            <span class="setupStepDescription">Walk and record movement</span>
+        <div
+            id="statusBadge"
+            class="status"
+        >
+            Setup required
+        </div>
+
+    </header>
+
+
+
+    <!-- ===================================================== -->
+    <!-- MAIN NAVIGATION -->
+    <!-- ===================================================== -->
+
+    <nav class="tabs">
+
+        <button
+            class="mainTab active"
+            data-page="setupPage"
+            type="button"
+        >
+            Setup
+        </button>
+
+
+        <button
+            class="mainTab"
+            data-page="trackPage"
+            type="button"
+        >
+            Track
+        </button>
+
+    </nav>
+
+
+
+    <!-- ===================================================== -->
+    <!-- SETUP PAGE -->
+    <!-- ===================================================== -->
+
+    <main
+        id="setupPage"
+        class="page active"
+    >
+
+        <div class="setupLayout">
+
+
+            <!-- ================================================= -->
+            <!-- LEFT SIDEBAR -->
+            <!-- ================================================= -->
+
+            <aside class="setupSidebar">
+
+                <div class="setupSidebarTitle">
+                    Setup
+                </div>
+
+
+                <button
+                    class="setupStep active"
+                    data-go-step="1"
+                    data-step-indicator="1"
+                    type="button"
+                >
+
+                    <span class="stepNumber">
+                        1
+                    </span>
+
+                    <span class="setupStepText">
+
+                        <span class="setupStepTitle">
+                            Workstation
                         </span>
-                    </button>
 
-                    <button class="setupStep" data-go-step="3" data-step-indicator="3" type="button">
-                        <span class="stepNumber">2</span>
-                        <span class="setupStepText">
-                            <span class="setupStepTitle">Floor Map</span>
-                            <span class="setupStepDescription">Select JPEG floor map</span>
+                        <span class="setupStepDescription">
+                            Define starting point
                         </span>
-                    </button>
 
-                    <button class="setupStep" data-go-step="4" data-step-indicator="4" type="button">
-                        <span class="stepNumber">3</span>
-                        <span class="setupStepText">
-                            <span class="setupStepTitle">Lock Map</span>
-                            <span class="setupStepDescription">Align map and movement</span>
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    class="setupStep"
+                    data-go-step="2"
+                    data-step-indicator="2"
+                    type="button"
+                >
+
+                    <span class="stepNumber">
+                        2
+                    </span>
+
+                    <span class="setupStepText">
+
+                        <span class="setupStepTitle">
+                            Map Area
                         </span>
-                    </button>
-                </aside>
 
-                <section class="setupContent">
-                    <section class="setupPanel" data-setup-step="2">
-                        <div class="setupHeader">
-                            <h2>Step 1 — Map Area</h2>
-                            <div class="hint">Start at coordinate 0,0 and walk around the area. The application records your estimated movement.</div>
-                            <div class="setupProgress"><div class="setupProgressBar" style="width:33%"></div></div>
+                        <span class="setupStepDescription">
+                            Walk and record movement
+                        </span>
+
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    class="setupStep"
+                    data-go-step="3"
+                    data-step-indicator="3"
+                    type="button"
+                >
+
+                    <span class="stepNumber">
+                        3
+                    </span>
+
+                    <span class="setupStepText">
+
+                        <span class="setupStepTitle">
+                            Floor Map
+                        </span>
+
+                        <span class="setupStepDescription">
+                            Select JPEG floor map
+                        </span>
+
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    class="setupStep"
+                    data-go-step="4"
+                    data-step-indicator="4"
+                    type="button"
+                >
+
+                    <span class="stepNumber">
+                        4
+                    </span>
+
+                    <span class="setupStepText">
+
+                        <span class="setupStepTitle">
+                            Align
+                        </span>
+
+                        <span class="setupStepDescription">
+                            Match movement to map
+                        </span>
+
+                    </span>
+
+                </button>
+
+
+
+                <button
+                    class="setupStep"
+                    data-go-step="5"
+                    data-step-indicator="5"
+                    type="button"
+                >
+
+                    <span class="stepNumber">
+                        5
+                    </span>
+
+                    <span class="setupStepText">
+
+                        <span class="setupStepTitle">
+                            Lock
+                        </span>
+
+                        <span class="setupStepDescription">
+                            Save the setup
+                        </span>
+
+                    </span>
+
+                </button>
+
+            </aside>
+
+
+
+            <!-- ================================================= -->
+            <!-- SETUP CONTENT -->
+            <!-- ================================================= -->
+
+            <section class="setupContent">
+
+
+                <!-- ================================================= -->
+                <!-- STEP 1 -->
+                <!-- ================================================= -->
+
+                <section
+                    class="setupPanel"
+                    data-setup-step="1"
+                >
+
+                    <div class="setupHeader">
+
+                        <h2>
+                            Step 1 — Define Workstation
+                        </h2>
+
+                        <div class="hint">
+                            The workstation is the starting reference
+                            point for the entire floor.
                         </div>
-                        <div class="card">
-                            <h3>Phone Sensors</h3>
-                            <div class="hint">The iPhone motion and orientation sensors are used while mapping the company.</div>
-                            <div id="sensorStatus" class="sensorStatus">Sensors have not been tested yet.</div>
-                            <div class="buttons">
-                                <button id="sensorBtn" class="primary" type="button">Enable Phone Sensors</button>
-                            </div>
+
+                        <div class="setupProgress">
+
+                            <div
+                                class="setupProgressBar"
+                                style="width:20%"
+                            ></div>
+
                         </div>
-                        <div class="card">
-                            <div class="setupStatus warning">
-                                <span class="setupStatusDot"></span>
-                                <div>
-                                    <strong>Mapping</strong>
-                                    <div class="hint">Start at coordinate 0,0. Walk normally around the area.</div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <div class="setupStatus ready">
+
+                            <span class="setupStatusDot"></span>
+
+                            <div>
+
+                                <strong>
+                                    Workstation position
+                                </strong>
+
+                                <div class="hint">
+                                    The workstation is world coordinate
+                                    0,0.
                                 </div>
+
                             </div>
-                            <div class="buttons">
-                                <button id="startMappingButton" class="primary" type="button">START MAPPING</button>
-                                <button id="dropReferenceButton" type="button">Drop Reference Point</button>
-                                <button id="resetMappingButton" type="button">Reset Mapping</button>
+
+                        </div>
+
+
+
+                        <div class="bigxy">
+
+                            <div>
+
+                                <span>
+                                    X Position
+                                </span>
+
+                                <strong>
+                                    0.00
+                                </strong>
+
+                                <small>
+                                    m
+                                </small>
+
                             </div>
-                            <div class="metrics">
-                                <div><span>Distance</span><strong data-mapping-distance>0.0 m</strong></div>
-                                <div><span>X</span><strong data-mapping-x>0.00</strong></div>
-                                <div><span>Y</span><strong data-mapping-y>0.00</strong></div>
-                                <div><span>Reference Points</span><strong data-reference-count>0</strong></div>
+
+
+                            <div>
+
+                                <span>
+                                    Y Position
+                                </span>
+
+                                <strong>
+                                    0.00
+                                </strong>
+
+                                <small>
+                                    m
+                                </small>
+
                             </div>
+
                         </div>
 
-                        <div class="card">
-                            <h3>Live Mapping</h3>
-                            <canvas id="mappingCanvas" width="1200" height="700"></canvas>
-                            <div class="sensorStatus">Grid scale: <strong data-mapping-scale>1 m per grid</strong></div>
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Phone Sensors
+                        </h3>
+
+                        <div class="hint">
+                            The iPhone motion and orientation sensors
+                            are used while mapping the company.
                         </div>
 
-                        <div class="setupNavigation">
-                            <button id="finishMappingButton" class="nextStepBtn primary" data-go-step="3" type="button">Continue to Floor Map →</button>
-                        </div>
-                    </section>
 
-                    <section class="setupPanel" data-setup-step="3">
-                        <div class="setupHeader">
-                            <h2>Step 2 — Select Floor Map</h2>
-                            <div class="hint">Choose the floor image that matches your site and assign it as the base map.</div>
-                            <div class="setupProgress"><div class="setupProgressBar" style="width:67%"></div></div>
+                        <div
+                            id="sensorStatus"
+                            class="sensorStatus"
+                        >
+                            Sensors have not been tested yet.
                         </div>
 
-                        <div class="card">
-                            <h3>Floor Map</h3>
-                            <select id="setupFloorMapSelect" data-floor-map-select>
-                                <option value="">Select a map...</option>
-                            </select>
+
+                        <div class="buttons">
+
+                            <button
+                                id="sensorBtn"
+                                class="primary"
+                                type="button"
+                            >
+                                Enable Phone Sensors
+                            </button>
+
                         </div>
 
-                        <div class="card">
-                            <h3>Map Preview</h3>
-                            <div style="overflow:hidden; width:100%; max-height:500px; display:flex; justify-content:center; align-items:center;">
-                                <img data-floor-map-image alt="Floor map" style="max-width:100%; max-height:500px; object-fit:contain; transform-origin:center center; display:none;">
-                            </div>
-                        </div>
+                    </div>
 
-                        <div class="setupNavigation">
-                            <button class="prevStepBtn" data-go-step="2" type="button">← Back</button>
-                            <button class="nextStepBtn primary" data-go-step="4" type="button">Continue to Align →</button>
-                        </div>
-                    </section>
 
-                    <section class="setupPanel" data-setup-step="4">
-                        <div class="setupHeader">
-                            <h2>Step 3 — Lock Map</h2>
-                            <div class="hint">Position the JPEG so the recorded movement corresponds to the real production floor.</div>
-                            <div class="setupProgress"><div class="setupProgressBar" style="width:100%"></div></div>
-                        </div>
 
-                        <div class="card">
-                            <h3>Align the floor map under the recorded movement</h3>
-                            <canvas id="alignmentCanvas" width="1200" height="700"></canvas>
-                            <div class="sensorStatus" data-map-load-status>Select a floor map to load its image here.</div>
-                            <div class="sensorStatus" data-floor-map-name>No map selected</div>
-                            <div class="sensorStatus">Map file: <strong data-floor-map-url>Not loaded</strong></div>
-                        </div>
+                    <div class="setupNavigation">
 
-                        <div class="card">
-                            <h3>Align Recorded Map Area</h3>
-                            <div class="buttons">
-                                <button id="mapRotateLeft" type="button">↶ Rotate Left</button>
-                                <button id="mapRotateRight" type="button">↷ Rotate Right</button>
-                                <button id="resetMapAlignment" type="button">Reset Alignment</button>
-                            </div>
-                            <div class="sensorStatus">Scale: <strong data-map-scale>100%</strong></div>
-                            <div class="sensorStatus" data-setup-status>Setup not locked</div>
-                            <div class="buttons">
-                                <button id="resetSetupButton" type="button">Reset Setup</button>
-                                <button id="lockSetupButton" class="primary" type="button">Lock Map</button>
-                            </div>
-                        </div>
+                        <div></div>
 
-                        <div class="setupNavigation">
-                            <button class="prevStepBtn" data-go-step="3" type="button">← Back</button>
-                        </div>
-                    </section>
+
+                        <button
+                            class="nextStepBtn primary"
+                            data-go-step="2"
+                            type="button"
+                        >
+                            Continue to Map Area →
+                        </button>
+
+                    </div>
+
                 </section>
-            </div>
-        </main>
 
-        <main id="trackPage" class="page">
-            <div id="trackLockedMessage" class="card" style="display:none;">
-                <h2>Tracking Not Ready</h2>
-                <div class="hint">Complete and lock the setup before tracking.</div>
-                <button id="goSetupBtn" class="primary" type="button">Go to Setup</button>
-            </div>
 
-            <div id="trackingApplication" style="display:none;">
-                <div class="setupHeader">
-                    <h2>Live Tracking</h2>
-                    <div class="hint">Start at the configured workstation and walk normally.</div>
-                </div>
 
-                <div class="card">
-                    <div class="buttons">
-                        <button id="startTrackingButton" class="primary" type="button">START TRACKING</button>
-                        <button id="stopTrackingButton" type="button">STOP</button>
+                <!-- ================================================= -->
+                <!-- STEP 2 -->
+                <!-- ================================================= -->
+
+                <section
+                    class="setupPanel"
+                    data-setup-step="2"
+                >
+
+                    <div class="setupHeader">
+
+                        <h2>
+                            Step 2 — Map Area
+                        </h2>
+
+                        <div class="hint">
+                            Start at the workstation and walk around
+                            the company. The application records your
+                            estimated movement.
+                        </div>
+
+                        <div class="setupProgress">
+
+                            <div
+                                class="setupProgressBar"
+                                style="width:40%"
+                            ></div>
+
+                        </div>
+
                     </div>
-                </div>
 
-                <div class="card">
-                    <h3>Live Movement on Floor Map</h3>
-                    <div class="sensorStatus" data-track-map-name>No floor map selected</div>
-                    <canvas id="trackingCanvas" width="1200" height="700"></canvas>
-                </div>
 
-                <div class="card">
-                    <h3>Current Position</h3>
-                    <div class="bigxy">
-                        <div><span>X</span><strong data-tracking-x>0.00</strong><small>m</small></div>
-                        <div><span>Y</span><strong data-tracking-y>0.00</strong><small>m</small></div>
+
+                    <div class="card">
+
+                        <div class="setupStatus warning">
+
+                            <span class="setupStatusDot"></span>
+
+                            <div>
+
+                                <strong>
+                                    Mapping
+                                </strong>
+
+                                <div class="hint">
+                                    Start at workstation 0,0.
+                                    Walk normally around the area.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="buttons">
+
+                            <button
+                                id="startMappingButton"
+                                class="primary"
+                                type="button"
+                            >
+                                START MAPPING
+                            </button>
+
+
+                            <button
+                                id="stopMappingButton"
+                                type="button"
+                                style="display:none;"
+                            >
+                                STOP
+                            </button>
+
+
+                            <button
+                                id="dropReferenceButton"
+                                type="button"
+                            >
+                                DROP REFERENCE POINT
+                            </button>
+
+                        </div>
+
                     </div>
-                    <div class="metrics">
-                        <div><span>Distance</span><strong data-tracking-distance>0.0 m</strong></div>
+
+
+
+                    <div class="grid2">
+
+
+                        <!-- MOVEMENT -->
+
+                        <div class="card">
+
+                            <h3>
+                                Recorded Movement
+                            </h3>
+
+
+                            <canvas
+                                id="mappingCanvas"
+                                width="900"
+                                height="600"
+                            ></canvas>
+
+                        </div>
+
+
+
+                        <!-- INFORMATION -->
+
+                        <div>
+
+
+                            <div class="card">
+
+                                <h3>
+                                    Current Position
+                                </h3>
+
+
+                                <div class="bigxy">
+
+                                    <div>
+
+                                        <span>
+                                            X
+                                        </span>
+
+                                        <strong
+                                            data-mapping-x
+                                        >
+                                            0.00
+                                        </strong>
+
+                                        <small>
+                                            m
+                                        </small>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Y
+                                        </span>
+
+                                        <strong
+                                            data-mapping-y
+                                        >
+                                            0.00
+                                        </strong>
+
+                                        <small>
+                                            m
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="metrics">
+
+                                    <div>
+
+                                        <span>
+                                            Distance
+                                        </span>
+
+                                        <strong
+                                            data-mapping-distance
+                                        >
+                                            0.0 m
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Reference Points
+                                        </span>
+
+                                        <strong
+                                            data-reference-count
+                                        >
+                                            0
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="card">
+
+                                <h3>
+                                    Reference Points
+                                </h3>
+
+                                <div
+                                    class="setupChecklist"
+                                    id="referenceList"
+                                >
+
+                                    <div class="setupCheck">
+
+                                        <div class="setupCheckIcon">
+                                            —
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                No reference points
+                                            </strong>
+
+                                            <div class="hint">
+                                                Press "Drop Reference Point"
+                                                while walking.
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
                     </div>
-                </div>
+
+
+
+                    <div class="setupNavigation">
+
+                        <button
+                            class="prevStepBtn"
+                            data-go-step="1"
+                            type="button"
+                        >
+                            ← Back
+                        </button>
+
+
+                        <button
+                            class="nextStepBtn primary"
+                            data-go-step="3"
+                            type="button"
+                        >
+                            Continue to Floor Map →
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ================================================= -->
+                <!-- STEP 3 -->
+                <!-- ================================================= -->
+
+                <section
+                    class="setupPanel"
+                    data-setup-step="3"
+                >
+
+                    <div class="setupHeader">
+
+                        <h2>
+                            Step 3 — Select Floor Map
+                        </h2>
+
+                        <div class="hint">
+                            Floor-plan JPEGs are stored directly in
+                            the GitHub repository.
+                        </div>
+
+                        <div class="setupProgress">
+
+                            <div
+                                class="setupProgressBar"
+                                style="width:60%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Floor Map
+                        </h3>
+
+                        <div class="hint">
+                            Select the JPEG that represents this
+                            production area.
+                        </div>
+
+
+                        <div class="formgrid">
+
+                            <label>
+
+                                Select Floor Map
+
+                                <select
+                                    id="floorMapSelect"
+                                >
+
+                                    <option value="">
+                                        Select a map...
+                                    </option>
+
+                                </select>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            class="sensorStatus"
+                            data-floor-map-name
+                        >
+                            No map selected.
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Map Preview
+                        </h3>
+
+
+                        <div
+                            style="
+                                overflow:hidden;
+                                width:100%;
+                                max-height:500px;
+                                display:flex;
+                                justify-content:center;
+                                align-items:center;
+                            "
+                        >
+
+                            <img
+                                data-floor-map-image
+                                alt="Floor map"
+                                style="
+                                    max-width:100%;
+                                    max-height:500px;
+                                    object-fit:contain;
+                                    transform-origin:center center;
+                                    display:none;
+                                "
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="setupNavigation">
+
+                        <button
+                            class="prevStepBtn"
+                            data-go-step="2"
+                            type="button"
+                        >
+                            ← Back
+                        </button>
+
+
+                        <button
+                            class="nextStepBtn primary"
+                            data-go-step="4"
+                            type="button"
+                        >
+                            Continue to Align →
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ================================================= -->
+                <!-- STEP 4 -->
+                <!-- ================================================= -->
+
+                <section
+                    class="setupPanel"
+                    data-setup-step="4"
+                >
+
+                    <div class="setupHeader">
+
+                        <h2>
+                            Step 4 — Align Map
+                        </h2>
+
+                        <div class="hint">
+                            Position the JPEG so the recorded movement
+                            corresponds to the real production floor.
+                        </div>
+
+                        <div class="setupProgress">
+
+                            <div
+                                class="setupProgressBar"
+                                style="width:80%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Recorded Movement
+                        </h3>
+
+
+                        <canvas
+                            id="mappingCanvas"
+                            width="1200"
+                            height="700"
+                        ></canvas>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Floor Map
+                        </h3>
+
+
+                        <div
+                            style="
+                                overflow:hidden;
+                                width:100%;
+                                min-height:300px;
+                                display:flex;
+                                justify-content:center;
+                                align-items:center;
+                            "
+                        >
+
+                            <img
+                                data-floor-map-image
+                                alt="Floor map"
+                                style="
+                                    max-width:100%;
+                                    max-height:600px;
+                                    object-fit:contain;
+                                    transform-origin:center center;
+                                "
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Image Controls
+                        </h3>
+
+
+                        <div class="buttons">
+
+                            <button
+                                id="mapScaleMinus"
+                                type="button"
+                            >
+                                − Scale
+                            </button>
+
+
+                            <button
+                                id="mapScalePlus"
+                                type="button"
+                            >
+                                + Scale
+                            </button>
+
+
+                            <button
+                                id="mapMoveLeft"
+                                type="button"
+                            >
+                                ←
+                            </button>
+
+
+                            <button
+                                id="mapMoveRight"
+                                type="button"
+                            >
+                                →
+                            </button>
+
+
+                            <button
+                                id="mapMoveUp"
+                                type="button"
+                            >
+                                ↑
+                            </button>
+
+
+                            <button
+                                id="mapMoveDown"
+                                type="button"
+                            >
+                                ↓
+                            </button>
+
+
+                            <button
+                                id="mapRotateLeft"
+                                type="button"
+                            >
+                                ↶ Rotate
+                            </button>
+
+
+                            <button
+                                id="mapRotateRight"
+                                type="button"
+                            >
+                                ↷ Rotate
+                            </button>
+
+
+                            <button
+                                id="resetMapAlignment"
+                                type="button"
+                            >
+                                Reset
+                            </button>
+
+                        </div>
+
+
+                        <div class="sensorStatus">
+
+                            Scale:
+
+                            <strong data-map-scale>
+                                100%
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="setupNavigation">
+
+                        <button
+                            class="prevStepBtn"
+                            data-go-step="3"
+                            type="button"
+                        >
+                            ← Back
+                        </button>
+
+
+                        <button
+                            class="nextStepBtn primary"
+                            data-go-step="5"
+                            type="button"
+                        >
+                            Continue to Lock →
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ================================================= -->
+                <!-- STEP 5 -->
+                <!-- ================================================= -->
+
+                <section
+                    class="setupPanel"
+                    data-setup-step="5"
+                >
+
+                    <div class="setupHeader">
+
+                        <h2>
+                            Step 5 — Lock Setup
+                        </h2>
+
+                        <div class="hint">
+                            Review the setup and lock it when the
+                            map alignment is correct.
+                        </div>
+
+                        <div class="setupProgress">
+
+                            <div
+                                class="setupProgressBar"
+                                style="width:100%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Setup Summary
+                        </h3>
+
+
+                        <div class="setupChecklist">
+
+
+                            <div class="setupCheck">
+
+                                <div class="setupCheckIcon">
+                                    1
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Workstation
+                                    </strong>
+
+                                    <div class="hint">
+                                        Coordinate 0,0
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="setupCheck">
+
+                                <div class="setupCheckIcon">
+                                    2
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Movement
+                                    </strong>
+
+                                    <div class="hint">
+
+                                        Distance:
+
+                                        <span
+                                            data-mapping-distance
+                                        >
+                                            0.0 m
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="setupCheck">
+
+                                <div class="setupCheckIcon">
+                                    3
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Floor Map
+                                    </strong>
+
+                                    <div
+                                        class="hint"
+                                        data-setup-map-name
+                                    >
+                                        No map selected
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="setupCheck">
+
+                                <div class="setupCheckIcon">
+                                    4
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Alignment
+                                    </strong>
+
+                                    <div class="hint">
+                                        Saved map transformation
+                                        will be used for tracking.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <button
+                            id="lockSetupButton"
+                            class="primary full"
+                            type="button"
+                        >
+                            🔒 Lock Setup
+                        </button>
+
+
+                        <div
+                            data-setup-status
+                            class="sensorStatus"
+                        >
+                            Setup not locked
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card">
+
+                        <h3>
+                            Ready to Track?
+                        </h3>
+
+                        <div class="hint">
+                            Once locked, switch to the Track page
+                            to begin tracking.
+                        </div>
+
+
+                        <button
+                            id="resetSetupButton"
+                            type="button"
+                        >
+                            Reset Setup
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="setupNavigation">
+
+                        <button
+                            class="prevStepBtn"
+                            data-go-step="4"
+                            type="button"
+                        >
+                            ← Back
+                        </button>
+
+                        <div></div>
+
+                    </div>
+
+                </section>
+
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ===================================================== -->
+    <!-- TRACK PAGE -->
+    <!-- ===================================================== -->
+
+    <main
+        id="trackPage"
+        class="page"
+    >
+
+
+        <div
+            id="trackLockedMessage"
+            class="card"
+        >
+
+            <h2>
+                Tracking Not Ready
+            </h2>
+
+            <div class="hint">
+                Complete and lock the setup before tracking.
             </div>
-        </main>
-    </div>
 
-    <script src="app.js"></script>
-    <script src="tracking.js"></script>
-    <script>
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("./service-worker.js").then(() => {
-                    console.log("Service worker registered.");
-                }).catch(error => {
-                    console.warn("Service worker registration failed:", error);
+            <button
+                id="goSetupBtn"
+                class="primary"
+                type="button"
+            >
+                Go to Setup
+            </button>
+
+        </div>
+
+
+
+        <div
+            id="trackingApplication"
+            style="display:none;"
+        >
+
+
+            <div class="setupHeader">
+
+                <h2>
+                    Live Tracking
+                </h2>
+
+                <div class="hint">
+                    Start at the configured workstation and walk normally.
+                </div>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <h3>
+                    Floor Map
+                </h3>
+
+
+                <select
+                    id="floorMapSelect"
+                    data-floor-map-select
+                >
+                </select>
+
+
+                <div
+                    style="
+                        margin-top:20px;
+                        overflow:hidden;
+                        width:100%;
+                        display:flex;
+                        justify-content:center;
+                    "
+                >
+
+                    <img
+                        data-floor-map-image
+                        alt="Floor map"
+                        style="
+                            max-width:100%;
+                            max-height:600px;
+                            object-fit:contain;
+                        "
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <div class="buttons">
+
+                    <button
+                        id="startTrackingButton"
+                        class="primary"
+                        type="button"
+                    >
+                        START TRACKING
+                    </button>
+
+
+                    <button
+                        id="stopTrackingButton"
+                        type="button"
+                    >
+                        STOP
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <h3>
+                    Live Position
+                </h3>
+
+
+                <canvas
+                    id="trackingCanvas"
+                    width="1200"
+                    height="700"
+                ></canvas>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <h3>
+                    Current Position
+                </h3>
+
+
+                <div class="bigxy">
+
+                    <div>
+
+                        <span>
+                            X
+                        </span>
+
+                        <strong
+                            data-tracking-x
+                        >
+                            0.00
+                        </strong>
+
+                        <small>
+                            m
+                        </small>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Y
+                        </span>
+
+                        <strong
+                            data-tracking-y
+                        >
+                            0.00
+                        </strong>
+
+                        <small>
+                            m
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="metrics">
+
+                    <div>
+
+                        <span>
+                            Distance
+                        </span>
+
+                        <strong
+                            data-tracking-distance
+                        >
+                            0.0 m
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- APP -->
+<!-- ========================================================= -->
+
+<script src="app.js"></script>
+
+
+
+<!-- ========================================================= -->
+<!-- SERVICE WORKER -->
+<!-- ========================================================= -->
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener(
+        "load",
+        () => {
+
+            navigator.serviceWorker
+                .register("./service-worker.js")
+                .then(() => {
+
+                    console.log(
+                        "Service worker registered."
+                    );
+
+                })
+                .catch(error => {
+
+                    console.warn(
+                        "Service worker registration failed:",
+                        error
+                    );
+
                 });
-            });
+
         }
-    </script>
+    );
+
+}
+
+</script>
+
+
 </body>
+
 </html>
