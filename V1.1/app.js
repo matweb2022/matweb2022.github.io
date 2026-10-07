@@ -2684,9 +2684,6 @@ function updateImageTransform() {
 }
 
 
-
-
-
 function setupMapGestureControls() {
 
     const canvas = get("alignmentCanvas");
@@ -2698,7 +2695,6 @@ function setupMapGestureControls() {
     const pointers = new Map();
 
     let gestureStart = null;
-
     let mouseRotate = false;
 
 
@@ -2712,14 +2708,8 @@ function setupMapGestureControls() {
             canvas.getBoundingClientRect();
 
         return {
-
-            x:
-                event.clientX -
-                rect.left,
-
-            y:
-                event.clientY -
-                rect.top
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
         };
     }
 
@@ -2730,33 +2720,24 @@ function setupMapGestureControls() {
 
     function getGestureMetrics(points) {
 
-        const first =
-            points[0];
+        const first = points[0];
 
         const second =
             points.length > 1
                 ? points[1]
                 : first;
 
-
         const dx =
-            second.x -
-            first.x;
+            second.x - first.x;
 
         const dy =
-            second.y -
-            first.y;
-
+            second.y - first.y;
 
         return {
 
             center: {
-
-                x:
-                    (first.x + second.x) / 2,
-
-                y:
-                    (first.y + second.y) / 2
+                x: (first.x + second.x) / 2,
+                y: (first.y + second.y) / 2
             },
 
             distance:
@@ -2777,14 +2758,42 @@ function setupMapGestureControls() {
     function normalizeAngle(angle) {
 
         return (
-            (angle + 180) % 360
-            + 360
+            (angle + 180) % 360 + 360
         ) % 360 - 180;
     }
 
 
     // =========================================================
-    // SAVE CURRENT GESTURE START
+    // MOUSE ROTATION ANGLE
+    //
+    // Rotation is relative to the center of the canvas.
+    // Shift + left mouse = rotate.
+    // =========================================================
+
+    function getMouseRotationAngle(point) {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const centerX =
+            rect.width / 2;
+
+        const centerY =
+            rect.height / 2;
+
+        return (
+            Math.atan2(
+                point.y - centerY,
+                point.x - centerX
+            ) *
+            180 /
+            Math.PI
+        );
+    }
+
+
+    // =========================================================
+    // CAPTURE CURRENT GESTURE BASELINE
     // =========================================================
 
     function captureGestureStart() {
@@ -2794,7 +2803,6 @@ function setupMapGestureControls() {
                 pointers.values()
             ).slice(0, 2);
 
-
         if (points.length === 0) {
 
             gestureStart = null;
@@ -2802,17 +2810,20 @@ function setupMapGestureControls() {
             return;
         }
 
-
         const metrics =
             getGestureMetrics(points);
 
-
         gestureStart = {
 
-            points,
+            points: points.map(point => ({
+                x: point.x,
+                y: point.y
+            })),
 
-            center:
-                metrics.center,
+            center: {
+                x: metrics.center.x,
+                y: metrics.center.y
+            },
 
             distance:
                 metrics.distance,
@@ -2836,35 +2847,6 @@ function setupMapGestureControls() {
 
 
     // =========================================================
-    // MOUSE ROTATION
-    //
-    // Shift + left mouse button
-    //
-    // Rotation is calculated from the mouse angle relative
-    // to the center of the alignment canvas.
-    // =========================================================
-
-    function getMouseRotationAngle(point) {
-
-        const centerX =
-            canvas.clientWidth / 2;
-
-        const centerY =
-            canvas.clientHeight / 2;
-
-
-        return (
-            Math.atan2(
-                point.y - centerY,
-                point.x - centerX
-            ) *
-            180 /
-            Math.PI
-        );
-    }
-
-
-    // =========================================================
     // POINTER DOWN
     // =========================================================
 
@@ -2877,40 +2859,32 @@ function setupMapGestureControls() {
             }
 
 
-            // -------------------------------------------------
+            // =================================================
             // MOUSE
-            // -------------------------------------------------
+            // =================================================
 
-            if (
-                event.pointerType === "mouse"
-            ) {
+            if (event.pointerType === "mouse") {
 
                 // Only left mouse button
                 if (event.button !== 0) {
                     return;
                 }
 
-
                 mouseRotate =
                     event.shiftKey;
 
-
                 const point =
                     getCanvasPoint(event);
-
 
                 pointers.set(
                     event.pointerId,
                     point
                 );
 
-
                 try {
-
                     canvas.setPointerCapture(
                         event.pointerId
                     );
-
                 } catch {}
 
 
@@ -2919,11 +2893,21 @@ function setupMapGestureControls() {
                 );
 
 
+                // ---------------------------------------------
+                // Mouse gesture baseline
+                // ---------------------------------------------
+
                 gestureStart = {
 
-                    points: [point],
+                    points: [{
+                        x: point.x,
+                        y: point.y
+                    }],
 
-                    center: point,
+                    center: {
+                        x: point.x,
+                        y: point.y
+                    },
 
                     distance: 0,
 
@@ -2945,33 +2929,28 @@ function setupMapGestureControls() {
                         state.plan.imageTransform.rotation
                 };
 
-
                 event.preventDefault();
 
                 return;
             }
 
 
-            // -------------------------------------------------
+            // =================================================
             // TOUCH / PEN
-            // -------------------------------------------------
+            // =================================================
 
             const point =
                 getCanvasPoint(event);
-
 
             pointers.set(
                 event.pointerId,
                 point
             );
 
-
             try {
-
                 canvas.setPointerCapture(
                     event.pointerId
                 );
-
             } catch {}
 
 
@@ -2981,12 +2960,25 @@ function setupMapGestureControls() {
 
 
             /*
-             * When the second finger arrives, capture
-             * the two-finger starting geometry.
+             * IMPORTANT:
+             *
+             * Re-capture the baseline every time the number
+             * of fingers changes.
+             *
+             * This prevents a jump when:
+             *
+             * 1 finger
+             *      ↓
+             * 2 fingers
+             *
+             * or:
+             *
+             * 2 fingers
+             *      ↓
+             * 1 finger
              */
 
             captureGestureStart();
-
 
             event.preventDefault();
         }
@@ -3005,13 +2997,11 @@ function setupMapGestureControls() {
                 return;
             }
 
-
             if (
                 !pointers.has(
                     event.pointerId
                 )
             ) {
-
                 return;
             }
 
@@ -3019,11 +3009,15 @@ function setupMapGestureControls() {
             const point =
                 getCanvasPoint(event);
 
-
             pointers.set(
                 event.pointerId,
                 point
             );
+
+
+            if (!gestureStart) {
+                return;
+            }
 
 
             const transform =
@@ -3034,14 +3028,7 @@ function setupMapGestureControls() {
             // MOUSE
             // =================================================
 
-            if (
-                event.pointerType === "mouse"
-            ) {
-
-                if (!gestureStart) {
-                    return;
-                }
-
+            if (event.pointerType === "mouse") {
 
                 // ---------------------------------------------
                 // SHIFT + LEFT MOUSE = ROTATE
@@ -3054,20 +3041,19 @@ function setupMapGestureControls() {
                             point
                         );
 
-
                     const angleDifference =
                         normalizeAngle(
                             currentAngle -
                             gestureStart.angle
                         );
 
-
                     transform.rotation =
                         gestureStart.rotation +
                         angleDifference;
 
-
                     updateImageTransform();
+
+                    event.preventDefault();
 
                     return;
                 }
@@ -3080,38 +3066,32 @@ function setupMapGestureControls() {
                 const startPoint =
                     gestureStart.points[0];
 
-
                 transform.x =
                     gestureStart.x +
                     point.x -
                     startPoint.x;
-
 
                 transform.y =
                     gestureStart.y +
                     point.y -
                     startPoint.y;
 
-
                 updateImageTransform();
+
+                event.preventDefault();
 
                 return;
             }
 
 
             // =================================================
-            // TOUCH
+            // TOUCH / PEN
             // =================================================
 
             const points =
                 Array.from(
                     pointers.values()
                 ).slice(0, 2);
-
-
-            if (!gestureStart) {
-                return;
-            }
 
 
             // =================================================
@@ -3123,20 +3103,19 @@ function setupMapGestureControls() {
                 const startPoint =
                     gestureStart.points[0];
 
-
                 transform.x =
                     gestureStart.x +
                     points[0].x -
                     startPoint.x;
-
 
                 transform.y =
                     gestureStart.y +
                     points[0].y -
                     startPoint.y;
 
-
                 updateImageTransform();
+
+                event.preventDefault();
 
                 return;
             }
@@ -3148,68 +3127,72 @@ function setupMapGestureControls() {
             // PAN + PINCH + ROTATE
             // =================================================
 
-            const current =
-                getGestureMetrics(points);
+            if (points.length >= 2) {
+
+                const current =
+                    getGestureMetrics(points);
 
 
-            // ---------------------------------------------
-            // PAN
-            // ---------------------------------------------
+                // ---------------------------------------------
+                // PAN
+                // ---------------------------------------------
 
-            transform.x =
-                gestureStart.x +
-                current.center.x -
-                gestureStart.center.x;
+                transform.x =
+                    gestureStart.x +
+                    current.center.x -
+                    gestureStart.center.x;
 
-
-            transform.y =
-                gestureStart.y +
-                current.center.y -
-                gestureStart.center.y;
-
-
-            // ---------------------------------------------
-            // PINCH ZOOM
-            // ---------------------------------------------
-
-            if (
-                gestureStart.distance > 0 &&
-                current.distance > 0
-            ) {
-
-                const zoomFactor =
-                    current.distance /
-                    gestureStart.distance;
+                transform.y =
+                    gestureStart.y +
+                    current.center.y -
+                    gestureStart.center.y;
 
 
-                transform.scale =
-                    clamp(
-                        gestureStart.scale *
-                        zoomFactor,
+                // ---------------------------------------------
+                // PINCH ZOOM
+                // ---------------------------------------------
 
-                        0.1,
-                        10
+                if (
+                    gestureStart.distance > 0 &&
+                    current.distance > 0
+                ) {
+
+                    const zoomFactor =
+                        current.distance /
+                        gestureStart.distance;
+
+                    transform.scale =
+                        clamp(
+                            gestureStart.scale *
+                            zoomFactor,
+
+                            0.1,
+                            10
+                        );
+                }
+
+
+                // ---------------------------------------------
+                // TWO-FINGER ROTATION
+                // ---------------------------------------------
+
+                const angleDifference =
+                    normalizeAngle(
+                        current.angle -
+                        gestureStart.angle
                     );
+
+                transform.rotation =
+                    gestureStart.rotation +
+                    angleDifference;
+
+
+                updateImageTransform();
+
+                event.preventDefault();
+
+                return;
             }
-
-
-            // ---------------------------------------------
-            // TWO-FINGER ROTATION
-            // ---------------------------------------------
-
-            const angleDifference =
-                normalizeAngle(
-                    current.angle -
-                    gestureStart.angle
-                );
-
-
-            transform.rotation =
-                gestureStart.rotation +
-                angleDifference;
-
-
-            updateImageTransform();
         }
     );
 
@@ -3225,7 +3208,6 @@ function setupMapGestureControls() {
                 event.pointerId
             )
         ) {
-
             return;
         }
 
@@ -3236,40 +3218,40 @@ function setupMapGestureControls() {
 
 
         try {
-
             canvas.releasePointerCapture(
                 event.pointerId
             );
-
         } catch {}
 
 
-        // -----------------------------------------------------
-        // Another finger remains.
+        // =====================================================
+        // FINGERS STILL ON SCREEN
         //
-        // Re-baseline the gesture so switching from
-        // two fingers back to one does not jump.
-        // -----------------------------------------------------
+        // Re-baseline immediately.
+        // =====================================================
 
         if (pointers.size > 0) {
 
             captureGestureStart();
 
+            return;
         }
 
-        else {
 
-            gestureStart = null;
+        // =====================================================
+        // GESTURE COMPLETELY FINISHED
+        // =====================================================
 
-            mouseRotate = false;
+        gestureStart = null;
 
-            canvas.classList.remove(
-                "is-dragging"
-            );
+        mouseRotate = false;
+
+        canvas.classList.remove(
+            "is-dragging"
+        );
 
 
-            saveState();
-        }
+        saveState();
     }
 
 
@@ -3278,7 +3260,6 @@ function setupMapGestureControls() {
         finishPointer
     );
 
-
     canvas.addEventListener(
         "pointercancel",
         finishPointer
@@ -3286,13 +3267,15 @@ function setupMapGestureControls() {
 
 
     // =========================================================
-    // PREVENT RIGHT-CLICK MENU
+    // RIGHT CLICK
+    //
+    // We don't use right-click for rotation anymore.
+    // Just suppress the browser menu.
     // =========================================================
 
     canvas.addEventListener(
         "contextmenu",
         event => {
-
             event.preventDefault();
         }
     );
@@ -3309,7 +3292,6 @@ function setupMapGestureControls() {
             if (state.locked) {
                 return;
             }
-
 
             event.preventDefault();
 
@@ -3356,7 +3338,11 @@ function setupMapGestureControls() {
                 oldScale;
 
 
-            // Zoom toward mouse position
+            // ---------------------------------------------
+            // Keep the point under the mouse stationary
+            // while zooming.
+            // ---------------------------------------------
+
             transform.x =
                 pointerX -
                 (
@@ -3389,6 +3375,7 @@ function setupMapGestureControls() {
         }
     );
 }
+
 
 
 
