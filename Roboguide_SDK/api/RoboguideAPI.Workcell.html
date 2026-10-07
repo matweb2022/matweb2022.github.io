@@ -1,0 +1,1816 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Workcell
+   | FANUC ROBOGUIDE SDK Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Workcell
+   | FANUC ROBOGUIDE SDK Documentation ">
+    <meta name="generator" content="docfx 2.58.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc">
+    <meta property="docfx:tocrel" content="toc">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" height="32" class="png" src="../images/logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+                
+                <ul class="nav level1 navbar-nav">
+                      <li>
+                          <a href="../articles/intro.html" title="Articles">Articles</a>
+                      </li>
+                      <li>
+                          <a href="../api/index.html" title="SDK Documentation">SDK Documentation</a>
+                      </li>
+                </ul>    </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div>
+              <div class="sidefilter">
+                <form class="toc-filter">
+                  <span class="glyphicon glyphicon-filter filter-icon"></span>
+                  <input type="text" id="toc_filter_input" placeholder="Enter here to filter..." onkeypress="if(event.keyCode==13) {return false;}">
+                </form>
+              </div>
+              <div class="sidetoc">
+                <div class="toc" id="toc">
+                  
+                  <ul class="nav level1">
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.html" title="RoboguideAPI" class="">RoboguideAPI</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsEngine.html" title="GraphicsEngine" class="">GraphicsEngine</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.RoboguideAPIPlugin.html" title="RoboguideAPIPlugin" class="">RoboguideAPIPlugin</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.RoboguideApplication.html" title="RoboguideApplication" class="">RoboguideApplication</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.SimulationController.html" title="SimulationController" class="">SimulationController</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.SimulationController.SimulationState.html" title="SimulationController.SimulationState" class="">SimulationController.SimulationState</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterface.html" title="UserInterface" class="">UserInterface</a>
+                          </li>
+                          <li class="active">
+                            <a href="RoboguideAPI.Workcell.html" title="Workcell" class="active">Workcell</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Adapters.SimPROAdapter.html" title="RoboguideAPI.Adapters.SimPROAdapter" class="">RoboguideAPI.Adapters.SimPROAdapter</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Adapters.SimPROAdapter.RoboguideApplicationFactory.html" title="RoboguideApplicationFactory" class="">RoboguideApplicationFactory</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.html" title="RoboguideAPI.Data" class="">RoboguideAPI.Data</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.CartesianPosition.html" title="CartesianPosition" class="">CartesianPosition</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Color.html" title="Color" class="">Color</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Constants.html" title="Constants" class="">Constants</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Frame.html" title="Frame" class="">Frame</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.JointPosition.html" title="JointPosition" class="">JointPosition</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Matrix4.html" title="Matrix4" class="">Matrix4</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Position.html" title="Position" class="">Position</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.RobotConfig.html" title="RobotConfig" class="">RobotConfig</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.RobotConfig.FlipNoFlip.html" title="RobotConfig.FlipNoFlip" class="">RobotConfig.FlipNoFlip</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.RobotConfig.FrontBack.html" title="RobotConfig.FrontBack" class="">RobotConfig.FrontBack</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.RobotConfig.LeftRight.html" title="RobotConfig.LeftRight" class="">RobotConfig.LeftRight</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.RobotConfig.UpDown.html" title="RobotConfig.UpDown" class="">RobotConfig.UpDown</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Rotation.html" title="Rotation" class="">Rotation</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Scale.html" title="Scale" class="">Scale</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Segment.html" title="Segment" class="">Segment</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Vector2.html" title="Vector2" class="">Vector2</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Vector3.html" title="Vector3" class="">Vector3</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Vector4.html" title="Vector4" class="">Vector4</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.AttachedPart.html" title="RoboguideAPI.Data.AttachedPart" class="">RoboguideAPI.Data.AttachedPart</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.AttachedPart.RandomLocationModes.html" title="RandomLocationModes" class="">RandomLocationModes</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Geometric.html" title="RoboguideAPI.Data.Geometric" class="">RoboguideAPI.Data.Geometric</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Geometric.AxisAlignedBoundingBox.html" title="AxisAlignedBoundingBox" class="">AxisAlignedBoundingBox</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Geometric.CadNode.html" title="CadNode" class="">CadNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Geometric.Mesh.html" title="Mesh" class="">Mesh</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Geometric.MeshMaterial.html" title="MeshMaterial" class="">MeshMaterial</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Geometric.MeshSet.html" title="MeshSet" class="">MeshSet</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Geometric.MeshVertex.html" title="MeshVertex" class="">MeshVertex</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Graphics.html" title="RoboguideAPI.Data.Graphics" class="">RoboguideAPI.Data.Graphics</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.BoxImage.html" title="BoxImage" class="">BoxImage</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.BoxImage.BoxSurface.html" title="BoxImage.BoxSurface" class="">BoxImage.BoxSurface</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.BoxImage.ImageDirection.html" title="BoxImage.ImageDirection" class="">BoxImage.ImageDirection</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.FeatureSegmentPoint.html" title="FeatureSegmentPoint" class="">FeatureSegmentPoint</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.LineSetSegment.html" title="LineSetSegment" class="">LineSetSegment</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.PointSetVertex.html" title="PointSetVertex" class="">PointSetVertex</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Graphics.ProjectionType.html" title="ProjectionType" class="">ProjectionType</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Machine.html" title="RoboguideAPI.Data.Machine" class="">RoboguideAPI.Data.Machine</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.AxisType.html" title="AxisType" class="">AxisType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.LinearDirection.html" title="LinearDirection" class="">LinearDirection</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.MachineLinkAxis.html" title="MachineLinkAxis" class="">MachineLinkAxis</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.MachineLinkJointType.html" title="MachineLinkJointType" class="">MachineLinkJointType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.MachineSubType.html" title="MachineSubType" class="">MachineSubType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.MachineType.html" title="MachineType" class="">MachineType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.MotionControlType.html" title="MotionControlType" class="">MotionControlType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Machine.RotationDirection.html" title="RotationDirection" class="">RotationDirection</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Metadata.html" title="RoboguideAPI.Data.Metadata" class="">RoboguideAPI.Data.Metadata</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.BooleanProperty.html" title="BooleanProperty" class="">BooleanProperty</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.FloatingPointProperty.html" title="FloatingPointProperty" class="">FloatingPointProperty</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.FrameProperty.html" title="FrameProperty" class="">FrameProperty</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.IntegerProperty.html" title="IntegerProperty" class="">IntegerProperty</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.IProperty.html" title="IProperty" class="">IProperty</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.PropertyCollection.html" title="PropertyCollection" class="">PropertyCollection</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.StringProperty.html" title="StringProperty" class="">StringProperty</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Metadata.UnsignedIntegerProperty.html" title="UnsignedIntegerProperty" class="">UnsignedIntegerProperty</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Paint.html" title="RoboguideAPI.Data.Paint" class="">RoboguideAPI.Data.Paint</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Paint.StyleLeftSideCADAxis.html" title="StyleLeftSideCADAxis" class="">StyleLeftSideCADAxis</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Robot.html" title="RoboguideAPI.Data.Robot" class="">RoboguideAPI.Data.Robot</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Robot.IOInputType.html" title="IOInputType" class="">IOInputType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Robot.IOOutputType.html" title="IOOutputType" class="">IOOutputType</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.TPProgram.html" title="RoboguideAPI.Data.TPProgram" class="">RoboguideAPI.Data.TPProgram</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.APIInstruction.html" title="APIInstruction" class="">APIInstruction</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.ForLoopInstruction.html" title="ForLoopInstruction" class="">ForLoopInstruction</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.IInstruction.html" title="IInstruction" class="">IInstruction</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.MotionInstruction.html" title="MotionInstruction" class="">MotionInstruction</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.MotionInstruction.MoveType.html" title="MotionInstruction.MoveType" class="">MotionInstruction.MoveType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.MotionInstruction.Position.html" title="MotionInstruction.Position" class="">MotionInstruction.Position</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.MotionInstruction.Reference.html" title="MotionInstruction.Reference" class="">MotionInstruction.Reference</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.MotionInstruction.TerminationType.html" title="MotionInstruction.TerminationType" class="">MotionInstruction.TerminationType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.MotionInstruction.Units.html" title="MotionInstruction.Units" class="">MotionInstruction.Units</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.PickPlaceInstruction.html" title="PickPlaceInstruction" class="">PickPlaceInstruction</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.PickPlaceInstruction.PickPlaceType.html" title="PickPlaceInstruction.PickPlaceType" class="">PickPlaceInstruction.PickPlaceType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.TPProgramLine.html" title="TPProgramLine" class="">TPProgramLine</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.TPProgramPosition.html" title="TPProgramPosition" class="">TPProgramPosition</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.TPProgramType.html" title="TPProgramType" class="">TPProgramType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Data.TPProgram.UnsupportedInstruction.html" title="UnsupportedInstruction" class="">UnsupportedInstruction</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.UserInterface.html" title="RoboguideAPI.Data.UserInterface" class="">RoboguideAPI.Data.UserInterface</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.UserInterface.KeyCode.html" title="KeyCode" class="">KeyCode</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Data.Workcell.html" title="RoboguideAPI.Data.Workcell" class="">RoboguideAPI.Data.Workcell</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Data.Workcell.ProcessPlugin.html" title="ProcessPlugin" class="">ProcessPlugin</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.GraphicsObjects.html" title="RoboguideAPI.GraphicsObjects" class="">RoboguideAPI.GraphicsObjects</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.BoxGraphicsNode.html" title="BoxGraphicsNode" class="">BoxGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.CadModelGraphicsNode.html" title="CadModelGraphicsNode" class="">CadModelGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.CylinderGraphicsNode.html" title="CylinderGraphicsNode" class="">CylinderGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.GraphicsObjectFactory.html" title="GraphicsObjectFactory" class="">GraphicsObjectFactory</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.IGraphicsNode.html" title="IGraphicsNode" class="">IGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.LineSetGraphicsNode.html" title="LineSetGraphicsNode" class="">LineSetGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.MeshSetGraphicsNode.html" title="MeshSetGraphicsNode" class="">MeshSetGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.PointSetGraphicsNode.html" title="PointSetGraphicsNode" class="">PointSetGraphicsNode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.GraphicsObjects.SphereGraphicsNode.html" title="SphereGraphicsNode" class="">SphereGraphicsNode</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Interfaces.html" title="RoboguideAPI.Interfaces" class="">RoboguideAPI.Interfaces</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Interfaces.IRoboguideAPIPlugin.html" title="IRoboguideAPIPlugin" class="">IRoboguideAPIPlugin</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Listeners.html" title="RoboguideAPI.Listeners" class="">RoboguideAPI.Listeners</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Listeners.IApplicationListener.html" title="IApplicationListener" class="">IApplicationListener</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Listeners.ILogListener.html" title="ILogListener" class="">ILogListener</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Listeners.ISimulationListener.html" title="ISimulationListener" class="">ISimulationListener</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Listeners.IUserInterfaceListener.html" title="IUserInterfaceListener" class="">IUserInterfaceListener</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Listeners.IViewportListener.html" title="IViewportListener" class="">IViewportListener</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Listeners.IWorkcellListener.html" title="IWorkcellListener" class="">IWorkcellListener</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Objects.html" title="RoboguideAPI.Objects" class="">RoboguideAPI.Objects</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Objects.IRoboguideObject.html" title="IRoboguideObject" class="">IRoboguideObject</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Objects.ObjectHandle.html" title="ObjectHandle" class="">ObjectHandle</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Plugin.html" title="RoboguideAPI.Plugin" class="">RoboguideAPI.Plugin</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Plugin.IRoboguideApplicationFactory.html" title="IRoboguideApplicationFactory" class="">IRoboguideApplicationFactory</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.UserInterfaceObjects.html" title="RoboguideAPI.UserInterfaceObjects" class="">RoboguideAPI.UserInterfaceObjects</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.DockableWindow.html" title="DockableWindow" class="">DockableWindow</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.DockMode.html" title="DockMode" class="">DockMode</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.IUserInterfaceObject.html" title="IUserInterfaceObject" class="">IUserInterfaceObject</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.Menu.html" title="Menu" class="">Menu</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.MenuEnableConditionFlags.html" title="MenuEnableConditionFlags" class="">MenuEnableConditionFlags</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.Toolbar.html" title="Toolbar" class="">Toolbar</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.ToolbarButton.html" title="ToolbarButton" class="">ToolbarButton</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.ToolbarButtonEnableConditionFlags.html" title="ToolbarButtonEnableConditionFlags" class="">ToolbarButtonEnableConditionFlags</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.UserInterfaceObjects.ToolbarButtonStyle.html" title="ToolbarButtonStyle" class="">ToolbarButtonStyle</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.Utilities.html" title="RoboguideAPI.Utilities" class="">RoboguideAPI.Utilities</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.CollisionChecker.html" title="CollisionChecker" class="">CollisionChecker</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.CollisionChecker.CollisionPair.html" title="CollisionChecker.CollisionPair" class="">CollisionChecker.CollisionPair</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.Logger.html" title="Logger" class="">Logger</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.Logger.ObjectProperyFailedException.html" title="Logger.ObjectProperyFailedException" class="">Logger.ObjectProperyFailedException</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.Logger.Severity.html" title="Logger.Severity" class="">Logger.Severity</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.RoboguideScript.html" title="RoboguideScript" class="">RoboguideScript</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.RoboguideScriptSignal.html" title="RoboguideScriptSignal" class="">RoboguideScriptSignal</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.Utilities.SafeExecutor.html" title="SafeExecutor" class="">SafeExecutor</a>
+                          </li>
+                        </ul>  </li>
+                    <li class="">
+                      <span class="expand-stub"></span>
+                      <a href="RoboguideAPI.WorkcellObjects.html" title="RoboguideAPI.WorkcellObjects" class="">RoboguideAPI.WorkcellObjects</a>
+                        
+                        <ul class="nav level2">
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.AttachedPart.html" title="AttachedPart" class="">AttachedPart</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.EndOfArmTool.html" title="EndOfArmTool" class="">EndOfArmTool</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Feature.html" title="Feature" class="">Feature</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.FeatureSegment.html" title="FeatureSegment" class="">FeatureSegment</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Fixture.html" title="Fixture" class="">Fixture</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Graphics.html" title="Graphics" class="">Graphics</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Graphics.ObjectShape.html" title="Graphics.ObjectShape" class="">Graphics.ObjectShape</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.IWorkcellObject.html" title="IWorkcellObject" class="">IWorkcellObject</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Machine.html" title="Machine" class="">Machine</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.MachineLink.html" title="MachineLink" class="">MachineLink</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Obstacle.html" title="Obstacle" class="">Obstacle</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.PaintStyle.html" title="PaintStyle" class="">PaintStyle</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.Part.html" title="Part" class="">Part</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.PartRack.html" title="PartRack" class="">PartRack</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.RobotController.html" title="RobotController" class="">RobotController</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.RobotGraphics.html" title="RobotGraphics" class="">RobotGraphics</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.RobotGroup.html" title="RobotGroup" class="">RobotGroup</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.RobotGroup.ExtAxisType.html" title="RobotGroup.ExtAxisType" class="">RobotGroup.ExtAxisType</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.TPProgram.html" title="TPProgram" class="">TPProgram</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.UnsupportedObject.html" title="UnsupportedObject" class="">UnsupportedObject</a>
+                          </li>
+                          <li class="">
+                            <a href="RoboguideAPI.WorkcellObjects.UserFrame.html" title="UserFrame" class="">UserFrame</a>
+                          </li>
+                        </ul>  </li>
+                  </ul>        </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="RoboguideAPI.Workcell">
+  
+  
+  <h1 id="RoboguideAPI_Workcell" data-uid="RoboguideAPI.Workcell" class="text-break">Class Workcell
+  </h1>
+  <div class="markdown level0 summary"><p>A workcell is a collection of <a class="xref" href="RoboguideAPI.Objects.IRoboguideObject.html">IRoboguideObject</a> and manages their
+creation and destruction.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">Workcell</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="RoboguideAPI.Objects.IRoboguideObject.html">IRoboguideObject</a></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="RoboguideAPI.html">RoboguideAPI</a></h6>
+  <h5 id="RoboguideAPI_Workcell_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class Workcell : IRoboguideObject</code></pre>
+  </div>
+  <h5 id="RoboguideAPI_Workcell_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>A workcell consists of robots, tooling, fixtures, parts, obstacles, etc. The
+workcell can create, destroy, and maintain these objects. The workcell also
+emits events to listeners that want to know when certain things happen. The
+workcell also has a <a class="xref" href="RoboguideAPI.SimulationController.html">SimulationController</a> which can be used to
+start, stop, or reset the simulation. It also has a <a class="xref" href="RoboguideAPI.Workcell.html#RoboguideAPI_Workcell_CollisionChecker">CollisionChecker</a>
+which can report collision information for the current state of the workcell
+objects.</p>
+</div>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="RoboguideAPI_Workcell_ActivePaintStyle_" data-uid="RoboguideAPI.Workcell.ActivePaintStyle*"></a>
+  <h4 id="RoboguideAPI_Workcell_ActivePaintStyle" data-uid="RoboguideAPI.Workcell.ActivePaintStyle">ActivePaintStyle</h4>
+  <div class="markdown level1 summary"><p>Gets the current &quot;Active&quot; PaintStyle in the Workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PaintStyle ActivePaintStyle { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.PaintStyle.html">PaintStyle</a></td>
+        <td><p>null if an error was encountered or this is not a PaintPRO workcell</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_ActiveRobotController_" data-uid="RoboguideAPI.Workcell.ActiveRobotController*"></a>
+  <h4 id="RoboguideAPI_Workcell_ActiveRobotController" data-uid="RoboguideAPI.Workcell.ActiveRobotController">ActiveRobotController</h4>
+  <div class="markdown level1 summary"><p>Get/Set the current &quot;Active&quot; Robot Controller in the Workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RobotController ActiveRobotController { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.RobotController.html">RobotController</a></td>
+        <td><p>null if an error was encountered</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_AutoSaveLockout_" data-uid="RoboguideAPI.Workcell.AutoSaveLockout*"></a>
+  <h4 id="RoboguideAPI_Workcell_AutoSaveLockout" data-uid="RoboguideAPI.Workcell.AutoSaveLockout">AutoSaveLockout</h4>
+  <div class="markdown level1 summary"><p>Gets/Sets the AutoSaveLockout setting</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AutoSaveLockout { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>AutoSaveLockout - allow workcell auto save or lock it out</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CollisionChecker_" data-uid="RoboguideAPI.Workcell.CollisionChecker*"></a>
+  <h4 id="RoboguideAPI_Workcell_CollisionChecker" data-uid="RoboguideAPI.Workcell.CollisionChecker">CollisionChecker</h4>
+  <div class="markdown level1 summary"><p>Reference to the workcell's CollisionChecker instance</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CollisionChecker CollisionChecker { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CollisionChecker</span></td>
+        <td><p>Reference to the workcell's CollisionChecker instance</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_GraphicsEngine_" data-uid="RoboguideAPI.Workcell.GraphicsEngine*"></a>
+  <h4 id="RoboguideAPI_Workcell_GraphicsEngine" data-uid="RoboguideAPI.Workcell.GraphicsEngine">GraphicsEngine</h4>
+  <div class="markdown level1 summary"><p>Reference to the GraphicsEngine instance</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GraphicsEngine GraphicsEngine { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.GraphicsEngine.html">GraphicsEngine</a></td>
+        <td><p>Reference to the GraphicsEngine instance</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_Handle_" data-uid="RoboguideAPI.Workcell.Handle*"></a>
+  <h4 id="RoboguideAPI_Workcell_Handle" data-uid="RoboguideAPI.Workcell.Handle">Handle</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ObjectHandle Handle { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.Objects.ObjectHandle.html">ObjectHandle</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_ImageLibraryFilePath_" data-uid="RoboguideAPI.Workcell.ImageLibraryFilePath*"></a>
+  <h4 id="RoboguideAPI_Workcell_ImageLibraryFilePath" data-uid="RoboguideAPI.Workcell.ImageLibraryFilePath">ImageLibraryFilePath</h4>
+  <div class="markdown level1 summary"><p>Gets the path to the image library</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ImageLibraryFilePath { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>Path to the image library</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_IsDestroyed_" data-uid="RoboguideAPI.Workcell.IsDestroyed*"></a>
+  <h4 id="RoboguideAPI_Workcell_IsDestroyed" data-uid="RoboguideAPI.Workcell.IsDestroyed">IsDestroyed</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsDestroyed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_Name_" data-uid="RoboguideAPI.Workcell.Name*"></a>
+  <h4 id="RoboguideAPI_Workcell_Name" data-uid="RoboguideAPI.Workcell.Name">Name</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Name { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_ProcessPlugIn_" data-uid="RoboguideAPI.Workcell.ProcessPlugIn*"></a>
+  <h4 id="RoboguideAPI_Workcell_ProcessPlugIn" data-uid="RoboguideAPI.Workcell.ProcessPlugIn">ProcessPlugIn</h4>
+  <div class="markdown level1 summary"><p>Gets the Process plugin of the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ProcessPlugin ProcessPlugIn { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ProcessPlugin</span></td>
+        <td><p>enum ProcessPlugin</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_Simulation_" data-uid="RoboguideAPI.Workcell.Simulation*"></a>
+  <h4 id="RoboguideAPI_Workcell_Simulation" data-uid="RoboguideAPI.Workcell.Simulation">Simulation</h4>
+  <div class="markdown level1 summary"><p>Reference to the workcell's SimulationController instance</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public SimulationController Simulation { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.SimulationController.html">SimulationController</a></td>
+        <td><p>Reference to the workcell's SimulationController instance</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_TeachRefreshRate_" data-uid="RoboguideAPI.Workcell.TeachRefreshRate*"></a>
+  <h4 id="RoboguideAPI_Workcell_TeachRefreshRate" data-uid="RoboguideAPI.Workcell.TeachRefreshRate">TeachRefreshRate</h4>
+  <div class="markdown level1 summary"><p>Gets/Sets the Teach Time Refresh Rate</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int TeachRefreshRate { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><p>Units of updates per second</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_WorkcellFilePath_" data-uid="RoboguideAPI.Workcell.WorkcellFilePath*"></a>
+  <h4 id="RoboguideAPI_Workcell_WorkcellFilePath" data-uid="RoboguideAPI.Workcell.WorkcellFilePath">WorkcellFilePath</h4>
+  <div class="markdown level1 summary"><p>Gets the absolute path to the open Workcell file</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string WorkcellFilePath { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>Absolute path to the open workcell file</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="RoboguideAPI_Workcell_AttachListener_" data-uid="RoboguideAPI.Workcell.AttachListener*"></a>
+  <h4 id="RoboguideAPI_Workcell_AttachListener_IWorkcellListener_" data-uid="RoboguideAPI.Workcell.AttachListener(IWorkcellListener)">AttachListener(IWorkcellListener)</h4>
+  <div class="markdown level1 summary"><p>Attaches a listener to the Workcell. This listener will receive workcell events.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void AttachListener(IWorkcellListener listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IWorkcellListener</span></td>
+        <td><span class="parametername">listener</span></td>
+        <td><p>Listener to attach</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreateAttachedPart_" data-uid="RoboguideAPI.Workcell.CreateAttachedPart*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreateAttachedPart_RoboguideAPI_WorkcellObjects_IWorkcellObject_RoboguideAPI_WorkcellObjects_Part_" data-uid="RoboguideAPI.Workcell.CreateAttachedPart(RoboguideAPI.WorkcellObjects.IWorkcellObject,RoboguideAPI.WorkcellObjects.Part)">CreateAttachedPart(IWorkcellObject, Part)</h4>
+  <div class="markdown level1 summary"><p>Creates an AttachedPart and adds it to the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AttachedPart CreateAttachedPart(IWorkcellObject parent, Part part)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.IWorkcellObject.html">IWorkcellObject</a></td>
+        <td><span class="parametername">parent</span></td>
+        <td><p>parent to add attached part</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Part.html">Part</a></td>
+        <td><span class="parametername">part</span></td>
+        <td><p>api part</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.AttachedPart.html">AttachedPart</a></td>
+        <td><p>The attached part that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreateDressout_" data-uid="RoboguideAPI.Workcell.CreateDressout*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreateDressout_RoboguideAPI_WorkcellObjects_RobotGroup_System_Int32_" data-uid="RoboguideAPI.Workcell.CreateDressout(RoboguideAPI.WorkcellObjects.RobotGroup,System.Int32)">CreateDressout(RobotGroup, Int32)</h4>
+  <div class="markdown level1 summary"><p>Creates a dressout machine</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Machine CreateDressout(RobotGroup robotGroup, int jointNumber)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.RobotGroup.html">RobotGroup</a></td>
+        <td><span class="parametername">robotGroup</span></td>
+        <td><p>Robot group for dressout to attach to.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">jointNumber</span></td>
+        <td><p>The joint axis that the dressout will attach to.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Machine.html">Machine</a></td>
+        <td><p>Machine of type dressout that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreateFixture_" data-uid="RoboguideAPI.Workcell.CreateFixture*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreateFixture" data-uid="RoboguideAPI.Workcell.CreateFixture">CreateFixture()</h4>
+  <div class="markdown level1 summary"><p>Creates a Fixture and adds it to the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Fixture CreateFixture()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Fixture.html">Fixture</a></td>
+        <td><p>Fixture that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreateMachine_" data-uid="RoboguideAPI.Workcell.CreateMachine*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreateMachine" data-uid="RoboguideAPI.Workcell.CreateMachine">CreateMachine()</h4>
+  <div class="markdown level1 summary"><p>Creates a Machine and adds it to the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Machine CreateMachine()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Machine.html">Machine</a></td>
+        <td><p>Machine that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreateObstacle_" data-uid="RoboguideAPI.Workcell.CreateObstacle*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreateObstacle" data-uid="RoboguideAPI.Workcell.CreateObstacle">CreateObstacle()</h4>
+  <div class="markdown level1 summary"><p>Creates an Obstacle and adds it to the workcell.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Obstacle CreateObstacle()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Obstacle.html">Obstacle</a></td>
+        <td><p>The obstacle that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreatePaintStyle_" data-uid="RoboguideAPI.Workcell.CreatePaintStyle*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreatePaintStyle_System_String_" data-uid="RoboguideAPI.Workcell.CreatePaintStyle(System.String)">CreatePaintStyle(String)</h4>
+  <div class="markdown level1 summary"><p>Creates a PaintPRO PaintStyle and adds it to the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PaintStyle CreatePaintStyle(string cadFileName)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">cadFileName</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.PaintStyle.html">PaintStyle</a></td>
+        <td><p>PaintPRO PaintStyle that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_CreatePart_" data-uid="RoboguideAPI.Workcell.CreatePart*"></a>
+  <h4 id="RoboguideAPI_Workcell_CreatePart_RoboguideAPI_WorkcellObjects_Graphics_ObjectShape_" data-uid="RoboguideAPI.Workcell.CreatePart(RoboguideAPI.WorkcellObjects.Graphics.ObjectShape)">CreatePart(Graphics.ObjectShape)</h4>
+  <div class="markdown level1 summary"><p>Creates a Part and adds it to the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Part CreatePart(Graphics.ObjectShape shape)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Graphics.ObjectShape.html">Graphics.ObjectShape</a></td>
+        <td><span class="parametername">shape</span></td>
+        <td><p>Shape of the part, e.g. CAD, Box, Sphere</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Part.html">Part</a></td>
+        <td><p>That part that was created, or null if an error occurred</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_DestroyObject_" data-uid="RoboguideAPI.Workcell.DestroyObject*"></a>
+  <h4 id="RoboguideAPI_Workcell_DestroyObject_RoboguideAPI_WorkcellObjects_IWorkcellObject_" data-uid="RoboguideAPI.Workcell.DestroyObject(RoboguideAPI.WorkcellObjects.IWorkcellObject)">DestroyObject(IWorkcellObject)</h4>
+  <div class="markdown level1 summary"><p>Removes the specified object from the workcell and destroys it</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool DestroyObject(IWorkcellObject workcellObject)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.IWorkcellObject.html">IWorkcellObject</a></td>
+        <td><span class="parametername">workcellObject</span></td>
+        <td><p>Specifies object to be removed from the workcell</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the object was removed successfully; False if it was not.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_DetachListener_" data-uid="RoboguideAPI.Workcell.DetachListener*"></a>
+  <h4 id="RoboguideAPI_Workcell_DetachListener_IWorkcellListener_" data-uid="RoboguideAPI.Workcell.DetachListener(IWorkcellListener)">DetachListener(IWorkcellListener)</h4>
+  <div class="markdown level1 summary"><p>Detaches a listener from the Workcell. This listener will no longer receive workcell events.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void DetachListener(IWorkcellListener listener)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IWorkcellListener</span></td>
+        <td><span class="parametername">listener</span></td>
+        <td><p>Listener to detach</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_FindMetadata_" data-uid="RoboguideAPI.Workcell.FindMetadata*"></a>
+  <h4 id="RoboguideAPI_Workcell_FindMetadata_System_String_PropertyCollection__" data-uid="RoboguideAPI.Workcell.FindMetadata(System.String,PropertyCollection@)">FindMetadata(String, out PropertyCollection)</h4>
+  <div class="markdown level1 summary"><p>Searches the object for metadata with the specified name</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool FindMetadata(string name, out PropertyCollection metadata)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>Specifies the name of the metadata to find</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">PropertyCollection</span></td>
+        <td><span class="parametername">metadata</span></td>
+        <td><p>Output metadata property if found, otherwise null</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the key was found, otherwise false</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_FindObject_" data-uid="RoboguideAPI.Workcell.FindObject*"></a>
+  <h4 id="RoboguideAPI_Workcell_FindObject_RoboguideAPI_Objects_ObjectHandle_" data-uid="RoboguideAPI.Workcell.FindObject(RoboguideAPI.Objects.ObjectHandle)">FindObject(ObjectHandle)</h4>
+  <div class="markdown level1 summary"><p>Find the IRoboguideObject with the specified <a class="xref" href="RoboguideAPI.Objects.ObjectHandle.html">ObjectHandle</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IWorkcellObject FindObject(ObjectHandle handle)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.Objects.ObjectHandle.html">ObjectHandle</a></td>
+        <td><span class="parametername">handle</span></td>
+        <td><p>Specifies the handle of the IRoboguideObject</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.IWorkcellObject.html">IWorkcellObject</a></td>
+        <td><p>The object with the specified handle, or null if no object was found</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_GetDressoutProperties_" data-uid="RoboguideAPI.Workcell.GetDressoutProperties*"></a>
+  <h4 id="RoboguideAPI_Workcell_GetDressoutProperties_RoboguideAPI_WorkcellObjects_Machine_RoboguideAPI_WorkcellObjects_RobotGroup__System_Int32__" data-uid="RoboguideAPI.Workcell.GetDressoutProperties(RoboguideAPI.WorkcellObjects.Machine,RoboguideAPI.WorkcellObjects.RobotGroup@,System.Int32@)">GetDressoutProperties(Machine, out RobotGroup, out Int32)</h4>
+  <div class="markdown level1 summary"><p>Gets the robot group and joint number for a dressout machine</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetDressoutProperties(Machine dressoutMachine, out RobotGroup robotGroup, out int jointNumber)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.Machine.html">Machine</a></td>
+        <td><span class="parametername">dressoutMachine</span></td>
+        <td><p>Machine that is of type dressout.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="RoboguideAPI.WorkcellObjects.RobotGroup.html">RobotGroup</a></td>
+        <td><span class="parametername">robotGroup</span></td>
+        <td><p>Robot group that dressout is attached to.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">jointNumber</span></td>
+        <td><p>Joint number of the robot group that the dressout is attached to.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_GetObjects_" data-uid="RoboguideAPI.Workcell.GetObjects*"></a>
+  <h4 id="RoboguideAPI_Workcell_GetObjects" data-uid="RoboguideAPI.Workcell.GetObjects">GetObjects()</h4>
+  <div class="markdown level1 summary"><p>Enumerates all objects in the workcell</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;IWorkcellObject&gt; GetObjects()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;<a class="xref" href="RoboguideAPI.WorkcellObjects.IWorkcellObject.html">IWorkcellObject</a>&gt;</td>
+        <td><p>An IEnumerable of all objects in the workcell</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="RoboguideAPI_Workcell_GetObjects_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method enumerates all known objects in the workcell.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>When iterating over the workcell objects, be careful not to modify the
+collection. For example, do not DestroyObject inside of a
+<code>foreach(var obj in Workcell.GetObjects())</code> as this will change
+the contents of the workcell object collection. The correct approach
+is to find the object to destroy, hold onto the reference outside the
+loop, then call DestroyObject.</p>
+</div>
+</div>
+  <h5 id="RoboguideAPI_Workcell_GetObjects_examples">Examples</h5>
+  <pre><code class="lang-cs">// Print out the name of every object in the cell
+foreach(var apiObject in Workcell.GetObjects())
+{
+    Debug.WriteLine(apiObject.Name);
+}
+
+// Find the first object with the name &quot;MyObstacle&quot;
+IRoboguideObject myObstacle = 
+    Workcell.GetObjects().FirstOrDefault(obj => obj.Name == &quot;MyObstacle&quot;);
+
+// Find all objects that have a name that starts with &quot;My&quot;
+IRoboguideObject[] myObjects = 
+    Workcell.GetObjects().Where(obj => obj.Name.StartsWith(&quot;My&quot;)).ToArray();
+
+
+// Find all objects that have a name that starts with &quot;My&quot; and destroy them
+IRoboguideObject[] myObjects = 
+    Workcell.GetObjects().Where(obj => obj.Name.StartsWith(&quot;My&quot;)).ToArray();</code></pre>
+
+  
+  
+  <a id="RoboguideAPI_Workcell_GetObjects_" data-uid="RoboguideAPI.Workcell.GetObjects*"></a>
+  <h4 id="RoboguideAPI_Workcell_GetObjects__1" data-uid="RoboguideAPI.Workcell.GetObjects``1">GetObjects&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Enumerates all objects in the workcell of the specified type</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;T&gt; GetObjects&lt;T&gt;()
+
+    where T : class, IWorkcellObject</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;T&gt;</td>
+        <td><p>An IEnumerable of all objects in the workcell</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of workcell object to find.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_RefreshView_" data-uid="RoboguideAPI.Workcell.RefreshView*"></a>
+  <h4 id="RoboguideAPI_Workcell_RefreshView_System_Boolean_" data-uid="RoboguideAPI.Workcell.RefreshView(System.Boolean)">RefreshView(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Refresh the Chui World View</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RefreshView(bool vForce = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">vForce</span></td>
+        <td><p>force the refresh</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_RemoveMetadata_" data-uid="RoboguideAPI.Workcell.RemoveMetadata*"></a>
+  <h4 id="RoboguideAPI_Workcell_RemoveMetadata_System_String_" data-uid="RoboguideAPI.Workcell.RemoveMetadata(System.String)">RemoveMetadata(String)</h4>
+  <div class="markdown level1 summary"><p>Removes the metadata with the specified key from the metadata collection</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool RemoveMetadata(string name)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>Specifies the key indicating the metadata to remove</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p>True if the metadata was removed, otherwise false</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="RoboguideAPI_Workcell_SetMetadata_" data-uid="RoboguideAPI.Workcell.SetMetadata*"></a>
+  <h4 id="RoboguideAPI_Workcell_SetMetadata_PropertyCollection_" data-uid="RoboguideAPI.Workcell.SetMetadata(PropertyCollection)">SetMetadata(PropertyCollection)</h4>
+  <div class="markdown level1 summary"><p>Adds the specified metadata to the object. If metadata with the same name
+already exists, it will be replaced.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetMetadata(PropertyCollection metadata)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PropertyCollection</span></td>
+        <td><span class="parametername">metadata</span></td>
+        <td><p>Specifies the metadata to be stored with the object</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="RoboguideAPI_Workcell_SetMetadata_PropertyCollection__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Metadata is saved to the workcell file. It will be restored when
+the workcell is loaded.</p>
+</div>
+  
+  
+  <a id="RoboguideAPI_Workcell_SuspendGraphicsUpdatesBegin_" data-uid="RoboguideAPI.Workcell.SuspendGraphicsUpdatesBegin*"></a>
+  <h4 id="RoboguideAPI_Workcell_SuspendGraphicsUpdatesBegin" data-uid="RoboguideAPI.Workcell.SuspendGraphicsUpdatesBegin">SuspendGraphicsUpdatesBegin()</h4>
+  <div class="markdown level1 summary"><p>Begin suspending graphics updates</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SuspendGraphicsUpdatesBegin()</code></pre>
+  </div>
+  
+  
+  <a id="RoboguideAPI_Workcell_SuspendGraphicsUpdatesEnd_" data-uid="RoboguideAPI.Workcell.SuspendGraphicsUpdatesEnd*"></a>
+  <h4 id="RoboguideAPI_Workcell_SuspendGraphicsUpdatesEnd_System_Boolean_" data-uid="RoboguideAPI.Workcell.SuspendGraphicsUpdatesEnd(System.Boolean)">SuspendGraphicsUpdatesEnd(Boolean)</h4>
+  <div class="markdown level1 summary"><p>End suspending graphics updates</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SuspendGraphicsUpdatesEnd(bool ForceAllEnd)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">ForceAllEnd</span></td>
+        <td><p>Remove all SuspendGraphicsUpdates requests (semaphore)</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="RoboguideAPI.Objects.IRoboguideObject.html">IRoboguideObject</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

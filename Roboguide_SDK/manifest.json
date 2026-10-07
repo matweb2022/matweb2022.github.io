@@ -1,0 +1,2175 @@
+{
+  "homepages": [],
+  "source_base_path": "V:/pczeroteach/ROBOGUIDE_DotNet/UtilityPlugIns/RoboguideAPI/docfx_project",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Adapters.SimPROAdapter.RoboguideApplicationFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Adapters.SimPROAdapter.RoboguideApplicationFactory.html",
+          "hash": "cBoiDSwLF3QV+uKoS6sWb9e3Yl+UKDqLIXAAx3JTzNQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Adapters.SimPROAdapter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Adapters.SimPROAdapter.html",
+          "hash": "LyWMn4MMPP/jix73d2UOcXa1JL5l1V4HLItrvlN14zI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.AttachedPart.RandomLocationModes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.AttachedPart.RandomLocationModes.html",
+          "hash": "7xCbneyPRVKeug8tfR4YumM+aTY5HOENcBp3oA73P1E="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.AttachedPart.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.AttachedPart.html",
+          "hash": "Gr7DuQU7bfpuzSaU3o3bcz8DENh2bdNdcxZCTw1atHI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.CartesianPosition.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.CartesianPosition.html",
+          "hash": "jv0drDcrpsrf/IseaY97IVNqlMhYjmLe363d1m50UTg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Color.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Color.html",
+          "hash": "s0xTdiozLSCek+6VnG1CiF4iY422TUm5tRErhqujaNg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Constants.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Constants.html",
+          "hash": "AXC/KPhHztTAo8F17/UDxBVkoXwSP0PGAABK5RvYHvM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Frame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Frame.html",
+          "hash": "3xWD6gWmFDGM3wPzb9rVmNW/rWQlyT9vJw7rM8bwboA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.AxisAlignedBoundingBox.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.AxisAlignedBoundingBox.html",
+          "hash": "3AmO0HrgHglsGQH2ibCORk6F+DDVceW2M49rfbrbH9c="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.CadNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.CadNode.html",
+          "hash": "pLvGCB6IZMIjuvYZON7NHXhO28uTY/g7RYx2Yc4lQgg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.Mesh.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.Mesh.html",
+          "hash": "47ogLRsl7iOTL0zPNGzPgD/EsMjUonCGQPq8IV/CHp0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.MeshMaterial.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.MeshMaterial.html",
+          "hash": "xTOQS0zE+miZoeSzNLZYPpo3KVMomJR4CiRkuhKq7TI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.MeshSet.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.MeshSet.html",
+          "hash": "XT/oAXfoG1EFjmrfZQ1mPISgUCb8xfVeSL3jUVLKcno="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.MeshVertex.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.MeshVertex.html",
+          "hash": "tSJUCuK9yPGqoCzZ0vH3/Me4XpCJSUPfqIjlbTMzXM0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Geometric.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Geometric.html",
+          "hash": "BpapU3P7qbypIptSFub0KwRW2gtx4yjayRV0HLR3YdQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.BoxImage.BoxSurface.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.BoxImage.BoxSurface.html",
+          "hash": "CXC/FCnPFQU5QtRvMIWF0cPHXDZNJTDR9f4uEhYbq1w="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.BoxImage.ImageDirection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.BoxImage.ImageDirection.html",
+          "hash": "cTcDEwbAZAvPXrZdfHar6hgzsFfElH4ORRlNoXXXkl0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.BoxImage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.BoxImage.html",
+          "hash": "4WP1HeeikTLMuUAho9ziezzQfjX3FfGZRJ4v+JG+41A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.FeatureSegmentPoint.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.FeatureSegmentPoint.html",
+          "hash": "PzUfhKOjOAkto9VRtdWz6fsy8xUzKiPBwXaBmN4LTu8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.LineSetSegment.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.LineSetSegment.html",
+          "hash": "FnWSy5RG+M/d8FkRG5yA/hUa2eYxlij1M95Rfzpiod8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.PointSetVertex.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.PointSetVertex.html",
+          "hash": "wJOOH1XaXwnIm0CFyB5cHb6BYd6iyn094Moyb1mFq2g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.ProjectionType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.ProjectionType.html",
+          "hash": "cs9B9AwHWS6XNDRRdR2GE4e4QUisYiF/LPOCx2p522c="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Graphics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Graphics.html",
+          "hash": "Se1cjpgPvqb68UN1Ll7Fi69AFZiQ8yYIWDklLR2lOsA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.JointPosition.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.JointPosition.html",
+          "hash": "Sock0f/5KJLUBLAUvf+l4giK5BoQltP8Yb4B/ydqjbc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.AxisType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.AxisType.html",
+          "hash": "6z7hF/WWjKZ9wXsiLHTxrz/JhuSO2sIZjPDWsGm8nYU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.LinearDirection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.LinearDirection.html",
+          "hash": "Bk7YoXAj8A2L5fxB4g2O13NH/5/LQFOMna9VfmnlPYE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.MachineLinkAxis.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.MachineLinkAxis.html",
+          "hash": "RWbqLSgbxjoGX7PPtuIAn1hlhXkUoSpExfNJCSyDDWw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.MachineLinkJointType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.MachineLinkJointType.html",
+          "hash": "KmL644YOEEkthCQKioc72Tc8mmEpZKcOqmFjF0ab2bY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.MachineSubType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.MachineSubType.html",
+          "hash": "e6p+x3ZZzGiCxnMuRPrc7wxj4h3pEwgMNT8wsmsBlcI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.MachineType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.MachineType.html",
+          "hash": "0PU6+qbqTHgXNqDZ8L2ZsPGmHa7CiTCW+emf2GAK45M="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.MotionControlType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.MotionControlType.html",
+          "hash": "rYSci08SZpL85ay+8RGLj+0l00FrwwydGSmt1JWe8GY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.RotationDirection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.RotationDirection.html",
+          "hash": "QHpjvuphgfVoW//G/NHm4nKu7hTzvPxdwv54dlTsxOw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Machine.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Machine.html",
+          "hash": "A73np/X+NTmosuwnHLoC2b/iYU+ZP1uOGOGTbfqTxuo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Matrix4.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Matrix4.html",
+          "hash": "n14j8M2XRdczQ1yJ1u84WFGJ+NsTxGtW8T3jAMtBJI0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.BooleanProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.BooleanProperty.html",
+          "hash": "5ObOC7ljo6+kkwWUGMhE8ers1EBaW+0TcgieH+L4NgE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.FloatingPointProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.FloatingPointProperty.html",
+          "hash": "Q6cCuY4AV4tMQUSHh+VgI2r82YVOE1W9+QI5n+cndDk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.FrameProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.FrameProperty.html",
+          "hash": "/yVroOuTrQlzf3jjk6XornrnIeruwDz6ufF41xvvHsU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.IProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.IProperty.html",
+          "hash": "Cs/z8VnmGzSyjGLc6dhSIzRSEdG3cBbPdbtRUID4C54="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.IntegerProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.IntegerProperty.html",
+          "hash": "wq4Lye4ZzyX5bRNzaDmc6ZM5SB17lokkQWwC7+4pu3c="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.PropertyCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.PropertyCollection.html",
+          "hash": "44B/PbDhlhk3Mwuk2XRoswEgIKRfgalpEs2602n0txg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.StringProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.StringProperty.html",
+          "hash": "kpf7cKv06KvKqNC816pTqIXmkNtVTMk3r5dml4P1qZc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.UnsignedIntegerProperty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.UnsignedIntegerProperty.html",
+          "hash": "I8lMJdM6K2tcH6x1atT1WyVav/8gmxguZuTNRSm2EmU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Metadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Metadata.html",
+          "hash": "54VCucML/PNA8cFzaysNB3+gZl0EUse0KYPDgfj/WRs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Paint.StyleLeftSideCADAxis.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Paint.StyleLeftSideCADAxis.html",
+          "hash": "Y9gZIOZoH+O6rLG+Azgawg2IrrEV4Q46wMfkRaaZQiE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Paint.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Paint.html",
+          "hash": "874FV5FHPe8BuBFq6SYzQlKnyNr2NE778rs3jeoIQ5w="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Position.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Position.html",
+          "hash": "V5pJ/+cNAaaBsvsIZ8Qeq6ueP4pEZRJ1/3zrt4uxXrQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Robot.IOInputType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Robot.IOInputType.html",
+          "hash": "wnumAPod4pKm0FNSxCzaefM7y1ZDWz9QdSAvA8h2BZA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Robot.IOOutputType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Robot.IOOutputType.html",
+          "hash": "7wwu3AuVXP9MNNbaNk7s4zBwVxgZRN25zVchw5vfFhM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Robot.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Robot.html",
+          "hash": "oW00Qzx5W57KRBx71uUdscmfyY+31MWbXd0VvotugK8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.RobotConfig.FlipNoFlip.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.RobotConfig.FlipNoFlip.html",
+          "hash": "/ExdDRcRqTHubVsBwWUAeBEmCNodJy5kSoN65zAh+oI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.RobotConfig.FrontBack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.RobotConfig.FrontBack.html",
+          "hash": "PUoWr5PJu8O3w70AMaviaRVraLQtfasOf5vX2yCccyA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.RobotConfig.LeftRight.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.RobotConfig.LeftRight.html",
+          "hash": "E6vVRaNV/jFIXu+ZD0T9hNulpD+YLIpHTe3a53WT+6s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.RobotConfig.UpDown.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.RobotConfig.UpDown.html",
+          "hash": "rRKPXIeh/M0Uo/ldiaGoJOum8T7Q2Y6SyYKcKyhHsqg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.RobotConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.RobotConfig.html",
+          "hash": "wwXAPJEqHhBGy2DGYAKbGTgiTGsOlAE+S/dvwasSzdw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Rotation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Rotation.html",
+          "hash": "dW7wRCRTEUM6EBSnoevEXs0BFUNQImJIynGqtltUyOg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Scale.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Scale.html",
+          "hash": "2Fi694zUqphaOjnl/PPFQ4z0h0pn7OC8JLnTaTp530g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Segment.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Segment.html",
+          "hash": "BGsMCNNqySwtm4vI18RIt7DdiVVDJ5zKubChithEmXg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.APIInstruction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.APIInstruction.html",
+          "hash": "18IxumHCtAqJxi0juyKwAUCZpx4Lp7ljB2cvdiLvWIk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.ForLoopInstruction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.ForLoopInstruction.html",
+          "hash": "Xu5UjngGuXynPa/Ly21LwMGryis20VHL+CdPq5pVWzo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.IInstruction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.IInstruction.html",
+          "hash": "i7edes5RYGWg+Y1VNjlPgYYXD6pQF8/BuW5bnxRdsUI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.MoveType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.MoveType.html",
+          "hash": "31Ee64EKcE5YoDME8KJacqirY+OjPnDhvQSQ3jor3QY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.Position.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.Position.html",
+          "hash": "yrEvSlYFniF0xIwnFKz9rIQLofkzXp/dwzezh/IfMDE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.Reference.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.Reference.html",
+          "hash": "lxuLuH0tuLdBvPRLbWkWbDC4znbGc9vISMMR7r3jsIc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.TerminationType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.TerminationType.html",
+          "hash": "8KIkaE0ovd7DCg04GkofjP3bNokv0S9fUKvTPyq8ohg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.Units.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.Units.html",
+          "hash": "6AzxeQSoYr2KvyxTU6hXjmjWswOuQ4Hjj/RmcdYh334="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.MotionInstruction.html",
+          "hash": "IknhdTWwMvCw2idLQExTRLpqR884s9iHjz236jSN8a4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.PickPlaceInstruction.PickPlaceType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.PickPlaceInstruction.PickPlaceType.html",
+          "hash": "SgBJZK+WTG9gZjxpySsu8OrWv7/XPuNGToZGRlUCYhk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.PickPlaceInstruction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.PickPlaceInstruction.html",
+          "hash": "EW7zD863hQDSt5Lb5XpdAu+wltLPJNZOlPycM0kxcxw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.TPProgramLine.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.TPProgramLine.html",
+          "hash": "f3ToItHemHlnH+QGgkku8etxtTYmGxdc5rrx3B1Xeb0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.TPProgramPosition.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.TPProgramPosition.html",
+          "hash": "+M/NOtl7vpsrd+LxxbHTR0zKMEHmYp62+PMTiX1ThLc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.TPProgramType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.TPProgramType.html",
+          "hash": "obKK5zG71RyXF3tIoIoqu5659lKfvUWTbMb6SlBTw/k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.UnsupportedInstruction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.UnsupportedInstruction.html",
+          "hash": "U2m7yLPlZ5e4kehUNHL2RUdVzGZAn4O+i8ztGoRNR+s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.TPProgram.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.TPProgram.html",
+          "hash": "QWfKS3Wsk9olEi9ouaSLbt671BGNspfBHsuHLBZSc/Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.UserInterface.KeyCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.UserInterface.KeyCode.html",
+          "hash": "IL6Gv0bjCnFA31HAY9c78IALjgYwaneDTFkUoby7LkU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.UserInterface.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.UserInterface.html",
+          "hash": "qB/valWBhRbhLWPirz3b5SxQ4rkdM0RU1du930NMF+A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Vector2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Vector2.html",
+          "hash": "YRNvfufJGDoq0mWnBbe3vaDESqLxSQp5QVq8jdH4p+g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Vector3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Vector3.html",
+          "hash": "e0j1bhT8Ci1UlF4UabtJRS+9ae4R6IPRFAOgfU5iGu0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Vector4.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Vector4.html",
+          "hash": "X+NjCI/x7vd5WGJJmIDFVoUzleaQcdctwsZI6EQV/UA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Workcell.ProcessPlugin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Workcell.ProcessPlugin.html",
+          "hash": "Cxm0+g6a6l+fSJ2xTxzJmLZtVP8amFsy639I/mE+H8s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.Workcell.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.Workcell.html",
+          "hash": "Oe3pcTF89rPP2w5qhXMDX7ofACWui8eWyu0vNcv/L5Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Data.html",
+          "hash": "en6D6OzM+phnrVZnqcXIe1nk3bgFi12KYmHi0GJRWw8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsEngine.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsEngine.html",
+          "hash": "oopfh+YogPa3grmnvrudCctlpfLOtrSpOo5ke+VzAUo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.BoxGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.BoxGraphicsNode.html",
+          "hash": "XhbhQwayGcY7pBk07C/d1b4vbsdh1i12dP7Kj64L01A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.CadModelGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.CadModelGraphicsNode.html",
+          "hash": "QhIHmYV9sn8cE0DOFWkQFeKVa4remPDwX+XHKX6PSZw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.CylinderGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.CylinderGraphicsNode.html",
+          "hash": "cvcJyLN3Toq+BQhKCgR7RQY9oJ23uud3SBj6k93ch8E="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.GraphicsObjectFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.GraphicsObjectFactory.html",
+          "hash": "KOIUxqms2eBiO1qZepCqGgCgBIlEc1bsAFbaiwVqoPM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.IGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.IGraphicsNode.html",
+          "hash": "GmJMtE9TWel5q921IdoiuCpbztvmMXmx/U3TzAU9fAo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.LineSetGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.LineSetGraphicsNode.html",
+          "hash": "U5RiSKwJ+W1AJI6mRjls91XNsrxWbvQpvJd9FjC+dPI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.MeshSetGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.MeshSetGraphicsNode.html",
+          "hash": "Dp3ddXjlB5MLhJYV98BtjQaXHPyXARX5ImkBOYTue58="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.PointSetGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.PointSetGraphicsNode.html",
+          "hash": "B9IrL/A4V/HM/tRGywNZrAhLgwxtO36b+jxRDnkgKaI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.SphereGraphicsNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.SphereGraphicsNode.html",
+          "hash": "ZudI/W5IfGYcgMxic3WDXzPdX54Ih5Uz3sKMjgT7aPU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.GraphicsObjects.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.GraphicsObjects.html",
+          "hash": "ZRLS9rq08rnnD8YztM5b4x1M4BqsLltOTfaJyu9DQsY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Interfaces.IRoboguideAPIPlugin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Interfaces.IRoboguideAPIPlugin.html",
+          "hash": "d5uoPqZYi8P+Nl5Vl9WMMeSt6S6x9YSuQaK+jF/0uaU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Interfaces.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Interfaces.html",
+          "hash": "j6EBcXLy0IBjQFaBorGW1d7lGVv41U/4wdl92RnNhw0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.IApplicationListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.IApplicationListener.html",
+          "hash": "Ue9S4llPkqZpA30jVrLe0lbDWiyi1BagS2iOvzzbjVY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.ILogListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.ILogListener.html",
+          "hash": "LbrLw5QZTJCBq6zREA8emrHCfyGpK1EjUquY6/62dxI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.ISimulationListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.ISimulationListener.html",
+          "hash": "W8uHAj3WTn9NflTvNggITiYWzhLCJnOlYgZqFYJQHcc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.IUserInterfaceListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.IUserInterfaceListener.html",
+          "hash": "mLpPpZ/8S1xkQzjRhcB/3oFwHjZgEBoKVg9MDovAilg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.IViewportListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.IViewportListener.html",
+          "hash": "eKCmorVWC9nI7LIapckNQVN+mke2rtK4/ra192U73qQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.IWorkcellListener.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.IWorkcellListener.html",
+          "hash": "yDAVIbWP3tFLRp8LBct45GzihpOqgUquL/JGDyKfmTQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Listeners.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Listeners.html",
+          "hash": "FwnjFlWeqi2ex+cUvYQoHuTVBRHyyQUTUey2uNhUSKw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Objects.IRoboguideObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Objects.IRoboguideObject.html",
+          "hash": "yCp47oXTH5n/opTJvq5ySoRLIdmuvDcDcbxVPpEKR8M="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Objects.ObjectHandle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Objects.ObjectHandle.html",
+          "hash": "Dzfm71qAcwe7rw+j/g2gaHjM0srSl7DMGxNujIvTst0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Objects.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Objects.html",
+          "hash": "GDtAKtMjiuKvA93KBw556ozUSLf+3Z4fk12MKCceli0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Plugin.IRoboguideApplicationFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Plugin.IRoboguideApplicationFactory.html",
+          "hash": "G8xUt7TjwIkMko6KZ+ThOizZy0faK0vL75ZO8u0I7pc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Plugin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Plugin.html",
+          "hash": "yvsgJqkZT8s9eQ9uYJz6W4Aa7dOFzZtxpVoiiIdj9lo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.RoboguideAPIPlugin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.RoboguideAPIPlugin.html",
+          "hash": "p8svtElPSYBPo0O5pWzykcEkT5LBYsDLE4+c509waZk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.RoboguideApplication.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.RoboguideApplication.html",
+          "hash": "odnfzcwrllvk8Cqc+ZTcv0XRj6QGpXuod/nQZxlW06o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.SimulationController.SimulationState.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.SimulationController.SimulationState.html",
+          "hash": "M7tPPbpz7ZAfJGUK5EZU4y5hn92U25zT0SmXbggQL+I="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.SimulationController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.SimulationController.html",
+          "hash": "9Zkr0eUl1FPskcFPtdD9f+iDeujjQJMg17Z8G7QeQRY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterface.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterface.html",
+          "hash": "8ZFKjlqleA1FvXoaAE1xPkN/amy35tF0rsYpVar+6fM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.DockMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.DockMode.html",
+          "hash": "lbHY1vI9DL8oLmAUyO06G6nI1y+rpivGVwLMQmSc7s4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.DockableWindow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.DockableWindow.html",
+          "hash": "RG000btDXXkUU7/MGWyWErSJA1YJlkfpCPMaEJwM0tM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.IUserInterfaceObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.IUserInterfaceObject.html",
+          "hash": "9ezvJaIX/O5o7S40Jn+gNTrD9EkrRS3b2VcUeUJexWU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.Menu.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.Menu.html",
+          "hash": "2QwxFZx5spHLdbtX/Hncq3Pr306+A6YNuFe4heGNU20="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.MenuEnableConditionFlags.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.MenuEnableConditionFlags.html",
+          "hash": "T3tRnuhcSbxX5/LfcyY5Z52Rxnmdyy2222AtErEHxFU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.Toolbar.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.Toolbar.html",
+          "hash": "MLW9cpboSeMrdJ+kgbcyAsR2pf0C+3cvtzLBd7w4mxg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.ToolbarButton.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.ToolbarButton.html",
+          "hash": "+WzJ2fhCzBJH0sePJiQDYQUspfMzBAZnzCVV2qMoPyM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.ToolbarButtonEnableConditionFlags.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.ToolbarButtonEnableConditionFlags.html",
+          "hash": "tWnjZgLZxFnQz6I2oN6EN9LNWNrhSK1sc1kz5aojons="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.ToolbarButtonStyle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.ToolbarButtonStyle.html",
+          "hash": "LiY04vB9iiXnp28m+ml3baeTZkmDdmFPY67enm8H0MI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.UserInterfaceObjects.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.UserInterfaceObjects.html",
+          "hash": "wkXJ08kp2eQE9/jYCMc//egBAhYHm3+nr/Vnty15HT4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.CollisionChecker.CollisionPair.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.CollisionChecker.CollisionPair.html",
+          "hash": "JKb2cPH4Vqny5PuH/LouBKrSjnhtrqrK5LFyJ6BJYUU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.CollisionChecker.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.CollisionChecker.html",
+          "hash": "ZIwltF+T7w4v0fmSD6UCluOtn/AiiHXC/J+ZvukYc44="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.Logger.ObjectProperyFailedException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.Logger.ObjectProperyFailedException.html",
+          "hash": "u7C93kky2EmEv51xKzBM5pvr4AX6Uy96lM3rs3wSKag="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.Logger.Severity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.Logger.Severity.html",
+          "hash": "7u0jAI0ocJC9FPRQ3fp9TUmZrCe/A7KJOesWtevHM/o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.Logger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.Logger.html",
+          "hash": "aTEysvuBxAGBFavAP1mMv0s8GeAzWpZqUmXjgk4CS6w="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.RoboguideScript.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.RoboguideScript.html",
+          "hash": "nOtmsVhFGB0w17V4lYk0z4c5HOjYitrj1hmN+SSwejE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.RoboguideScriptSignal.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.RoboguideScriptSignal.html",
+          "hash": "0fQ8NzUAraSk1Iq1w29XP4L0a2GoDdeBi1rxFnj6dyk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.SafeExecutor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.SafeExecutor.html",
+          "hash": "Mzj/gDNoYhGN/uiIPbZqxJ3gCeFvcJSnuNQpmcVpg2Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Utilities.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Utilities.html",
+          "hash": "+/QT5Eqhu5psF6lyU4HRDbuqFPkoNcnTzFP4K5WqeRk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.Workcell.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.Workcell.html",
+          "hash": "/wMPUtS/A/WiTeyDQabhwpR1o9o30TykQNWXIlS5r8M="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.AttachedPart.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.AttachedPart.html",
+          "hash": "Ws0xCllhWwl+TOZ1ji36Q82RvesqWJhrD8UW2Pi1H0s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.EndOfArmTool.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.EndOfArmTool.html",
+          "hash": "4gCy7i6OSzzOzaV1uqFUWAKf/mXDMBL79PqJ+Rogap0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Feature.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Feature.html",
+          "hash": "OrfD/5AYuhDxgZXa1WPgJFZvt547ZcHgnAnxT+PjBV8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "invalid-note-section"
+      ],
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.FeatureSegment.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.FeatureSegment.html",
+          "hash": "pLVtuHs/SOtg5DkZffrH05AT+1YlxGxntTj1smyKAzw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Fixture.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Fixture.html",
+          "hash": "SiO4FO05NPR9FOZ4WKsVMRWEoY3tBOjH7p3PVEIZ1No="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Graphics.ObjectShape.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Graphics.ObjectShape.html",
+          "hash": "R+/f77ObIZCVKf1VaZP7WzKTXTeJJ+Drb7uYCk27soU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Graphics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Graphics.html",
+          "hash": "xlpvF0UDTBkcFbD8nyQq+R8Rdm4e/GhKMhCAz1FUTAc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.IWorkcellObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.IWorkcellObject.html",
+          "hash": "K1/RQ824RfVMAumb3wFPYo3IG2Fqu5MVAZc45ZQdPpE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Machine.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Machine.html",
+          "hash": "HPv03WIUlFxxvAL8RaAYDxJSR4qD3V5w3HhhQAehr0A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.MachineLink.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.MachineLink.html",
+          "hash": "XG011iD+ERST+7ZgIvxsD5yaE2qGgyGnN6iSTMYsAZY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Obstacle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Obstacle.html",
+          "hash": "mk0wMo+A+EIv6Sbv9SsmJTJise2ddhTfEIIi4Cfgt4Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.PaintStyle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.PaintStyle.html",
+          "hash": "8UXXbKsvu8ttUPYyhkF0fX6nrmOl+zZFC1SjKe7L3+s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.Part.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.Part.html",
+          "hash": "3whfeaZjcpXq5v2ar5GNl9WF65H9E6OIvQSJu6HE/5Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.PartRack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.PartRack.html",
+          "hash": "tIRxjrJ5k/Cs1Gaz3KUSwrmBvmjuH62fKyuSKvw6xzw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.RobotController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.RobotController.html",
+          "hash": "9BnzEInXQ3SdA/OhlGpKMNWNUsv6lq5xT1e8MOpDkLc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.RobotGraphics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.RobotGraphics.html",
+          "hash": "cbi8HoBHDH3Gl2OZWMphLkZaXuSfi4hBNBi/anugYPI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.RobotGroup.ExtAxisType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.RobotGroup.ExtAxisType.html",
+          "hash": "NAYAinKYGHEqB+HXB+x8F6cX7VljkOIT2kZXiFdRv4A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.RobotGroup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.RobotGroup.html",
+          "hash": "HS0aK1htqFiN+z81WvQ2QLziChIepU4hHRbAM1qhqME="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.TPProgram.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.TPProgram.html",
+          "hash": "UBje5hioE4BcCpFZPvY4jVvs3UD8nEWh4EERlWi4txw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.UnsupportedObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.UnsupportedObject.html",
+          "hash": "3R5ILEilniTzthFOZu2MzNelPSKpbY9A2AgTL8b33Dk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.UserFrame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.UserFrame.html",
+          "hash": "InDpK+GQA3vvdSX/aby6AyYvPt7LHckDm0TGDtjNkRI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.WorkcellObjects.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.WorkcellObjects.html",
+          "hash": "J1d1cBHIAQPtmc0dUEhc2bGhrvDit3SDuoTsQWrn9bc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/RoboguideAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/RoboguideAPI.html",
+          "hash": "G4H80/I7JMMNNcmONvTHp5l/KqVKH1LwmayaBl1OWZY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "TbvHDE7W561rVKPqTNvs6f6NyU9DakhLxS/WAYtp//8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/changelog.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/changelog.html",
+          "hash": "p2dfppPWtex+8y3cL55nSdJO94S2u9MzHWjJb+/zk8o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/gettingstarted.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/gettingstarted.html",
+          "hash": "WkMU64xYrCawXoyt5JM9BUCWQmOm2Jq4hT/nIafEWDc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "kh3VwzNpKp9AD1sdza7ELwShHfJhmF/UVSVO9qc71/I="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/troubleshooting.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/troubleshooting.html",
+          "hash": "bQ8htZTOHMj2+E4tBCmt6vh8YzZ74LGhYpfGjpriGyU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/addreference.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/addreference.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/apiassembly.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/apiassembly.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/browsereference.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/browsereference.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/coolsphere.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/coolsphere.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/copylocal.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/copylocal.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/logo.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/logo.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/logo2.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/logo2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/newproject.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/newproject.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/roboguide-main-image.jpg",
+      "output": {
+        "resource": {
+          "relative_path": "images/roboguide-main-image.jpg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/roboguide-main-image2.jpg",
+      "output": {
+        "resource": {
+          "relative_path": "images/roboguide-main-image2.jpg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/roboguide-main-image3.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/roboguide-main-image3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/setupdebug.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/setupdebug.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/setupoutput.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/setupoutput.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/troubleshooting_unabletolocate.PNG",
+      "output": {
+        "resource": {
+          "relative_path": "images/troubleshooting_unabletolocate.PNG"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/troubleshooting_unblock.PNG",
+      "output": {
+        "resource": {
+          "relative_path": "images/troubleshooting_unblock.PNG"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "31PV1eQz23gGxlEdmn+doMF2oWcwXDAQ4mBqs/EdQzk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot build incrementally because last build info is missing.",
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0,
+        "full_build_reason_code": "NoAvailableBuildCache"
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 6,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 154,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: last post processor info is null.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
