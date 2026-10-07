@@ -1059,6 +1059,7 @@ label > span {
     min-height: 400px;
     touch-action: none;
     cursor: grab;
+    touch-action: none;
 }
 
 #alignmentCanvas.is-dragging {
