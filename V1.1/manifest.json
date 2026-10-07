@@ -7,7 +7,7 @@
   "background_color": "#0b1020",
   "theme_color": "#111827",
   "orientation": "portrait",
-  "description": "Production floor PDF mapping and indoor location tracking application",
+  "description": "Production floor mapping and indoor location tracking application",
   "icons": [
     {
       "src": "./icons/icon-192.png",

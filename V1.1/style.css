@@ -722,7 +722,6 @@ button.full {
     margin-top: 13px;
 }
 
-
 /* =========================================================
    SETUP NAVIGATION
    ========================================================= */
@@ -844,6 +843,7 @@ label > span {
    ========================================================= */
 
 #movementCanvas,
+#mappingCanvas,
 #alignmentCanvas,
 #liveCanvas {
     width: 100%;
@@ -867,6 +867,10 @@ label > span {
     border: 1px solid var(--line);
 
     border-radius: 10px;
+}
+
+#mappingCanvas {
+    height: 420px;
 }
 
 
@@ -1053,6 +1057,12 @@ label > span {
 
 #alignmentCanvas {
     min-height: 400px;
+    touch-action: none;
+    cursor: grab;
+}
+
+#alignmentCanvas.is-dragging {
+    cursor: grabbing;
 }
 
 
@@ -1223,9 +1233,14 @@ label > span {
     }
 
     #movementCanvas,
+    #mappingCanvas,
     #alignmentCanvas,
     #liveCanvas {
         min-height: 260px;
+    }
+
+    #mappingCanvas {
+        height: 300px;
     }
 
     #alignmentCanvas,
