@@ -1,27 +1,24 @@
+
 // ============================================================
 // FLOOR TRACKER
 // Static GitHub Pages version
 // JPEG maps only - no PDF / no upload server required
+//
+// V1.1 SENSOR IMPROVEMENTS
+// - Accelerometer step detection
+// - Gyroscope-assisted heading
+// - Smoothed compass heading
+// - Adaptive step length
+// - Stationary/noise rejection
+// - Better turn handling
+// - World X/Y remains the source of truth
 // ============================================================
 
-const STORAGE_KEY = "production-floor-tracker-clean-v3";
+const STORAGE_KEY = "production-floor-tracker-clean-v4";
 
 // ============================================================
 // FLOOR MAPS
 // ============================================================
-//
-// Put your JPEG files in:
-//
-//     /maps/
-//
-// Example:
-//
-//     /maps/factory.jpg
-//     /maps/assembly.jpg
-//     /maps/welding.jpg
-//
-// Add them to this list.
-//
 
 const FLOOR_MAPS = [
     {
@@ -36,14 +33,40 @@ const FLOOR_MAPS = [
 // CONSTANTS
 // ============================================================
 
+// Base step length.
 const STEP_LENGTH = 0.72;
-const STEP_THRESHOLD = 1.15;
-const STEP_COOLDOWN = 280;
-const GRAVITY_FILTER_ALPHA = 0.08;
 
+// Minimum / maximum adaptive step length.
+const MIN_STEP_LENGTH = 0.55;
+const MAX_STEP_LENGTH = 0.95;
+
+// Step detection.
+const STEP_THRESHOLD = 1.15;
+const STEP_PEAK_THRESHOLD = 1.35;
+const STEP_COOLDOWN = 280;
+
+// Sensor filtering.
+const GRAVITY_FILTER_ALPHA = 0.08;
+const ACCELERATION_FILTER_ALPHA = 0.25;
+const HEADING_FILTER_ALPHA = 0.12;
+
+// Gyroscope heading fusion.
+const GYRO_WEIGHT = 0.92;
+const COMPASS_CORRECTION_WEIGHT = 0.08;
+
+// Stationary detection.
+const STATIONARY_ACCEL_THRESHOLD = 0.20;
+const STATIONARY_TIME = 500;
+
+// Adaptive step timing.
+const MIN_STEP_INTERVAL = 280;
+const MAX_STEP_INTERVAL = 1100;
+
+// Canvas.
 const CANVAS_PADDING = 50;
 
 const DEG_TO_RAD = Math.PI / 180;
+const RAD_TO_DEG = 180 / Math.PI;
 
 let gravityVectorBaseline = null;
 let lastSensorStatusUpdate = 0;
@@ -74,7 +97,45 @@ const state = {
         orientationReading: null,
 
         motionListener: false,
-        orientationListener: false
+        orientationListener: false,
+
+        // ----------------------------------------------------
+        // Enhanced sensor information
+        // ----------------------------------------------------
+
+        gyroAvailable: false,
+
+        gyroReading: null,
+
+        filteredAcceleration: 0,
+
+        lastMotionTimestamp: 0,
+
+        stationarySince: 0,
+
+        isStationary: false,
+
+        // Compass heading after circular filtering.
+        compassHeading: null,
+
+        // Gyroscope integrated heading.
+        gyroHeading: null,
+
+        lastGyroTimestamp: 0,
+
+        // Final fused heading.
+        fusedHeading: 0,
+
+        headingInitialized: false,
+
+        // Step detector state.
+        stepPeak: 0,
+
+        stepValley: 0,
+
+        lastStepTimestamp: 0,
+
+        stepIntervals: []
     },
 
     mapping: {
@@ -165,6 +226,63 @@ function clamp(value, min, max) {
 
 
 // ============================================================
+// ANGLE UTILITIES
+// ============================================================
+
+function normalizeHeading(degrees) {
+
+    let value =
+        safeNumber(degrees, 0) % 360;
+
+    if (value < 0) {
+        value += 360;
+    }
+
+    return value;
+}
+
+
+function shortestAngleDifference(
+    target,
+    current
+) {
+
+    let difference =
+        normalizeHeading(target) -
+        normalizeHeading(current);
+
+    if (difference > 180) {
+        difference -= 360;
+    }
+
+    if (difference < -180) {
+        difference += 360;
+    }
+
+    return difference;
+}
+
+
+function interpolateHeading(
+    current,
+    target,
+    amount
+) {
+
+    const difference =
+        shortestAngleDifference(
+            target,
+            current
+        );
+
+    return normalizeHeading(
+        current +
+        difference * amount
+    );
+}
+
+
+// ============================================================
 // STORAGE
 // ============================================================
 
@@ -225,13 +343,13 @@ function loadState() {
             state.mapping.x =
                 safeNumber(
                     parsed.mapping.x,
-                    0
+                    state.workstation.x
                 );
 
             state.mapping.y =
                 safeNumber(
                     parsed.mapping.y,
-                    0
+                    state.workstation.y
                 );
 
             state.mapping.heading =
@@ -257,6 +375,38 @@ function loadState() {
                     : [];
         }
 
+        if (parsed.tracking) {
+
+            state.tracking.x =
+                safeNumber(
+                    parsed.tracking.x,
+                    state.workstation.x
+                );
+
+            state.tracking.y =
+                safeNumber(
+                    parsed.tracking.y,
+                    state.workstation.y
+                );
+
+            state.tracking.heading =
+                safeNumber(
+                    parsed.tracking.heading,
+                    0
+                );
+
+            state.tracking.distance =
+                safeNumber(
+                    parsed.tracking.distance,
+                    0
+                );
+
+            state.tracking.path =
+                Array.isArray(parsed.tracking.path)
+                    ? parsed.tracking.path
+                    : [];
+        }
+
         if (parsed.plan) {
 
             state.plan.selectedMapId =
@@ -271,10 +421,25 @@ function loadState() {
             if (parsed.plan.calibrationBounds) {
 
                 state.plan.calibrationBounds = {
-                    minX: safeNumber(parsed.plan.calibrationBounds.minX, -1),
-                    maxX: safeNumber(parsed.plan.calibrationBounds.maxX, 1),
-                    minY: safeNumber(parsed.plan.calibrationBounds.minY, -1),
-                    maxY: safeNumber(parsed.plan.calibrationBounds.maxY, 1)
+                    minX: safeNumber(
+                        parsed.plan.calibrationBounds.minX,
+                        -1
+                    ),
+
+                    maxX: safeNumber(
+                        parsed.plan.calibrationBounds.maxX,
+                        1
+                    ),
+
+                    minY: safeNumber(
+                        parsed.plan.calibrationBounds.minY,
+                        -1
+                    ),
+
+                    maxY: safeNumber(
+                        parsed.plan.calibrationBounds.maxY,
+                        1
+                    )
                 };
             }
 
@@ -307,6 +472,12 @@ function loadState() {
 
         state.locked =
             parsed.locked === true;
+
+        if (Number.isFinite(parsed.setupStep)) {
+
+            state.setupStep =
+                parsed.setupStep;
+        }
 
     } catch (error) {
 
@@ -486,6 +657,10 @@ async function enablePhoneSensors() {
 }
 
 
+// ============================================================
+// SENSOR STATUS
+// ============================================================
+
 function updateSensorStatus() {
 
     const status =
@@ -495,7 +670,14 @@ function updateSensorStatus() {
         return;
     }
 
-    function sensorState(name, supported, permission, listener, data, reading) {
+    function sensorState(
+        name,
+        supported,
+        permission,
+        listener,
+        data,
+        reading
+    ) {
 
         if (!supported) {
             return `${name}: unavailable`;
@@ -522,7 +704,11 @@ function updateSensorStatus() {
     const orientationReading =
         state.sensors.orientationReading;
 
+    const gyro =
+        state.sensors.gyroReading;
+
     status.textContent = [
+
         sensorState(
             "Motion",
             "DeviceMotionEvent" in window,
@@ -530,9 +716,10 @@ function updateSensorStatus() {
             state.sensors.motionListener,
             state.sensors.motionData,
             motionReading
-                ? `x ${motionReading.x.toFixed(2)}, y ${motionReading.y.toFixed(2)}, z ${motionReading.z.toFixed(2)} m/s^2`
+                ? `x ${motionReading.x.toFixed(2)}, y ${motionReading.y.toFixed(2)}, z ${motionReading.z.toFixed(2)} m/s²`
                 : ""
         ),
+
         sensorState(
             "Orientation",
             "DeviceOrientationEvent" in window,
@@ -540,9 +727,18 @@ function updateSensorStatus() {
             state.sensors.orientationListener,
             state.sensors.orientationData,
             orientationReading
-                ? `alpha ${orientationReading.alpha}, beta ${orientationReading.beta}, gamma ${orientationReading.gamma}, heading ${orientationReading.heading} deg`
+                ? `heading ${orientationReading.heading}°`
                 : ""
-        )
+        ),
+
+        `Gyro: ${
+            state.sensors.gyroAvailable
+                ? gyro
+                    ? `active ${gyro.z.toFixed(1)} °/s`
+                    : "available"
+                : "unavailable"
+        }`
+
     ].join(" | ");
 
     lastSensorStatusUpdate =
@@ -601,7 +797,11 @@ function handleMotion(event) {
         const z =
             safeNumber(acceleration.z, 0);
 
-        rawReading = { x, y, z };
+        rawReading = {
+            x,
+            y,
+            z
+        };
 
         magnitude =
             Math.sqrt(
@@ -628,7 +828,11 @@ function handleMotion(event) {
         const z =
             safeNumber(acceleration.z, 0);
 
-        rawReading = { x, y, z };
+        rawReading = {
+            x,
+            y,
+            z
+        };
 
         if (gravityVectorBaseline === null) {
 
@@ -659,18 +863,224 @@ function handleMotion(event) {
             );
     }
 
+    // --------------------------------------------------------
+    // Low-pass acceleration magnitude.
+    // --------------------------------------------------------
+
+    state.sensors.filteredAcceleration +=
+        (
+            magnitude -
+            state.sensors.filteredAcceleration
+        ) *
+        ACCELERATION_FILTER_ALPHA;
+
+    const filtered =
+        state.sensors.filteredAcceleration;
+
+    // --------------------------------------------------------
+    // Stationary detection.
+    // --------------------------------------------------------
+
+    const now =
+        performance.now();
+
+    if (
+        filtered <
+        STATIONARY_ACCEL_THRESHOLD
+    ) {
+
+        if (!state.sensors.stationarySince) {
+
+            state.sensors.stationarySince =
+                now;
+        }
+
+        if (
+            now -
+            state.sensors.stationarySince >
+            STATIONARY_TIME
+        ) {
+
+            state.sensors.isStationary =
+                true;
+        }
+
+    } else {
+
+        state.sensors.stationarySince = 0;
+
+        state.sensors.isStationary =
+            false;
+    }
+
+    // --------------------------------------------------------
+    // Gyroscope.
+    // --------------------------------------------------------
+
+    if (event.rotationRate) {
+
+        const alpha =
+            safeNumber(
+                event.rotationRate.alpha,
+                0
+            );
+
+        const beta =
+            safeNumber(
+                event.rotationRate.beta,
+                0
+            );
+
+        const gamma =
+            safeNumber(
+                event.rotationRate.gamma,
+                0
+            );
+
+        state.sensors.gyroAvailable = true;
+
+        state.sensors.gyroReading = {
+            x: beta,
+            y: gamma,
+            z: alpha
+        };
+
+        updateGyroscopeHeading(
+            event,
+            now
+        );
+    }
+
     state.sensors.motionData = true;
-    state.sensors.motionReading = rawReading;
+
+    state.sensors.motionReading =
+        rawReading;
+
+    state.sensors.lastMotionTimestamp =
+        now;
 
     if (
         firstReading ||
-        performance.now() - lastSensorStatusUpdate >= 250
+        now - lastSensorStatusUpdate >= 250
     ) {
 
         updateSensorStatus();
     }
 
-    processStepDetection(magnitude);
+    processStepDetection(
+        filtered
+    );
+}
+
+
+// ============================================================
+// GYROSCOPE HEADING
+// ============================================================
+
+function updateGyroscopeHeading(
+    event,
+    now
+) {
+
+    if (!event.rotationRate) {
+        return;
+    }
+
+    const rotationRate =
+        safeNumber(
+            event.rotationRate.alpha,
+            0
+        );
+
+    if (!Number.isFinite(rotationRate)) {
+        return;
+    }
+
+    if (
+        !state.sensors.headingInitialized ||
+        state.sensors.gyroHeading === null
+    ) {
+
+        if (
+            state.sensors.compassHeading !== null
+        ) {
+
+            state.sensors.gyroHeading =
+                state.sensors.compassHeading;
+
+            state.sensors.fusedHeading =
+                state.sensors.compassHeading;
+
+            state.sensors.headingInitialized =
+                true;
+        }
+
+        state.sensors.lastGyroTimestamp =
+            now;
+
+        return;
+    }
+
+    if (!state.sensors.lastGyroTimestamp) {
+
+        state.sensors.lastGyroTimestamp =
+            now;
+
+        return;
+    }
+
+    const dt =
+        (now -
+            state.sensors.lastGyroTimestamp) /
+        1000;
+
+    state.sensors.lastGyroTimestamp =
+        now;
+
+    // Ignore impossible sensor timing.
+    if (
+        dt <= 0 ||
+        dt > 0.25
+    ) {
+        return;
+    }
+
+    // DeviceMotion rotationRate is degrees/second.
+    //
+    // The sign convention can vary slightly by device,
+    // so the compass correction below continually pulls
+    // the integrated heading back toward absolute north.
+
+    state.sensors.gyroHeading =
+        normalizeHeading(
+            state.sensors.gyroHeading +
+            rotationRate * dt
+        );
+
+    // Complementary filter.
+    if (
+        state.sensors.compassHeading !== null
+    ) {
+
+        const compass =
+            state.sensors.compassHeading;
+
+        const error =
+            shortestAngleDifference(
+                compass,
+                state.sensors.gyroHeading
+            );
+
+        state.sensors.gyroHeading =
+            normalizeHeading(
+                state.sensors.gyroHeading +
+                error *
+                COMPASS_CORRECTION_WEIGHT
+            );
+    }
+
+    state.sensors.fusedHeading =
+        state.sensors.gyroHeading;
 }
 
 
@@ -707,7 +1117,10 @@ function handleOrientation(event) {
 
     let heading = null;
 
-    if (typeof event.webkitCompassHeading === "number") {
+    if (
+        typeof event.webkitCompassHeading ===
+        "number"
+    ) {
 
         heading =
             event.webkitCompassHeading;
@@ -724,36 +1137,110 @@ function handleOrientation(event) {
         return;
     }
 
+    heading =
+        normalizeHeading(heading);
+
     const firstReading =
         !state.sensors.orientationData;
 
     state.sensors.orientationData = true;
+
     state.sensors.orientationReading = {
-        alpha: Number.isFinite(event.alpha) ? event.alpha.toFixed(1) : "n/a",
-        beta: Number.isFinite(event.beta) ? event.beta.toFixed(1) : "n/a",
-        gamma: Number.isFinite(event.gamma) ? event.gamma.toFixed(1) : "n/a",
-        heading: heading.toFixed(1)
+
+        alpha:
+            Number.isFinite(event.alpha)
+                ? event.alpha.toFixed(1)
+                : "n/a",
+
+        beta:
+            Number.isFinite(event.beta)
+                ? event.beta.toFixed(1)
+                : "n/a",
+
+        gamma:
+            Number.isFinite(event.gamma)
+                ? event.gamma.toFixed(1)
+                : "n/a",
+
+        heading:
+            heading.toFixed(1)
     };
 
+    // --------------------------------------------------------
+    // Circular heading smoothing.
+    // --------------------------------------------------------
+
     if (
-        firstReading ||
-        performance.now() - lastSensorStatusUpdate >= 250
+        state.sensors.compassHeading === null
     ) {
 
-        updateSensorStatus();
+        state.sensors.compassHeading =
+            heading;
+
+    } else {
+
+        state.sensors.compassHeading =
+            interpolateHeading(
+                state.sensors.compassHeading,
+                heading,
+                HEADING_FILTER_ALPHA
+            );
     }
+
+    // --------------------------------------------------------
+    // Initialize / correct gyro heading.
+    // --------------------------------------------------------
+
+    if (
+        !state.sensors.headingInitialized
+    ) {
+
+        state.sensors.gyroHeading =
+            state.sensors.compassHeading;
+
+        state.sensors.fusedHeading =
+            state.sensors.compassHeading;
+
+        state.sensors.headingInitialized =
+            true;
+
+    } else if (
+        state.sensors.gyroHeading === null
+    ) {
+
+        state.sensors.gyroHeading =
+            state.sensors.compassHeading;
+    }
+
+    // If gyro isn't available, use the smoothed compass.
+    if (!state.sensors.gyroAvailable) {
+
+        state.sensors.fusedHeading =
+            state.sensors.compassHeading;
+    }
+
+    const finalHeading =
+        state.sensors.fusedHeading;
 
     if (state.mapping.active) {
 
         state.mapping.heading =
-            heading;
-
+            finalHeading;
     }
 
     if (state.tracking.active) {
 
         state.tracking.heading =
-            heading;
+            finalHeading;
+    }
+
+    if (
+        firstReading ||
+        performance.now() -
+        lastSensorStatusUpdate >= 250
+    ) {
+
+        updateSensorStatus();
     }
 }
 
@@ -766,6 +1253,34 @@ function processStepDetection(magnitude) {
 
     const now =
         performance.now();
+
+    // --------------------------------------------------------
+    // Never create steps while completely stationary.
+    // --------------------------------------------------------
+
+    if (state.sensors.isStationary) {
+
+        state.sensors.stepPeak =
+            Math.max(
+                state.sensors.stepPeak * 0.9,
+                magnitude
+            );
+
+        state.sensors.stepValley =
+            magnitude;
+
+        return;
+    }
+
+    // --------------------------------------------------------
+    // Track local peak.
+    // --------------------------------------------------------
+
+    state.sensors.stepPeak =
+        Math.max(
+            state.sensors.stepPeak * 0.92,
+            magnitude
+        );
 
     const previous =
         state.mapping.active
@@ -786,9 +1301,15 @@ function processStepDetection(magnitude) {
         STEP_THRESHOLD &&
         previous <= STEP_THRESHOLD;
 
+    // Additional peak requirement.
+    const strongEnough =
+        magnitude >= STEP_PEAK_THRESHOLD ||
+        state.sensors.stepPeak >= STEP_PEAK_THRESHOLD;
+
     if (
         rising &&
-        cooldownPassed
+        cooldownPassed &&
+        strongEnough
     ) {
 
         if (state.mapping.active) {
@@ -816,6 +1337,102 @@ function processStepDetection(magnitude) {
 
 
 // ============================================================
+// ADAPTIVE STEP LENGTH
+// ============================================================
+
+function getAdaptiveStepLength() {
+
+    const intervals =
+        state.sensors.stepIntervals;
+
+    if (
+        intervals.length < 2
+    ) {
+
+        return STEP_LENGTH;
+    }
+
+    const recent =
+        intervals
+            .slice(-5)
+            .filter(
+                value =>
+                    value >= MIN_STEP_INTERVAL &&
+                    value <= MAX_STEP_INTERVAL
+            );
+
+    if (!recent.length) {
+        return STEP_LENGTH;
+    }
+
+    const average =
+        recent.reduce(
+            (sum, value) =>
+                sum + value,
+            0
+        ) /
+        recent.length;
+
+    // Faster walking -> slightly longer step.
+    //
+    // This is deliberately conservative because
+    // step frequency is only an approximation of
+    // actual stride length.
+
+    const normalized =
+        clamp(
+            (600 - average) / 250,
+            -1,
+            1
+        );
+
+    const adaptive =
+        STEP_LENGTH +
+        normalized * 0.10;
+
+    return clamp(
+        adaptive,
+        MIN_STEP_LENGTH,
+        MAX_STEP_LENGTH
+    );
+}
+
+
+function recordStepTiming(now) {
+
+    if (
+        state.sensors.lastStepTimestamp > 0
+    ) {
+
+        const interval =
+            now -
+            state.sensors.lastStepTimestamp;
+
+        if (
+            interval >= MIN_STEP_INTERVAL &&
+            interval <= MAX_STEP_INTERVAL
+        ) {
+
+            state.sensors.stepIntervals.push(
+                interval
+            );
+
+            if (
+                state.sensors.stepIntervals.length >
+                8
+            ) {
+
+                state.sensors.stepIntervals.shift();
+            }
+        }
+    }
+
+    state.sensors.lastStepTimestamp =
+        now;
+}
+
+
+// ============================================================
 // MOVEMENT
 // ============================================================
 
@@ -824,20 +1441,25 @@ function registerMappingStep() {
     const now =
         performance.now();
 
+    recordStepTiming(now);
+
+    const stepLength =
+        getAdaptiveStepLength();
+
     const heading =
         state.mapping.heading *
         DEG_TO_RAD;
 
     state.mapping.x +=
         Math.sin(heading) *
-        STEP_LENGTH;
+        stepLength;
 
     state.mapping.y +=
         Math.cos(heading) *
-        STEP_LENGTH;
+        stepLength;
 
     state.mapping.distance +=
-        STEP_LENGTH;
+        stepLength;
 
     state.mapping.lastStepTime =
         now;
@@ -860,20 +1482,25 @@ function registerTrackingStep() {
     const now =
         performance.now();
 
+    recordStepTiming(now);
+
+    const stepLength =
+        getAdaptiveStepLength();
+
     const heading =
         state.tracking.heading *
         DEG_TO_RAD;
 
     state.tracking.x +=
         Math.sin(heading) *
-        STEP_LENGTH;
+        stepLength;
 
     state.tracking.y +=
         Math.cos(heading) *
-        STEP_LENGTH;
+        stepLength;
 
     state.tracking.distance +=
-        STEP_LENGTH;
+        stepLength;
 
     state.tracking.lastStepTime =
         now;
@@ -900,6 +1527,8 @@ async function startMapping() {
 
     await requestOrientationPermission();
 
+    resetSensorFusion();
+
     state.mapping.active = true;
 
     state.mapping.x =
@@ -908,7 +1537,8 @@ async function startMapping() {
     state.mapping.y =
         state.workstation.y;
 
-    state.mapping.heading = 0;
+    state.mapping.heading =
+        state.sensors.fusedHeading || 0;
 
     state.mapping.distance = 0;
 
@@ -980,7 +1610,49 @@ async function resetMapping() {
 
     stopMapping();
 
+    resetSensorFusion();
+
     await startMapping();
+}
+
+
+// ============================================================
+// RESET SENSOR FUSION
+// ============================================================
+
+function resetSensorFusion() {
+
+    gravityVectorBaseline = null;
+
+    state.sensors.filteredAcceleration = 0;
+
+    state.sensors.stationarySince = 0;
+
+    state.sensors.isStationary = false;
+
+    state.sensors.stepPeak = 0;
+
+    state.sensors.stepValley = 0;
+
+    state.sensors.lastStepTimestamp = 0;
+
+    state.sensors.stepIntervals = [];
+
+    state.sensors.lastGyroTimestamp = 0;
+
+    if (
+        state.sensors.compassHeading !== null
+    ) {
+
+        state.sensors.gyroHeading =
+            state.sensors.compassHeading;
+
+        state.sensors.fusedHeading =
+            state.sensors.compassHeading;
+
+        state.sensors.headingInitialized =
+            true;
+    }
 }
 
 
@@ -1073,7 +1745,6 @@ function updateMappingInformation() {
         element.textContent =
             state.mapping.y.toFixed(2);
     });
-
 }
 
 
@@ -1147,7 +1818,10 @@ function getCanvas(id) {
 
 function calculatePathBounds(path) {
 
-    if (!Array.isArray(path) || path.length === 0) {
+    if (
+        !Array.isArray(path) ||
+        path.length === 0
+    ) {
 
         return {
 
@@ -1236,8 +1910,11 @@ function getMapAreaBounds() {
     }
 
     return calculatePathBounds([
+
         ...state.mapping.path,
+
         ...state.mapping.references,
+
         {
             x: state.mapping.x,
             y: state.mapping.y
@@ -1293,7 +1970,11 @@ function drawMapping() {
             )
             : null;
 
-    if (image && image.complete && image.naturalWidth > 0) {
+    if (
+        image &&
+        image.complete &&
+        image.naturalWidth > 0
+    ) {
 
         const imageScale =
             Math.min(
@@ -1302,10 +1983,12 @@ function drawMapping() {
             );
 
         const imageWidth =
-            image.naturalWidth * imageScale;
+            image.naturalWidth *
+            imageScale;
 
         const imageHeight =
-            image.naturalHeight * imageScale;
+            image.naturalHeight *
+            imageScale;
 
         context.drawImage(
 
@@ -1403,7 +2086,8 @@ function drawMapping() {
             );
 
         const normalizedGridInterval =
-            rawGridInterval / gridMagnitude;
+            rawGridInterval /
+            gridMagnitude;
 
         const gridFactor =
             normalizedGridInterval <= 1
@@ -1415,7 +2099,8 @@ function drawMapping() {
                         : 10;
 
         const gridInterval =
-            gridFactor * gridMagnitude;
+            gridFactor *
+            gridMagnitude;
 
         const scaleDisplay =
             document.querySelector(
@@ -1425,7 +2110,9 @@ function drawMapping() {
         if (scaleDisplay) {
 
             scaleDisplay.textContent =
-                `${Number(gridInterval.toPrecision(2))} m per grid`;
+                `${Number(
+                    gridInterval.toPrecision(2)
+                )} m per grid`;
         }
 
         context.strokeStyle =
@@ -1443,7 +2130,10 @@ function drawMapping() {
             "center";
 
         const firstXTick =
-            Math.ceil(bounds.minX / gridInterval) *
+            Math.ceil(
+                bounds.minX /
+                gridInterval
+            ) *
             gridInterval;
 
         for (
@@ -1456,19 +2146,34 @@ function drawMapping() {
                 screenX(x);
 
             context.beginPath();
-            context.moveTo(pixelX, CANVAS_PADDING);
-            context.lineTo(pixelX, height - CANVAS_PADDING);
+
+            context.moveTo(
+                pixelX,
+                CANVAS_PADDING
+            );
+
+            context.lineTo(
+                pixelX,
+                height -
+                CANVAS_PADDING
+            );
+
             context.stroke();
 
             context.fillText(
-                `${Number(x.toPrecision(3))}`,
+                `${Number(
+                    x.toPrecision(3)
+                )}`,
                 pixelX,
                 height - 18
             );
         }
 
         const firstYTick =
-            Math.ceil(bounds.minY / gridInterval) *
+            Math.ceil(
+                bounds.minY /
+                gridInterval
+            ) *
             gridInterval;
 
         context.textAlign =
@@ -1484,12 +2189,24 @@ function drawMapping() {
                 screenY(y);
 
             context.beginPath();
-            context.moveTo(CANVAS_PADDING, pixelY);
-            context.lineTo(width - CANVAS_PADDING, pixelY);
+
+            context.moveTo(
+                CANVAS_PADDING,
+                pixelY
+            );
+
+            context.lineTo(
+                width -
+                CANVAS_PADDING,
+                pixelY
+            );
+
             context.stroke();
 
             context.fillText(
-                `${Number(y.toPrecision(3))}`,
+                `${Number(
+                    y.toPrecision(3)
+                )}`,
                 CANVAS_PADDING - 8,
                 pixelY + 4
             );
@@ -1506,7 +2223,9 @@ function drawMapping() {
 
         context.fillText(
             "X (m)",
-            width - CANVAS_PADDING - 36,
+            width -
+            CANVAS_PADDING -
+            36,
             height - 8
         );
 
@@ -1517,35 +2236,39 @@ function drawMapping() {
         );
     }
 
+    // --------------------------------------------------------
     // Path
+    // --------------------------------------------------------
 
     if (path.length > 1) {
 
         context.beginPath();
 
-        path.forEach((point, index) => {
+        path.forEach(
+            (point, index) => {
 
-            const screenPoint =
-                mapAreaScreenPoint(
-                    safeNumber(point.x),
-                    safeNumber(point.y)
-                );
+                const screenPoint =
+                    mapAreaScreenPoint(
+                        safeNumber(point.x),
+                        safeNumber(point.y)
+                    );
 
-            if (index === 0) {
+                if (index === 0) {
 
-                context.moveTo(
-                    screenPoint.x,
-                    screenPoint.y
-                );
+                    context.moveTo(
+                        screenPoint.x,
+                        screenPoint.y
+                    );
 
-            } else {
+                } else {
 
-                context.lineTo(
-                    screenPoint.x,
-                    screenPoint.y
-                );
+                    context.lineTo(
+                        screenPoint.x,
+                        screenPoint.y
+                    );
+                }
             }
-        });
+        );
 
         context.strokeStyle =
             "#ffffff";
@@ -1555,8 +2278,9 @@ function drawMapping() {
         context.stroke();
     }
 
-
+    // --------------------------------------------------------
     // Reference points
+    // --------------------------------------------------------
 
     state.mapping.references.forEach(
         (reference, index) => {
@@ -1596,8 +2320,9 @@ function drawMapping() {
         }
     );
 
-
+    // --------------------------------------------------------
     // Current position
+    // --------------------------------------------------------
 
     const currentPoint =
         mapAreaScreenPoint(
@@ -1627,8 +2352,9 @@ function drawMapping() {
 
     context.stroke();
 
-
+    // --------------------------------------------------------
     // Starting position
+    // --------------------------------------------------------
 
     const start =
         path.length > 0
@@ -1658,9 +2384,6 @@ function drawMapping() {
         "#ffffff";
 
     context.fill();
-
-    context.fillStyle =
-        "#ffffff";
 
     context.font =
         "12px sans-serif";
@@ -1725,7 +2448,6 @@ function populateFloorMaps() {
                 previousValue;
         }
     });
-
 
     if (state.plan.selectedMapId) {
 
@@ -1846,6 +2568,7 @@ function updateMapPreview(mapId) {
                 }
 
                 drawMapping();
+                drawTracking();
             };
 
         image.onerror =
@@ -1858,9 +2581,9 @@ function updateMapPreview(mapId) {
                 }
 
                 drawMapping();
+                drawTracking();
             };
     });
-
 
     const nameElements =
         document.querySelectorAll(
@@ -1872,7 +2595,6 @@ function updateMapPreview(mapId) {
         element.textContent =
             map.name;
     });
-
 
     const urlElements =
         document.querySelectorAll(
@@ -1891,31 +2613,49 @@ function updateMapPreview(mapId) {
 // IMAGE TRANSFORM
 // ============================================================
 
-function transformMapAreaPoint(point, width, height) {
+function transformMapAreaPoint(
+    point,
+    width,
+    height
+) {
 
     const transform =
         state.plan.imageTransform;
 
     const offsetX =
-        point.x - width / 2;
+        point.x -
+        width / 2;
 
     const offsetY =
-        point.y - height / 2;
+        point.y -
+        height / 2;
 
     const rotation =
         transform.rotation *
         DEG_TO_RAD;
 
     return {
-        x: width / 2 +
+
+        x:
+            width / 2 +
             transform.x +
-            (offsetX * Math.cos(rotation) -
-                offsetY * Math.sin(rotation)) *
+            (
+                offsetX *
+                Math.cos(rotation) -
+                offsetY *
+                Math.sin(rotation)
+            ) *
             transform.scale,
-        y: height / 2 +
+
+        y:
+            height / 2 +
             transform.y +
-            (offsetX * Math.sin(rotation) +
-                offsetY * Math.cos(rotation)) *
+            (
+                offsetX *
+                Math.sin(rotation) +
+                offsetY *
+                Math.cos(rotation)
+            ) *
             transform.scale
     };
 }
@@ -1964,14 +2704,21 @@ function setupMapGestureControls() {
             canvas.getBoundingClientRect();
 
         return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top
+
+            x:
+                event.clientX -
+                rect.left,
+
+            y:
+                event.clientY -
+                rect.top
         };
     }
 
     function getGestureMetrics(points) {
 
-        const first = points[0];
+        const first =
+            points[0];
 
         const second =
             points.length > 1
@@ -1979,14 +2726,26 @@ function setupMapGestureControls() {
                 : first;
 
         return {
+
             center: {
-                x: (first.x + second.x) / 2,
-                y: (first.y + second.y) / 2
+
+                x:
+                    (first.x +
+                        second.x) / 2,
+
+                y:
+                    (first.y +
+                        second.y) / 2
             },
-            distance: Math.hypot(
-                second.x - first.x,
-                second.y - first.y
-            )
+
+            distance:
+                Math.hypot(
+                    second.x -
+                    first.x,
+
+                    second.y -
+                    first.y
+                )
         };
     }
 
@@ -1998,7 +2757,10 @@ function setupMapGestureControls() {
             ).slice(0, 2);
 
         if (points.length === 0) {
-            gestureStart = null;
+
+            gestureStart =
+                null;
+
             return;
         }
 
@@ -2006,12 +2768,23 @@ function setupMapGestureControls() {
             getGestureMetrics(points);
 
         gestureStart = {
+
             points,
-            center: metrics.center,
-            distance: metrics.distance,
-            x: state.plan.imageTransform.x,
-            y: state.plan.imageTransform.y,
-            scale: state.plan.imageTransform.scale
+
+            center:
+                metrics.center,
+
+            distance:
+                metrics.distance,
+
+            x:
+                state.plan.imageTransform.x,
+
+            y:
+                state.plan.imageTransform.y,
+
+            scale:
+                state.plan.imageTransform.scale
         };
     }
 
@@ -2036,9 +2809,11 @@ function setupMapGestureControls() {
             );
 
             try {
-                canvas.setPointerCapture(event.pointerId);
+                canvas.setPointerCapture(
+                    event.pointerId
+                );
             } catch {
-                // Synthetic pointer events do not support capture.
+                // Synthetic pointer events.
             }
 
             canvas.classList.add(
@@ -2053,7 +2828,12 @@ function setupMapGestureControls() {
         "pointermove",
         event => {
 
-            if (!pointers.has(event.pointerId) || !gestureStart) {
+            if (
+                !pointers.has(
+                    event.pointerId
+                ) ||
+                !gestureStart
+            ) {
                 return;
             }
 
@@ -2087,13 +2867,16 @@ function setupMapGestureControls() {
 
             } else {
 
-                if (gestureStart.distance > 0) {
+                if (
+                    gestureStart.distance > 0
+                ) {
 
                     transform.scale =
                         clamp(
                             gestureStart.scale *
                             current.distance /
                             gestureStart.distance,
+
                             0.1,
                             10
                         );
@@ -2116,11 +2899,17 @@ function setupMapGestureControls() {
 
     function finishPointer(event) {
 
-        if (!pointers.has(event.pointerId)) {
+        if (
+            !pointers.has(
+                event.pointerId
+            )
+        ) {
             return;
         }
 
-        pointers.delete(event.pointerId);
+        pointers.delete(
+            event.pointerId
+        );
 
         if (pointers.size > 0) {
 
@@ -2128,7 +2917,8 @@ function setupMapGestureControls() {
 
         } else {
 
-            gestureStart = null;
+            gestureStart =
+                null;
 
             canvas.classList.remove(
                 "is-dragging"
@@ -2138,9 +2928,13 @@ function setupMapGestureControls() {
         }
 
         try {
-            canvas.releasePointerCapture(event.pointerId);
+
+            canvas.releasePointerCapture(
+                event.pointerId
+            );
+
         } catch {
-            // Synthetic pointer events do not support capture.
+            // Synthetic pointer events.
         }
     }
 
@@ -2186,22 +2980,33 @@ function setupMapGestureControls() {
             const newScale =
                 clamp(
                     oldScale *
-                    Math.exp(-event.deltaY * 0.001),
+                    Math.exp(
+                        -event.deltaY *
+                        0.001
+                    ),
+
                     0.1,
                     10
                 );
 
             const ratio =
-                newScale / oldScale;
+                newScale /
+                oldScale;
 
             transform.x =
                 pointerX -
-                (pointerX - transform.x) *
+                (
+                    pointerX -
+                    transform.x
+                ) *
                 ratio;
 
             transform.y =
                 pointerY -
-                (pointerY - transform.y) *
+                (
+                    pointerY -
+                    transform.y
+                ) *
                 ratio;
 
             transform.scale =
@@ -2211,7 +3016,9 @@ function setupMapGestureControls() {
 
             saveState();
         },
-        { passive: false }
+        {
+            passive: false
+        }
     );
 }
 
@@ -2314,8 +3121,11 @@ function lockSetup() {
 
     state.plan.calibrationBounds =
         calculatePathBounds([
+
             ...state.mapping.path,
+
             ...state.mapping.references,
+
             {
                 x: state.mapping.x,
                 y: state.mapping.y
@@ -2347,16 +3157,10 @@ function updateSetupStatus() {
 
     statusElements.forEach(element => {
 
-        if (state.locked) {
-
-            element.textContent =
-                "Setup locked";
-
-        } else {
-
-            element.textContent =
-                "Setup not locked";
-        }
+        element.textContent =
+            state.locked
+                ? "Setup locked"
+                : "Setup not locked";
     });
 
     [
@@ -2370,7 +3174,9 @@ function updateSetupStatus() {
             get(id);
 
         if (button) {
-            button.disabled = state.locked;
+
+            button.disabled =
+                state.locked;
         }
     });
 
@@ -2378,9 +3184,10 @@ function updateSetupStatus() {
         get("setupFloorMapSelect");
 
     if (floorMapSelect) {
-        floorMapSelect.disabled = state.locked;
-    }
 
+        floorMapSelect.disabled =
+            state.locked;
+    }
 
     const mapElements =
         document.querySelectorAll(
@@ -2395,14 +3202,16 @@ function updateSetupStatus() {
     });
 
     document
-        .querySelectorAll("[data-track-map-name]")
+        .querySelectorAll(
+            "[data-track-map-name]"
+        )
         .forEach(element => {
+
             element.textContent =
                 state.plan.imageName ||
                 "No floor map selected";
         });
 }
-
 
 
 // ============================================================
@@ -2439,6 +3248,12 @@ function saveWorkstation() {
         state.workstation.x;
 
     state.mapping.y =
+        state.workstation.y;
+
+    state.tracking.x =
+        state.workstation.x;
+
+    state.tracking.y =
         state.workstation.y;
 
     saveState();
@@ -2553,6 +3368,8 @@ function resetSetup() {
 
     state.locked = false;
 
+    resetSensorFusion();
+
     saveState();
 
     location.reload();
@@ -2575,6 +3392,7 @@ function showPage(pageName) {
         get("trackPage");
 
     if (setupPage) {
+
         setupPage.classList.toggle(
             "active",
             !showTracking
@@ -2582,6 +3400,7 @@ function showPage(pageName) {
     }
 
     if (trackPage) {
+
         trackPage.classList.toggle(
             "active",
             showTracking
@@ -2594,7 +3413,8 @@ function showPage(pageName) {
 
             button.classList.toggle(
                 "active",
-                button.dataset.page === pageName
+                button.dataset.page ===
+                pageName
             );
         });
 
@@ -2602,8 +3422,10 @@ function showPage(pageName) {
         get("trackLockedMessage");
 
     if (lockedMessage) {
+
         lockedMessage.style.display =
-            showTracking && !state.locked
+            showTracking &&
+            !state.locked
                 ? ""
                 : "none";
     }
@@ -2612,16 +3434,23 @@ function showPage(pageName) {
         get("trackingApplication");
 
     if (trackingApplication) {
+
         trackingApplication.style.display =
-            showTracking && state.locked
+            showTracking &&
+            state.locked
                 ? ""
                 : "none";
     }
 
-    if (showTracking && state.locked) {
+    if (
+        showTracking &&
+        state.locked
+    ) {
+
         drawTracking();
     }
 }
+
 
 function setupEventListeners() {
 
@@ -2631,7 +3460,10 @@ function setupEventListeners() {
 
             button.addEventListener(
                 "click",
-                () => showPage(button.dataset.page)
+                () =>
+                    showPage(
+                        button.dataset.page
+                    )
             );
         });
 
@@ -2639,9 +3471,11 @@ function setupEventListeners() {
         get("goSetupBtn");
 
     if (goSetupButton) {
+
         goSetupButton.addEventListener(
             "click",
-            () => showPage("setup")
+            () =>
+                showPage("setup")
         );
     }
 
@@ -2671,7 +3505,6 @@ function setupEventListeners() {
         );
     }
 
-
     // --------------------------------------------------------
     // Mapping
     // --------------------------------------------------------
@@ -2685,7 +3518,9 @@ function setupEventListeners() {
             "click",
             () => {
 
-                if (state.mapping.active) {
+                if (
+                    state.mapping.active
+                ) {
 
                     stopMapping();
 
@@ -2696,7 +3531,6 @@ function setupEventListeners() {
             }
         );
     }
-
 
     const resetMappingButton =
         get("resetMappingButton");
@@ -2709,7 +3543,6 @@ function setupEventListeners() {
         );
     }
 
-
     const referenceButton =
         get("dropReferenceButton");
 
@@ -2721,7 +3554,6 @@ function setupEventListeners() {
         );
     }
 
-
     const finishMappingButton =
         get("finishMappingButton");
 
@@ -2732,7 +3564,6 @@ function setupEventListeners() {
             finishMapping
         );
     }
-
 
     // --------------------------------------------------------
     // Map selection
@@ -2755,7 +3586,6 @@ function setupEventListeners() {
             );
         });
 
-
     setupMapGestureControls();
 
     const rotateMapLeft =
@@ -2765,7 +3595,8 @@ function setupEventListeners() {
 
         rotateMapLeft.addEventListener(
             "click",
-            () => rotateImage(-2)
+            () =>
+                rotateImage(-2)
         );
     }
 
@@ -2776,10 +3607,10 @@ function setupEventListeners() {
 
         rotateMapRight.addEventListener(
             "click",
-            () => rotateImage(2)
+            () =>
+                rotateImage(2)
         );
     }
-
 
     const resetAlignment =
         get("resetMapAlignment");
@@ -2791,7 +3622,6 @@ function setupEventListeners() {
             resetImageAlignment
         );
     }
-
 
     // --------------------------------------------------------
     // Lock
@@ -2807,8 +3637,6 @@ function setupEventListeners() {
             lockSetup
         );
     }
-
-
     // --------------------------------------------------------
     // Reset
     // --------------------------------------------------------
@@ -2823,7 +3651,6 @@ function setupEventListeners() {
             resetSetup
         );
     }
-
 
     // --------------------------------------------------------
     // Navigation buttons
@@ -2848,7 +3675,9 @@ function setupEventListeners() {
                         Number.isFinite(step)
                     ) {
 
-                        showSetupStep(step);
+                        showSetupStep(
+                            step
+                        );
                     }
                 }
             );
@@ -2866,7 +3695,10 @@ function handleResize() {
 
     drawMapping();
 
-    if (typeof drawTracking === "function") {
+    if (
+        typeof drawTracking ===
+        "function"
+    ) {
 
         drawTracking();
     }
@@ -2889,10 +3721,33 @@ function initializeApplication() {
 
     loadState();
 
-    state.workstation = {
-        x: 0,
-        y: 0
-    };
+    // IMPORTANT:
+    // Do NOT overwrite the saved workstation here.
+    //
+    // The old version contained:
+    //
+    // state.workstation = { x: 0, y: 0 };
+    //
+    // which destroyed the saved origin every time
+    // the application started.
+
+    if (
+        !Number.isFinite(
+            state.workstation.x
+        )
+    ) {
+
+        state.workstation.x = 0;
+    }
+
+    if (
+        !Number.isFinite(
+            state.workstation.y
+        )
+    ) {
+
+        state.workstation.y = 0;
+    }
 
     if (
         state.locked &&
@@ -2901,8 +3756,11 @@ function initializeApplication() {
 
         state.plan.calibrationBounds =
             calculatePathBounds([
+
                 ...state.mapping.path,
+
                 ...state.mapping.references,
+
                 {
                     x: state.workstation.x,
                     y: state.workstation.y
@@ -2928,13 +3786,6 @@ function initializeApplication() {
 
     drawTracking();
 
-
-    // If there is an existing locked setup,
-    // keep the user on the setup page for now.
-    //
-    // The existing UI can navigate to tracking
-    // using the normal navigation controls.
-
     showSetupStep(
         state.setupStep || 2
     );
@@ -2949,3 +3800,789 @@ document.addEventListener(
     "DOMContentLoaded",
     initializeApplication
 );
+
+// ============================================================
+// LIVE TRACKING
+// ============================================================
+//
+// Tracking uses the SAME world X/Y coordinate system as mapping.
+//
+// Sensors are handled by app.js:
+//   - accelerometer
+//   - compass
+//   - gyroscope
+//   - step detection
+//   - adaptive step length
+//
+// This file is responsible for:
+//   - starting/stopping tracking
+//   - tracking display
+//   - drawing the path
+//   - displaying X/Y/distance
+// ============================================================
+
+
+// ============================================================
+// START TRACKING
+// ============================================================
+
+async function startTracking() {
+
+    if (!state.locked) {
+
+        alert(
+            "Complete and lock the setup first."
+        );
+
+        return;
+    }
+
+    await requestMotionPermission();
+
+    await requestOrientationPermission();
+
+    resetSensorFusion();
+
+    state.tracking.active =
+        true;
+
+    // --------------------------------------------------------
+    // Tracking ALWAYS starts at the defined workstation origin.
+    // --------------------------------------------------------
+
+    state.tracking.x =
+        state.workstation.x;
+
+    state.tracking.y =
+        state.workstation.y;
+
+    // Use current fused sensor heading.
+    state.tracking.heading =
+        Number.isFinite(
+            state.sensors.fusedHeading
+        )
+            ? state.sensors.fusedHeading
+            : 0;
+
+    state.tracking.distance =
+        0;
+
+    state.tracking.path = [
+
+        {
+            x: state.tracking.x,
+            y: state.tracking.y
+        }
+
+    ];
+
+    state.tracking.lastStepTime =
+        performance.now();
+
+    state.tracking.lastStepAcceleration =
+        0;
+
+    drawTracking();
+
+    updateTrackingInformation();
+
+    const button =
+        get("startTrackingButton");
+
+    if (button) {
+
+        button.textContent =
+            "TRACKING ACTIVE";
+
+        button.classList.add(
+            "active"
+        );
+    }
+}
+
+
+// ============================================================
+// STOP TRACKING
+// ============================================================
+
+function stopTracking() {
+
+    state.tracking.active =
+        false;
+
+    const button =
+        get("startTrackingButton");
+
+    if (button) {
+
+        button.textContent =
+            "START TRACKING";
+
+        button.classList.remove(
+            "active"
+        );
+    }
+
+    saveState();
+}
+
+
+// ============================================================
+// TRACKING INFORMATION
+// ============================================================
+
+function updateTrackingInformation() {
+
+    const distanceElements =
+        document.querySelectorAll(
+            "[data-tracking-distance]"
+        );
+
+    distanceElements.forEach(element => {
+
+        element.textContent =
+            `${state.tracking.distance.toFixed(1)} m`;
+    });
+
+
+    const xElements =
+        document.querySelectorAll(
+            "[data-tracking-x]"
+        );
+
+    xElements.forEach(element => {
+
+        element.textContent =
+            state.tracking.x.toFixed(2);
+    });
+
+
+    const yElements =
+        document.querySelectorAll(
+            "[data-tracking-y]"
+        );
+
+    yElements.forEach(element => {
+
+        element.textContent =
+            state.tracking.y.toFixed(2);
+    });
+
+
+    // Optional heading display if the HTML later
+    // contains [data-tracking-heading].
+
+    const headingElements =
+        document.querySelectorAll(
+            "[data-tracking-heading]"
+        );
+
+    headingElements.forEach(element => {
+
+        element.textContent =
+            `${normalizeHeading(
+                state.tracking.heading
+            ).toFixed(1)}°`;
+    });
+
+
+    // Optional sensor status if the HTML later
+    // contains [data-tracking-sensor-status].
+
+    const sensorElements =
+        document.querySelectorAll(
+            "[data-tracking-sensor-status]"
+        );
+
+    sensorElements.forEach(element => {
+
+        const gyro =
+            state.sensors.gyroAvailable
+                ? "GYRO"
+                : "NO GYRO";
+
+        const stationary =
+            state.sensors.isStationary
+                ? "STATIONARY"
+                : "MOVING";
+
+        element.textContent =
+            `${gyro} / ${stationary}`;
+    });
+}
+
+
+// ============================================================
+// TRACKING DRAW
+// ============================================================
+
+function drawTracking() {
+
+    const result =
+        getCanvas(
+            "trackingCanvas"
+        );
+
+    if (!result) {
+        return;
+    }
+
+    const {
+        context,
+        width,
+        height
+    } = result;
+
+    context.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    context.fillStyle =
+        "#080f1b";
+
+    context.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    // --------------------------------------------------------
+    // Floor image.
+    // --------------------------------------------------------
+
+    const image =
+        document.querySelector(
+            "[data-floor-map-image]"
+        );
+
+    if (
+        image &&
+        !image.complete
+    ) {
+
+        image.onload =
+            () => drawTracking();
+
+        return;
+    }
+
+    // --------------------------------------------------------
+    // If the floor map exists, draw it.
+    // --------------------------------------------------------
+
+    if (
+        image &&
+        image.complete &&
+        image.naturalWidth > 0
+    ) {
+
+        const imageScale =
+            Math.min(
+                width / image.naturalWidth,
+                height / image.naturalHeight
+            );
+
+        const imageWidth =
+            image.naturalWidth *
+            imageScale;
+
+        const imageHeight =
+            image.naturalHeight *
+            imageScale;
+
+        context.drawImage(
+
+            image,
+
+            (width -
+                imageWidth) / 2,
+
+            (height -
+                imageHeight) / 2,
+
+            imageWidth,
+            imageHeight
+        );
+    }
+
+    // --------------------------------------------------------
+    // Path.
+    // --------------------------------------------------------
+
+    const path =
+        state.tracking.path;
+
+    if (
+        !Array.isArray(path) ||
+        path.length === 0
+    ) {
+
+        return;
+    }
+
+    // --------------------------------------------------------
+    // World bounds.
+    //
+    // IMPORTANT:
+    // We use the locked mapping bounds.
+    // This prevents the display from changing scale
+    // while the user walks.
+    // --------------------------------------------------------
+
+    const bounds =
+        getMapAreaBounds();
+
+    const rangeX =
+        Math.max(
+            bounds.maxX -
+            bounds.minX,
+            0.01
+        );
+
+    const rangeY =
+        Math.max(
+            bounds.maxY -
+            bounds.minY,
+            0.01
+        );
+
+    const scale =
+        Math.min(
+
+            (width -
+                CANVAS_PADDING * 2) /
+                rangeX,
+
+            (height -
+                CANVAS_PADDING * 2) /
+                rangeY
+        );
+
+
+    function screenX(x) {
+
+        return (
+            CANVAS_PADDING +
+            (x -
+                bounds.minX) *
+            scale
+        );
+    }
+
+
+    function screenY(y) {
+
+        return (
+            height -
+            CANVAS_PADDING -
+            (y -
+                bounds.minY) *
+            scale
+        );
+    }
+
+
+    function alignedPoint(
+        x,
+        y
+    ) {
+
+        return transformMapAreaPoint(
+
+            {
+                x:
+                    screenX(x),
+
+                y:
+                    screenY(y)
+            },
+
+            width,
+            height
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // Grid.
+    // --------------------------------------------------------
+
+    const rawGridInterval =
+        80 / scale;
+
+    const gridMagnitude =
+        10 **
+        Math.floor(
+            Math.log10(
+                Math.max(
+                    rawGridInterval,
+                    0.001
+                )
+            )
+        );
+
+    const normalizedGridInterval =
+        rawGridInterval /
+        gridMagnitude;
+
+    const gridFactor =
+        normalizedGridInterval <= 1
+            ? 1
+            : normalizedGridInterval <= 2
+                ? 2
+                : normalizedGridInterval <= 5
+                    ? 5
+                    : 10;
+
+    const gridInterval =
+        gridFactor *
+        gridMagnitude;
+
+
+    context.strokeStyle =
+        "rgba(255,255,255,0.12)";
+
+    context.lineWidth = 1;
+
+
+    const firstXTick =
+        Math.ceil(
+            bounds.minX /
+            gridInterval
+        ) *
+        gridInterval;
+
+
+    for (
+        let x = firstXTick;
+        x <= bounds.maxX;
+        x += gridInterval
+    ) {
+
+        const pointA =
+            alignedPoint(
+                x,
+                bounds.minY
+            );
+
+        const pointB =
+            alignedPoint(
+                x,
+                bounds.maxY
+            );
+
+        context.beginPath();
+
+        context.moveTo(
+            pointA.x,
+            pointA.y
+        );
+
+        context.lineTo(
+            pointB.x,
+            pointB.y
+        );
+
+        context.stroke();
+    }
+
+
+    const firstYTick =
+        Math.ceil(
+            bounds.minY /
+            gridInterval
+        ) *
+        gridInterval;
+
+
+    for (
+        let y = firstYTick;
+        y <= bounds.maxY;
+        y += gridInterval
+    ) {
+
+        const pointA =
+            alignedPoint(
+                bounds.minX,
+                y
+            );
+
+        const pointB =
+            alignedPoint(
+                bounds.maxX,
+                y
+            );
+
+        context.beginPath();
+
+        context.moveTo(
+            pointA.x,
+            pointA.y
+        );
+
+        context.lineTo(
+            pointB.x,
+            pointB.y
+        );
+
+        context.stroke();
+    }
+
+
+    // --------------------------------------------------------
+    // Tracking path.
+    // --------------------------------------------------------
+
+    if (path.length > 1) {
+
+        context.beginPath();
+
+        path.forEach(
+            (point, index) => {
+
+                const screenPoint =
+                    alignedPoint(
+                        point.x,
+                        point.y
+                    );
+
+                if (index === 0) {
+
+                    context.moveTo(
+                        screenPoint.x,
+                        screenPoint.y
+                    );
+
+                } else {
+
+                    context.lineTo(
+                        screenPoint.x,
+                        screenPoint.y
+                    );
+                }
+            }
+        );
+
+        context.strokeStyle =
+            "#00d4ff";
+
+        context.lineWidth = 4;
+
+        context.lineJoin =
+            "round";
+
+        context.lineCap =
+            "round";
+
+        context.stroke();
+    }
+
+
+    // --------------------------------------------------------
+    // Starting position.
+    // --------------------------------------------------------
+
+    const start =
+        path[0];
+
+    const startPoint =
+        alignedPoint(
+            start.x,
+            start.y
+        );
+
+    context.beginPath();
+
+    context.arc(
+        startPoint.x,
+        startPoint.y,
+        7,
+        0,
+        Math.PI * 2
+    );
+
+    context.fillStyle =
+        "#ffffff";
+
+    context.fill();
+
+    context.font =
+        "12px sans-serif";
+
+    context.fillText(
+        "START",
+        startPoint.x + 10,
+        startPoint.y + 4
+    );
+
+
+    // --------------------------------------------------------
+    // Current position.
+    // --------------------------------------------------------
+
+    const currentPoint =
+        alignedPoint(
+            state.tracking.x,
+            state.tracking.y
+        );
+
+
+    // Direction line.
+    //
+    // This makes it easier to visually see whether the
+    // phone thinks you are facing the correct direction.
+
+    const heading =
+        state.tracking.heading *
+        DEG_TO_RAD;
+
+    const directionLength =
+        28;
+
+    const directionEnd = {
+
+        x:
+            currentPoint.x +
+            Math.sin(heading) *
+            directionLength,
+
+        y:
+            currentPoint.y -
+            Math.cos(heading) *
+            directionLength
+    };
+
+
+    context.beginPath();
+
+    context.moveTo(
+        currentPoint.x,
+        currentPoint.y
+    );
+
+    context.lineTo(
+        directionEnd.x,
+        directionEnd.y
+    );
+
+    context.strokeStyle =
+        "#ffffff";
+
+    context.lineWidth = 3;
+
+    context.stroke();
+
+
+    // Position circle.
+
+    context.beginPath();
+
+    context.arc(
+        currentPoint.x,
+        currentPoint.y,
+        11,
+        0,
+        Math.PI * 2
+    );
+
+    context.fillStyle =
+        state.sensors.isStationary
+            ? "#ffaa00"
+            : "#00ff88";
+
+    context.fill();
+
+    context.strokeStyle =
+        "#ffffff";
+
+    context.lineWidth = 3;
+
+    context.stroke();
+
+
+    // --------------------------------------------------------
+    // Position text.
+    // --------------------------------------------------------
+
+    context.fillStyle =
+        "#ffffff";
+
+    context.font =
+        "12px sans-serif";
+
+    context.fillText(
+
+        `X ${state.tracking.x.toFixed(2)} m`,
+
+        currentPoint.x + 16,
+
+        currentPoint.y - 12
+    );
+
+    context.fillText(
+
+        `Y ${state.tracking.y.toFixed(2)} m`,
+
+        currentPoint.x + 16,
+
+        currentPoint.y + 4
+    );
+
+    context.fillText(
+
+        `${normalizeHeading(
+            state.tracking.heading
+        ).toFixed(0)}°`,
+
+        currentPoint.x + 16,
+
+        currentPoint.y + 20
+    );
+}
+
+
+// ============================================================
+// TRACKING EVENT LISTENERS
+// ============================================================
+
+function setupTrackingEventListeners() {
+
+    const trackingButton =
+        get("startTrackingButton");
+
+    if (trackingButton) {
+
+        trackingButton.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    state.tracking.active
+                ) {
+
+                    stopTracking();
+
+                } else {
+
+                    startTracking();
+                }
+            }
+        );
+    }
+
+
+    const stopTrackingButton =
+        get("stopTrackingButton");
+
+    if (stopTrackingButton) {
+
+        stopTrackingButton.addEventListener(
+            "click",
+            stopTracking
+        );
+    }
+}
